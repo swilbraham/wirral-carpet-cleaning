@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { HiPhone, HiMail, HiLocationMarker } from 'react-icons/hi';
 import logo from '../assets/logo.png';
 
@@ -99,9 +100,15 @@ export default function Footer() {
           <p className="text-xs text-gray-500">
             &copy; {currentYear} Wirral Carpet Cleaning Limited. All rights reserved.
           </p>
-          <p className="text-xs text-gray-500">
-            Serving Merseyside &amp; Cheshire with professional cleaning services.
-          </p>
+          <div className="flex items-center gap-4">
+            <Link to="/privacy-policy" className="text-xs text-gray-500 hover:text-white transition-colors">
+              Privacy Policy
+            </Link>
+            <span className="text-gray-700">|</span>
+            <p className="text-xs text-gray-500">
+              Serving Merseyside &amp; Cheshire with professional cleaning services.
+            </p>
+          </div>
         </div>
       </div>
     </footer>

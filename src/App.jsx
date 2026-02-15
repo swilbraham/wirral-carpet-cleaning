@@ -6,6 +6,7 @@ import Services from './components/Services';
 import Process from './components/Process';
 import Testimonials from './components/Testimonials';
 import About from './components/About';
+import FAQ from './components/FAQ';
 import CTA from './components/CTA';
 import Footer from './components/Footer';
 import MobileCallButton from './components/MobileCallButton';
@@ -20,6 +21,7 @@ function HomePage() {
       <Process />
       <Testimonials />
       <About />
+      <FAQ />
       <CTA />
     </>
   );

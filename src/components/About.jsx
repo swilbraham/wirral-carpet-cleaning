@@ -65,9 +65,9 @@ export default function About() {
             About Us
           </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-5">
-            Your Local Cleaning
+            Your Local Carpet Cleaning
             <br />
-            <span className="text-primary">Experts Since Day One</span>
+            <span className="text-primary">Experts in Wirral &amp; Merseyside</span>
           </h2>
         </motion.div>
 
@@ -84,7 +84,7 @@ export default function About() {
             <div className="relative rounded-2xl overflow-hidden shadow-xl">
               <img
                 src={teamCleaningImg}
-                alt="Professional carpet cleaning in progress"
+                alt="Wirral Carpet Cleaning professional team at work"
                 className="w-full h-72 md:h-96 object-cover"
               />
             </div>
@@ -92,7 +92,7 @@ export default function About() {
             <div className="absolute -bottom-6 -right-4 md:-right-6 w-40 md:w-48 rounded-xl overflow-hidden shadow-xl border-4 border-white">
               <img
                 src={carpetTextureImg}
-                alt="Close-up carpet cleaning"
+                alt="Professional carpet cleaning equipment and team in Merseyside"
                 className="w-full h-28 md:h-36 object-cover"
               />
             </div>
@@ -142,7 +142,7 @@ export default function About() {
               <h3 className="text-xl font-bold text-gray-900">Areas We Cover</h3>
             </div>
             <p className="text-gray-500 mb-6">
-              We serve domestic and commercial customers across Merseyside and Cheshire,
+              We provide professional carpet cleaning and upholstery cleaning to domestic and commercial customers across Merseyside and Cheshire,
               including:
             </p>
             <div className="flex flex-wrap gap-2">

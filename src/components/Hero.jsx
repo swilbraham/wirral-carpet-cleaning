@@ -10,7 +10,7 @@ const stats = [
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden bg-dark">
+    <section id="hero" aria-label="Hero" className="relative min-h-screen flex items-center overflow-hidden bg-dark">
       {/* Background image */}
       <div className="absolute inset-0">
         <img
@@ -66,13 +66,13 @@ export default function Hero() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.1] tracking-tight mb-6"
             >
-              Professional Cleaning
+              Professional Carpet Cleaning
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent-light">
                 That Transforms
               </span>
               <br />
-              Your Space
+              Your Home &amp; Business
             </motion.h1>
 
             {/* Subheadline */}
@@ -82,7 +82,7 @@ export default function Hero() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-lg md:text-xl text-gray-300 max-w-2xl mb-10 leading-relaxed"
             >
-              Expert carpet, upholstery and biohazard cleaning for homes and businesses.
+              Expert carpet cleaning, upholstery cleaning and biohazard cleaning for homes and businesses.
               We restore what others can't — serving Liverpool, Wirral, Chester and
               communities throughout Merseyside and Cheshire.
             </motion.p>
@@ -139,7 +139,7 @@ export default function Hero() {
             <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-black/30">
               <img
                 src={heroImage}
-                alt="Beautifully clean living room with fresh carpets"
+                alt="Professional carpet cleaning results — spotless living room by Wirral Carpet Cleaning"
                 className="w-full h-[500px] object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-dark/40 to-transparent" />

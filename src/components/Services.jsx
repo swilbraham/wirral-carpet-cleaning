@@ -96,7 +96,7 @@ function ServiceCard({ service, index }) {
       <div className="relative h-48 overflow-hidden">
         <img
           src={service.image}
-          alt={service.title}
+          alt={`${service.title} service in Wirral and Merseyside`}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         <div className={`absolute inset-0 bg-gradient-to-t from-black/50 to-transparent`} />
@@ -148,13 +148,13 @@ export default function Services() {
             Our Services
           </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-5">
-            Comprehensive Cleaning
+            Professional Cleaning
             <br />
-            <span className="text-primary">Solutions That Deliver</span>
+            <span className="text-primary">Services in Merseyside &amp; Cheshire</span>
           </h2>
           <p className="text-lg text-gray-500 leading-relaxed">
-            From everyday carpet refreshes to specialist biohazard remediation,
-            we have the expertise and equipment to handle any cleaning challenge.
+            From domestic carpet cleaning to commercial upholstery care and specialist biohazard remediation,
+            we have the expertise and equipment to handle any cleaning challenge across Wirral, Liverpool and Chester.
           </p>
         </motion.div>
 

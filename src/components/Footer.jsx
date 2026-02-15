@@ -106,7 +106,7 @@ export default function Footer() {
             </Link>
             <span className="text-gray-700">|</span>
             <p className="text-xs text-gray-500">
-              Serving Merseyside &amp; Cheshire with professional cleaning services.
+              Professional carpet cleaning &amp; upholstery cleaning across Wirral, Liverpool, Chester &amp; Merseyside.
             </p>
           </div>
         </div>

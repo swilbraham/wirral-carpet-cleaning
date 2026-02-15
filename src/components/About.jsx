@@ -8,8 +8,8 @@ import {
   HiClock,
   HiHeart,
 } from 'react-icons/hi';
-import cleaningResultImg from '../assets/cleaning-result.jpg';
-import carpetImg from '../assets/carpet-cleaning.jpg';
+import teamCleaningImg from '../assets/team-cleaning.jpg';
+import carpetTextureImg from '../assets/carpet-texture-clean.jpg';
 
 const credentials = [
   { icon: HiBadgeCheck, label: 'Fully Insured' },
@@ -83,7 +83,7 @@ export default function About() {
           <div className="lg:col-span-2 relative">
             <div className="relative rounded-2xl overflow-hidden shadow-xl">
               <img
-                src={cleaningResultImg}
+                src={teamCleaningImg}
                 alt="Professional carpet cleaning in progress"
                 className="w-full h-72 md:h-96 object-cover"
               />
@@ -91,7 +91,7 @@ export default function About() {
             {/* Overlapping second image */}
             <div className="absolute -bottom-6 -right-4 md:-right-6 w-40 md:w-48 rounded-xl overflow-hidden shadow-xl border-4 border-white">
               <img
-                src={carpetImg}
+                src={carpetTextureImg}
                 alt="Close-up carpet cleaning"
                 className="w-full h-28 md:h-36 object-cover"
               />

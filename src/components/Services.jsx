@@ -8,10 +8,10 @@ import {
   HiCheck,
   HiArrowRight,
 } from 'react-icons/hi';
-import carpetImg from '../assets/carpet-cleaning.jpg';
-import upholsteryImg from '../assets/upholstery-cleaning.jpg';
-import commercialImg from '../assets/commercial-office.jpg';
-import cleaningResultImg from '../assets/cleaning-result.jpg';
+import carpetImg from '../assets/hero-carpet-clean.jpg';
+import upholsteryImg from '../assets/sofa-upholstery.jpg';
+import commercialImg from '../assets/commercial-cleaning.jpg';
+import biohazardImg from '../assets/sofa-cleaning.jpg';
 
 const services = [
   {
@@ -76,7 +76,7 @@ const services = [
     accent: 'from-emerald-500 to-emerald-400',
     iconBg: 'bg-emerald-100',
     iconColor: 'text-emerald-600',
-    image: cleaningResultImg,
+    image: biohazardImg,
   },
 ];
 

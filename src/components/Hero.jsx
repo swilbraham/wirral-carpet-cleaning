@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { HiPhone, HiArrowRight, HiShieldCheck, HiClock, HiStar } from 'react-icons/hi';
-import heroImage from '../assets/hero-living-room.jpg';
+import heroImage from '../assets/clean-living-room.jpg';
 
 const stats = [
   { icon: HiStar, value: '5★', label: 'Rated Service' },

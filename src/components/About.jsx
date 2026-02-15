@@ -8,6 +8,8 @@ import {
   HiClock,
   HiHeart,
 } from 'react-icons/hi';
+import cleaningResultImg from '../assets/cleaning-result.jpg';
+import carpetImg from '../assets/carpet-cleaning.jpg';
 
 const credentials = [
   { icon: HiBadgeCheck, label: 'Fully Insured' },
@@ -46,6 +48,8 @@ export default function About() {
   const headingInView = useInView(headingRef, { once: true, margin: '-50px' });
   const contentRef = useRef(null);
   const contentInView = useInView(contentRef, { once: true, margin: '-50px' });
+  const imageRef = useRef(null);
+  const imageInView = useInView(imageRef, { once: true, margin: '-50px' });
 
   return (
     <section id="about" className="py-20 md:py-28 bg-gray-50">
@@ -67,15 +71,35 @@ export default function About() {
           </h2>
         </motion.div>
 
+        {/* Image + Story row */}
         <motion.div
-          ref={contentRef}
+          ref={imageRef}
           initial={{ opacity: 0, y: 40 }}
-          animate={contentInView ? { opacity: 1, y: 0 } : {}}
+          animate={imageInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="grid lg:grid-cols-2 gap-12 lg:gap-16"
+          className="grid lg:grid-cols-5 gap-10 lg:gap-14 items-center mb-16"
         >
-          {/* Left: Story & Credentials */}
-          <div>
+          {/* Image collage */}
+          <div className="lg:col-span-2 relative">
+            <div className="relative rounded-2xl overflow-hidden shadow-xl">
+              <img
+                src={cleaningResultImg}
+                alt="Professional carpet cleaning in progress"
+                className="w-full h-72 md:h-96 object-cover"
+              />
+            </div>
+            {/* Overlapping second image */}
+            <div className="absolute -bottom-6 -right-4 md:-right-6 w-40 md:w-48 rounded-xl overflow-hidden shadow-xl border-4 border-white">
+              <img
+                src={carpetImg}
+                alt="Close-up carpet cleaning"
+                className="w-full h-28 md:h-36 object-cover"
+              />
+            </div>
+          </div>
+
+          {/* Story text */}
+          <div className="lg:col-span-3">
             <p className="text-lg text-gray-600 leading-relaxed mb-6">
               Wirral Carpet Cleaning Limited is a family-run business serving homes
               and businesses throughout Merseyside and Cheshire. With over 15 years
@@ -101,8 +125,15 @@ export default function About() {
               ))}
             </div>
           </div>
+        </motion.div>
 
-          {/* Right: Areas We Cover */}
+        {/* Areas We Cover */}
+        <motion.div
+          ref={contentRef}
+          initial={{ opacity: 0, y: 40 }}
+          animate={contentInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+        >
           <div className="bg-white rounded-2xl border border-gray-100 p-6 md:p-8">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">

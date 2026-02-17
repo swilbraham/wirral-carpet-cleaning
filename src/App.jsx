@@ -12,6 +12,7 @@ import CTA from './components/CTA';
 import Footer from './components/Footer';
 import MobileCallButton from './components/MobileCallButton';
 import PrivacyPolicy from './components/PrivacyPolicy';
+import Landing from './components/Landing';
 
 function HomePage() {
   return (
@@ -29,18 +30,27 @@ function HomePage() {
   );
 }
 
+function MainLayout() {
+  return (
+    <div className="min-h-screen bg-white">
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+      </Routes>
+      <Footer />
+      <MobileCallButton />
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-white">
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        </Routes>
-        <Footer />
-        <MobileCallButton />
-      </div>
+      <Routes>
+        <Route path="/landing" element={<Landing />} />
+        <Route path="/*" element={<MainLayout />} />
+      </Routes>
     </BrowserRouter>
   );
 }

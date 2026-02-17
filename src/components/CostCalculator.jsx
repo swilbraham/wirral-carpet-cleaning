@@ -15,16 +15,19 @@ import {
 
 const FIRST_CARPET_PRICE = 60;
 const ADDITIONAL_CARPET_PRICE = 20;
-const THROUGH_LOUNGE_PRICE = 80;
+const THROUGH_LOUNGE_ALONE_PRICE = 80;
+const THROUGH_LOUNGE_WITH_OTHERS_PRICE = 60;
 const COMBO_DISCOUNT = 20;
 
 const rooms = [
   { id: 'living-room', name: 'Living Room', icon: '🛋️' },
-  { id: 'through-lounge', name: 'Through Lounge/Diner', icon: '🏠', fixedPrice: THROUGH_LOUNGE_PRICE },
+  { id: 'through-lounge', name: 'Through Lounge/Diner', icon: '🏠', isThroughLounge: true },
   { id: 'master-bedroom', name: 'Master Bedroom', icon: '🛏️' },
   { id: 'bedroom-2', name: 'Bedroom 2', icon: '🛏️' },
   { id: 'bedroom-3', name: 'Bedroom 3', icon: '🛏️' },
   { id: 'bedroom-4', name: 'Bedroom 4', icon: '🛏️' },
+  { id: 'bedroom-5', name: 'Bedroom 5', icon: '🛏️' },
+  { id: 'bedroom-6', name: 'Bedroom 6', icon: '🛏️' },
   { id: 'hallway', name: 'Hallway', icon: '🚪' },
   { id: 'stairs', name: 'Stairs', icon: '📶' },
   { id: 'landing', name: 'Landing', icon: '🏠' },
@@ -32,6 +35,7 @@ const rooms = [
   { id: 'study', name: 'Study / Office', icon: '💻' },
   { id: 'conservatory', name: 'Conservatory', icon: '☀️' },
   { id: 'playroom', name: 'Playroom', icon: '🧸' },
+  { id: 'other', name: 'Other', icon: '📋' },
 ];
 
 function generateDates() {
@@ -65,13 +69,18 @@ function calculatePrice(selectedRooms) {
   const breakdown = [];
   let standardCount = 0;
 
-  // Separate fixed-price rooms from standard rooms
+  const hasThroughLounge = selectedRooms.includes('through-lounge');
+  const otherRoomCount = selectedRooms.filter((id) => id !== 'through-lounge').length;
+
+  // Through Lounge/Diner: £80 alone, £60 when selected with other rooms
+  const throughLoungePrice = otherRoomCount > 0 ? THROUGH_LOUNGE_WITH_OTHERS_PRICE : THROUGH_LOUNGE_ALONE_PRICE;
+
   selectedRooms.forEach((id) => {
     const room = rooms.find((r) => r.id === id);
     if (!room) return;
 
-    if (room.fixedPrice) {
-      breakdown.push({ name: room.name, price: room.fixedPrice, icon: room.icon });
+    if (room.isThroughLounge) {
+      breakdown.push({ name: room.name, price: throughLoungePrice, icon: room.icon });
     } else {
       standardCount++;
       const price = standardCount === 1 ? FIRST_CARPET_PRICE : ADDITIONAL_CARPET_PRICE;
@@ -314,9 +323,6 @@ export default function CostCalculator() {
                       >
                         {room.name}
                       </span>
-                      {room.fixedPrice && (
-                        <span className="text-xs text-gray-400">&pound;{room.fixedPrice}</span>
-                      )}
                     </button>
                   );
                 })}

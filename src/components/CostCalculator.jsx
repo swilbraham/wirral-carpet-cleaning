@@ -73,7 +73,15 @@ function calculatePrice(selectedRooms) {
     breakdown.push({ name: room.name, price, icon: room.icon });
   });
 
-  const total = breakdown.reduce((sum, item) => sum + item.price, 0);
+  let total = breakdown.reduce((sum, item) => sum + item.price, 0);
+
+  // Silent combo discount: hall+stairs, stairs+landing, or hall+stairs+landing = -£20
+  const hasHall = selectedRooms.includes('hallway');
+  const hasStairs = selectedRooms.includes('stairs');
+  const hasLanding = selectedRooms.includes('landing');
+  if ((hasHall && hasStairs) || (hasStairs && hasLanding)) {
+    total = Math.max(0, total - 20);
+  }
 
   return { total, breakdown };
 }

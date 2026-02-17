@@ -6,6 +6,7 @@ import Services from './components/Services';
 import Process from './components/Process';
 import Testimonials from './components/Testimonials';
 import About from './components/About';
+import CostCalculator from './components/CostCalculator';
 import FAQ from './components/FAQ';
 import CTA from './components/CTA';
 import Footer from './components/Footer';
@@ -19,6 +20,7 @@ function HomePage() {
       <PainPoints />
       <Services />
       <Process />
+      <CostCalculator />
       <Testimonials />
       <About />
       <FAQ />

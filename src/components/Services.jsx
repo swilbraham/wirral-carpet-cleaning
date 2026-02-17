@@ -8,10 +8,10 @@ import {
   HiCheck,
   HiArrowRight,
 } from 'react-icons/hi';
-import carpetImg from '../assets/hero-carpet-clean.jpg';
-import upholsteryImg from '../assets/sofa-upholstery.jpg';
+import carpetImg from '../assets/carpet.jpg';
+import upholsteryImg from '../assets/upholstery.jpg';
 import commercialImg from '../assets/commercial-cleaning.jpg';
-import biohazardImg from '../assets/sofa-cleaning.jpg';
+import biohazardImg from '../assets/bio.jpeg';
 
 const services = [
   {

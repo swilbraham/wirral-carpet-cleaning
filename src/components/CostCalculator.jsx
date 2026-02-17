@@ -210,11 +210,6 @@ export default function CostCalculator() {
             <span className="text-primary">In Seconds</span>
           </h2>
           <p className="text-lg text-gray-500 leading-relaxed">
-            Select the rooms you need cleaned and get an instant estimate.
-            First carpet from &pound;{FIRST_CARPET_PRICE}, then &pound;{ADDITIONAL_CARPET_PRICE} per additional room.
-            Through lounge/diner &pound;{THROUGH_LOUNGE_PRICE}.
-          </p>
-          <p className="text-sm text-gray-400 mt-2">
             All prices are estimates — final price to be confirmed on booking.
           </p>
         </motion.div>

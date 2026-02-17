@@ -10,18 +10,13 @@ import {
   HiUser,
   HiPhone,
   HiLocationMarker,
-  HiInformationCircle,
 } from 'react-icons/hi';
 
 const FIRST_CARPET_PRICE = 60;
 const ADDITIONAL_CARPET_PRICE = 20;
-const THROUGH_LOUNGE_ALONE_PRICE = 80;
-const THROUGH_LOUNGE_WITH_OTHERS_PRICE = 60;
-const COMBO_DISCOUNT = 20;
 
 const rooms = [
   { id: 'living-room', name: 'Living Room', icon: '🛋️' },
-  { id: 'through-lounge', name: 'Through Lounge/Diner', icon: '🏠', isThroughLounge: true },
   { id: 'master-bedroom', name: 'Master Bedroom', icon: '🛏️' },
   { id: 'bedroom-2', name: 'Bedroom 2', icon: '🛏️' },
   { id: 'bedroom-3', name: 'Bedroom 3', icon: '🛏️' },
@@ -64,45 +59,23 @@ function formatDateValue(date) {
 }
 
 function calculatePrice(selectedRooms) {
-  if (selectedRooms.length === 0) return { subtotal: 0, discount: 0, total: 0, breakdown: [] };
+  if (selectedRooms.length === 0) return { total: 0, breakdown: [] };
 
   const breakdown = [];
-  let standardCount = 0;
-
-  const hasThroughLounge = selectedRooms.includes('through-lounge');
-  const otherRoomCount = selectedRooms.filter((id) => id !== 'through-lounge').length;
-
-  // Through Lounge/Diner: £80 alone, £60 when selected with other rooms
-  const throughLoungePrice = otherRoomCount > 0 ? THROUGH_LOUNGE_WITH_OTHERS_PRICE : THROUGH_LOUNGE_ALONE_PRICE;
+  let count = 0;
 
   selectedRooms.forEach((id) => {
     const room = rooms.find((r) => r.id === id);
     if (!room) return;
 
-    if (room.isThroughLounge) {
-      breakdown.push({ name: room.name, price: throughLoungePrice, icon: room.icon });
-    } else {
-      standardCount++;
-      const price = standardCount === 1 ? FIRST_CARPET_PRICE : ADDITIONAL_CARPET_PRICE;
-      breakdown.push({ name: room.name, price, icon: room.icon });
-    }
+    count++;
+    const price = count === 1 ? FIRST_CARPET_PRICE : ADDITIONAL_CARPET_PRICE;
+    breakdown.push({ name: room.name, price, icon: room.icon });
   });
 
-  const subtotal = breakdown.reduce((sum, item) => sum + item.price, 0);
+  const total = breakdown.reduce((sum, item) => sum + item.price, 0);
 
-  // Combo discount: hall+stairs, stairs+landing, or hall+stairs+landing = -£20
-  const hasHall = selectedRooms.includes('hallway');
-  const hasStairs = selectedRooms.includes('stairs');
-  const hasLanding = selectedRooms.includes('landing');
-
-  let discount = 0;
-  if ((hasHall && hasStairs) || (hasStairs && hasLanding) || (hasHall && hasStairs && hasLanding)) {
-    discount = COMBO_DISCOUNT;
-  }
-
-  const total = Math.max(0, subtotal - discount);
-
-  return { subtotal, discount, total, breakdown };
+  return { total, breakdown };
 }
 
 export default function CostCalculator() {
@@ -123,7 +96,7 @@ export default function CostCalculator() {
 
   const availableDates = useMemo(() => generateDates(), []);
 
-  const { subtotal, discount, total, breakdown } = useMemo(
+  const { total, breakdown } = useMemo(
     () => calculatePrice(selectedRooms),
     [selectedRooms]
   );
@@ -169,7 +142,6 @@ export default function CostCalculator() {
     body.append('rooms', selectedRoomNames);
     body.append('totalRooms', selectedRooms.length.toString());
     body.append('estimatedCost', `£${total.toFixed(2)} (estimated)`);
-    if (discount > 0) body.append('comboDiscount', `-£${discount.toFixed(2)}`);
     body.append('_subject', 'New Booking Request - Wirral Carpet Cleaning');
     body.append('_captcha', 'false');
     body.append('_template', 'table');
@@ -192,12 +164,6 @@ export default function CostCalculator() {
     setSubmitted(false);
     setFormData({ name: '', phone: '', postcode: '', date: '', timeSlot: '' });
   };
-
-  // Check for active combo discount eligibility
-  const hasHall = selectedRooms.includes('hallway');
-  const hasStairs = selectedRooms.includes('stairs');
-  const hasLanding = selectedRooms.includes('landing');
-  const hasCombo = (hasHall && hasStairs) || (hasStairs && hasLanding);
 
   return (
     <section id="calculator" className="py-20 md:py-28 bg-white">
@@ -287,15 +253,6 @@ export default function CostCalculator() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
             >
-              {/* Combo discount info banner */}
-              <div className="mb-6 flex items-start gap-3 p-4 rounded-xl bg-green-50 border border-green-100">
-                <HiInformationCircle className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
-                <div className="text-sm text-green-800">
-                  <strong>Save &pound;{COMBO_DISCOUNT}!</strong> Select hall &amp; stairs, stairs &amp; landing,
-                  or hall, stairs &amp; landing together and get &pound;{COMBO_DISCOUNT} off your estimated total.
-                </div>
-              </div>
-
               {/* Room selection grid */}
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 mb-8">
                 {rooms.map((room) => {
@@ -347,11 +304,6 @@ export default function CostCalculator() {
                             ? '1 room selected'
                             : `${selectedRooms.length} rooms selected`}
                         </p>
-                        {discount > 0 && (
-                          <p className="text-sm text-green-600 font-medium">
-                            Combo discount applied: -&pound;{discount.toFixed(2)}
-                          </p>
-                        )}
                         <div className="flex items-baseline gap-2">
                           <span className="text-3xl md:text-4xl font-bold text-primary">
                             &pound;{total.toFixed(2)}
@@ -399,12 +351,6 @@ export default function CostCalculator() {
                         </li>
                       ))}
                     </ul>
-                    {discount > 0 && (
-                      <div className="flex items-center justify-between text-sm text-green-600 font-medium mb-4">
-                        <span>Combo discount</span>
-                        <span>-&pound;{discount.toFixed(2)}</span>
-                      </div>
-                    )}
                     <div className="border-t border-gray-200 pt-4 flex items-center justify-between">
                       <span className="font-semibold text-gray-900">Estimated Total</span>
                       <span className="text-2xl font-bold text-primary">

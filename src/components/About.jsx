@@ -8,8 +8,8 @@ import {
   HiClock,
   HiHeart,
 } from 'react-icons/hi';
-import teamCleaningImg from '../assets/team-cleaning.jpg';
-import carpetTextureImg from '../assets/carpet-texture-clean.jpg';
+import carpetsImg from '../assets/carpets2.jpg';
+import stairsImg from '../assets/stairs.jpg';
 
 const credentials = [
   { icon: HiBadgeCheck, label: 'Fully Insured' },
@@ -83,16 +83,16 @@ export default function About() {
           <div className="lg:col-span-2 relative">
             <div className="relative rounded-2xl overflow-hidden shadow-xl">
               <img
-                src={teamCleaningImg}
-                alt="Wirral Carpet Cleaning professional team at work"
+                src={carpetsImg}
+                alt="Professional carpet cleaning results in Wirral - before and after deep clean"
                 className="w-full h-72 md:h-96 object-cover"
               />
             </div>
             {/* Overlapping second image */}
             <div className="absolute -bottom-6 -right-4 md:-right-6 w-40 md:w-48 rounded-xl overflow-hidden shadow-xl border-4 border-white">
               <img
-                src={carpetTextureImg}
-                alt="Professional carpet cleaning equipment and team in Merseyside"
+                src={stairsImg}
+                alt="Stair carpet cleaning service in Merseyside - professionally cleaned stairs"
                 className="w-full h-28 md:h-36 object-cover"
               />
             </div>

@@ -2,36 +2,36 @@ import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef } from 'react';
 import {
-  HiExclamationCircle,
-  HiEmojiSad,
-  HiCurrencyPound,
-  HiBan,
+  HiSparkles,
+  HiHeart,
+  HiShieldCheck,
+  HiHome,
 } from 'react-icons/hi';
 
-const painPoints = [
+const reasons = [
   {
-    icon: HiExclamationCircle,
-    title: 'Stubborn Stains',
+    icon: HiSparkles,
+    title: 'Revive Your Carpets',
     description:
-      'Wine spills, pet accidents, coffee marks — everyday stains that shop-bought products just push deeper into the fibres.',
+      'Professional deep cleaning lifts embedded dirt and restores your carpets to their original colour and softness — they\'ll look and feel like new again.',
   },
   {
-    icon: HiEmojiSad,
-    title: 'Allergens & Odours',
+    icon: HiHeart,
+    title: 'Healthier Home',
     description:
-      'Dust mites, pet dander and trapped odours build up over time, affecting air quality and triggering allergies in your home or office.',
+      'Remove dust mites, allergens, bacteria and pet dander that build up over time. Clean carpets and upholstery mean cleaner air for your family.',
   },
   {
-    icon: HiCurrencyPound,
-    title: 'Costly Replacements',
+    icon: HiShieldCheck,
+    title: 'Protect Your Investment',
     description:
-      'Replacing carpets and upholstery is expensive. Without proper cleaning, wear and discolouration mean premature replacement costs.',
+      'Regular professional cleaning extends the life of your carpets and furniture by years, saving you thousands on premature replacements.',
   },
   {
-    icon: HiBan,
-    title: 'DIY Disasters',
+    icon: HiHome,
+    title: 'Fresh & Inviting Spaces',
     description:
-      'Rental machines and supermarket products often leave residue that attracts more dirt, making the problem worse in the long run.',
+      'Eliminate trapped odours and stale smells. Freshly cleaned carpets and sofas transform the feel of any room — perfect before guests or a new season.',
   },
 ];
 
@@ -45,10 +45,10 @@ function AnimatedCard({ item, index }) {
       initial={{ opacity: 0, y: 40 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="group relative p-6 md:p-8 rounded-2xl bg-white border border-gray-100 hover:border-red-100 hover:shadow-xl hover:shadow-red-500/5 transition-all duration-300"
+      className="group relative p-6 md:p-8 rounded-2xl bg-white border border-gray-100 hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300"
     >
-      <div className="w-12 h-12 rounded-xl bg-red-50 group-hover:bg-red-100 flex items-center justify-center mb-5 transition-colors">
-        <item.icon className="w-6 h-6 text-red-500" />
+      <div className="w-12 h-12 rounded-xl bg-primary/10 group-hover:bg-primary/20 flex items-center justify-center mb-5 transition-colors">
+        <item.icon className="w-6 h-6 text-primary" />
       </div>
       <h3 className="text-lg font-bold text-gray-900 mb-3">{item.title}</h3>
       <p className="text-gray-500 leading-relaxed">{item.description}</p>
@@ -70,22 +70,22 @@ export default function PainPoints() {
           transition={{ duration: 0.5 }}
           className="text-center max-w-3xl mx-auto mb-16"
         >
-          <span className="inline-block px-4 py-1.5 rounded-full bg-red-50 text-red-600 text-sm font-medium mb-4">
-            The Problem
+          <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+            Why Clean?
           </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-5">
-            Dirty Carpets Are More Than
+            The Benefits of Professional
             <br />
-            <span className="text-red-500">Just an Eyesore</span>
+            <span className="text-primary">Carpet &amp; Upholstery Cleaning</span>
           </h2>
           <p className="text-lg text-gray-500 leading-relaxed">
-            From hidden allergens to stubborn stains, neglected carpets and upholstery
-            create problems that go far beyond appearance.
+            Regular professional cleaning doesn&rsquo;t just make your home look great —
+            it protects your health, your furnishings and your investment.
           </p>
         </motion.div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {painPoints.map((item, i) => (
+          {reasons.map((item, i) => (
             <AnimatedCard key={item.title} item={item} index={i} />
           ))}
         </div>

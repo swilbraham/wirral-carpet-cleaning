@@ -2,8 +2,6 @@ import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { useRef, useState, useMemo } from 'react';
 import {
   HiCalculator,
-  HiPlus,
-  HiMinus,
   HiCurrencyPound,
   HiArrowRight,
   HiCheck,
@@ -12,14 +10,17 @@ import {
   HiUser,
   HiPhone,
   HiLocationMarker,
+  HiInformationCircle,
 } from 'react-icons/hi';
 
-const MINIMUM_CHARGE = 60;
 const FIRST_CARPET_PRICE = 60;
 const ADDITIONAL_CARPET_PRICE = 20;
+const THROUGH_LOUNGE_PRICE = 80;
+const COMBO_DISCOUNT = 20;
 
 const rooms = [
   { id: 'living-room', name: 'Living Room', icon: '🛋️' },
+  { id: 'through-lounge', name: 'Through Lounge/Diner', icon: '🏠', fixedPrice: THROUGH_LOUNGE_PRICE },
   { id: 'master-bedroom', name: 'Master Bedroom', icon: '🛏️' },
   { id: 'bedroom-2', name: 'Bedroom 2', icon: '🛏️' },
   { id: 'bedroom-3', name: 'Bedroom 3', icon: '🛏️' },
@@ -58,12 +59,49 @@ function formatDateValue(date) {
   return date.toISOString().split('T')[0];
 }
 
+function calculatePrice(selectedRooms) {
+  if (selectedRooms.length === 0) return { subtotal: 0, discount: 0, total: 0, breakdown: [] };
+
+  const breakdown = [];
+  let standardCount = 0;
+
+  // Separate fixed-price rooms from standard rooms
+  selectedRooms.forEach((id) => {
+    const room = rooms.find((r) => r.id === id);
+    if (!room) return;
+
+    if (room.fixedPrice) {
+      breakdown.push({ name: room.name, price: room.fixedPrice, icon: room.icon });
+    } else {
+      standardCount++;
+      const price = standardCount === 1 ? FIRST_CARPET_PRICE : ADDITIONAL_CARPET_PRICE;
+      breakdown.push({ name: room.name, price, icon: room.icon });
+    }
+  });
+
+  const subtotal = breakdown.reduce((sum, item) => sum + item.price, 0);
+
+  // Combo discount: hall+stairs, stairs+landing, or hall+stairs+landing = -£20
+  const hasHall = selectedRooms.includes('hallway');
+  const hasStairs = selectedRooms.includes('stairs');
+  const hasLanding = selectedRooms.includes('landing');
+
+  let discount = 0;
+  if ((hasHall && hasStairs) || (hasStairs && hasLanding) || (hasHall && hasStairs && hasLanding)) {
+    discount = COMBO_DISCOUNT;
+  }
+
+  const total = Math.max(0, subtotal - discount);
+
+  return { subtotal, discount, total, breakdown };
+}
+
 export default function CostCalculator() {
   const headingRef = useRef(null);
   const headingInView = useInView(headingRef, { once: true, margin: '-50px' });
 
   const [selectedRooms, setSelectedRooms] = useState([]);
-  const [step, setStep] = useState(1); // 1 = select rooms, 2 = booking details
+  const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -76,12 +114,10 @@ export default function CostCalculator() {
 
   const availableDates = useMemo(() => generateDates(), []);
 
-  const totalCarpets = selectedRooms.length;
-  const totalPrice = useMemo(() => {
-    if (totalCarpets === 0) return 0;
-    if (totalCarpets === 1) return FIRST_CARPET_PRICE;
-    return FIRST_CARPET_PRICE + (totalCarpets - 1) * ADDITIONAL_CARPET_PRICE;
-  }, [totalCarpets]);
+  const { subtotal, discount, total, breakdown } = useMemo(
+    () => calculatePrice(selectedRooms),
+    [selectedRooms]
+  );
 
   const toggleRoom = (roomId) => {
     setSelectedRooms((prev) =>
@@ -96,7 +132,7 @@ export default function CostCalculator() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const canProceed = totalCarpets > 0;
+  const canProceed = selectedRooms.length > 0;
   const canSubmit =
     formData.name.trim() &&
     formData.phone.trim() &&
@@ -122,8 +158,9 @@ export default function CostCalculator() {
     body.append('date', selectedDate ? formatDate(selectedDate) : formData.date);
     body.append('timeSlot', formData.timeSlot === 'am' ? 'Morning (AM)' : 'Afternoon (PM)');
     body.append('rooms', selectedRoomNames);
-    body.append('totalCarpets', totalCarpets.toString());
-    body.append('estimatedCost', `£${totalPrice.toFixed(2)}`);
+    body.append('totalRooms', selectedRooms.length.toString());
+    body.append('estimatedCost', `£${total.toFixed(2)} (estimated)`);
+    if (discount > 0) body.append('comboDiscount', `-£${discount.toFixed(2)}`);
     body.append('_subject', 'New Booking Request - Wirral Carpet Cleaning');
     body.append('_captcha', 'false');
     body.append('_template', 'table');
@@ -147,6 +184,12 @@ export default function CostCalculator() {
     setFormData({ name: '', phone: '', postcode: '', date: '', timeSlot: '' });
   };
 
+  // Check for active combo discount eligibility
+  const hasHall = selectedRooms.includes('hallway');
+  const hasStairs = selectedRooms.includes('stairs');
+  const hasLanding = selectedRooms.includes('landing');
+  const hasCombo = (hasHall && hasStairs) || (hasStairs && hasLanding);
+
   return (
     <section id="calculator" className="py-20 md:py-28 bg-white">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -159,16 +202,20 @@ export default function CostCalculator() {
         >
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-medium mb-4">
             <HiCalculator className="w-4 h-4" />
-            Instant Price Calculator
+            Price Estimator
           </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-5">
-            Get Your Price
+            Get Your Estimated Price
             <br />
             <span className="text-primary">In Seconds</span>
           </h2>
           <p className="text-lg text-gray-500 leading-relaxed">
             Select the rooms you need cleaned and get an instant estimate.
             First carpet from &pound;{FIRST_CARPET_PRICE}, then &pound;{ADDITIONAL_CARPET_PRICE} per additional room.
+            Through lounge/diner &pound;{THROUGH_LOUNGE_PRICE}.
+          </p>
+          <p className="text-sm text-gray-400 mt-2">
+            All prices are estimates — final price to be confirmed on booking.
           </p>
         </motion.div>
 
@@ -216,8 +263,11 @@ export default function CostCalculator() {
                 Thank you, {formData.name}. We&rsquo;ll confirm your{' '}
                 {formData.timeSlot === 'am' ? 'morning' : 'afternoon'} appointment shortly.
               </p>
-              <p className="text-2xl font-bold text-primary mb-6">
-                Estimated Cost: &pound;{totalPrice.toFixed(2)}
+              <p className="text-2xl font-bold text-primary mb-1">
+                Estimated Price: &pound;{total.toFixed(2)}
+              </p>
+              <p className="text-sm text-gray-400 mb-6">
+                Final price to be confirmed on booking.
               </p>
               <button
                 onClick={resetAll}
@@ -233,6 +283,15 @@ export default function CostCalculator() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
             >
+              {/* Combo discount info banner */}
+              <div className="mb-6 flex items-start gap-3 p-4 rounded-xl bg-green-50 border border-green-100">
+                <HiInformationCircle className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
+                <div className="text-sm text-green-800">
+                  <strong>Save &pound;{COMBO_DISCOUNT}!</strong> Select hall &amp; stairs, stairs &amp; landing,
+                  or hall, stairs &amp; landing together and get &pound;{COMBO_DISCOUNT} off your estimated total.
+                </div>
+              </div>
+
               {/* Room selection grid */}
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 mb-8">
                 {rooms.map((room) => {
@@ -260,6 +319,9 @@ export default function CostCalculator() {
                       >
                         {room.name}
                       </span>
+                      {room.fixedPrice && (
+                        <span className="text-xs text-gray-400">&pound;{room.fixedPrice}</span>
+                      )}
                     </button>
                   );
                 })}
@@ -271,31 +333,33 @@ export default function CostCalculator() {
                   <div>
                     <div className="flex items-center gap-3 mb-2">
                       <HiCurrencyPound className="w-6 h-6 text-primary" />
-                      <h3 className="text-lg font-bold text-gray-900">Your Estimate</h3>
+                      <h3 className="text-lg font-bold text-gray-900">Your Estimated Price</h3>
                     </div>
-                    {totalCarpets === 0 ? (
+                    {selectedRooms.length === 0 ? (
                       <p className="text-gray-500">
-                        Select rooms above to see your price. Minimum charge &pound;{MINIMUM_CHARGE}.
+                        Select rooms above to see your estimated price. First room from &pound;{FIRST_CARPET_PRICE}.
                       </p>
                     ) : (
                       <div className="space-y-1">
                         <p className="text-sm text-gray-500">
-                          {totalCarpets === 1
-                            ? '1 carpet selected'
-                            : `${totalCarpets} carpets selected`}
-                          {' — '}
-                          <span className="text-gray-700">
-                            1 &times; &pound;{FIRST_CARPET_PRICE}
-                            {totalCarpets > 1 &&
-                              ` + ${totalCarpets - 1} × £${ADDITIONAL_CARPET_PRICE}`}
-                          </span>
+                          {selectedRooms.length === 1
+                            ? '1 room selected'
+                            : `${selectedRooms.length} rooms selected`}
                         </p>
+                        {discount > 0 && (
+                          <p className="text-sm text-green-600 font-medium">
+                            Combo discount applied: -&pound;{discount.toFixed(2)}
+                          </p>
+                        )}
                         <div className="flex items-baseline gap-2">
                           <span className="text-3xl md:text-4xl font-bold text-primary">
-                            &pound;{totalPrice.toFixed(2)}
+                            &pound;{total.toFixed(2)}
                           </span>
                           <span className="text-sm text-gray-400">estimated total</span>
                         </div>
+                        <p className="text-xs text-gray-400">
+                          To be confirmed on booking.
+                        </p>
                       </div>
                     )}
                   </div>
@@ -323,28 +387,32 @@ export default function CostCalculator() {
                 <div className="lg:col-span-2">
                   <div className="bg-gray-50 rounded-2xl border border-gray-100 p-6 sticky top-24">
                     <h3 className="text-lg font-bold text-gray-900 mb-4">Your Selection</h3>
-                    <ul className="space-y-2 mb-6">
-                      {selectedRooms.map((id, i) => {
-                        const room = rooms.find((r) => r.id === id);
-                        return (
-                          <li key={id} className="flex items-center justify-between text-sm">
-                            <span className="flex items-center gap-2 text-gray-700">
-                              <span>{room.icon}</span>
-                              {room.name}
-                            </span>
-                            <span className="text-gray-500">
-                              {i === 0 ? `£${FIRST_CARPET_PRICE}` : `£${ADDITIONAL_CARPET_PRICE}`}
-                            </span>
-                          </li>
-                        );
-                      })}
+                    <ul className="space-y-2 mb-4">
+                      {breakdown.map((item, i) => (
+                        <li key={i} className="flex items-center justify-between text-sm">
+                          <span className="flex items-center gap-2 text-gray-700">
+                            <span>{item.icon}</span>
+                            {item.name}
+                          </span>
+                          <span className="text-gray-500">&pound;{item.price}</span>
+                        </li>
+                      ))}
                     </ul>
+                    {discount > 0 && (
+                      <div className="flex items-center justify-between text-sm text-green-600 font-medium mb-4">
+                        <span>Combo discount</span>
+                        <span>-&pound;{discount.toFixed(2)}</span>
+                      </div>
+                    )}
                     <div className="border-t border-gray-200 pt-4 flex items-center justify-between">
-                      <span className="font-semibold text-gray-900">Total</span>
+                      <span className="font-semibold text-gray-900">Estimated Total</span>
                       <span className="text-2xl font-bold text-primary">
-                        &pound;{totalPrice.toFixed(2)}
+                        &pound;{total.toFixed(2)}
                       </span>
                     </div>
+                    <p className="text-xs text-gray-400 mt-1">
+                      To be confirmed on booking.
+                    </p>
                     <button
                       onClick={() => setStep(1)}
                       className="mt-4 text-sm text-primary hover:text-primary-dark font-medium transition-colors"
@@ -518,12 +586,12 @@ export default function CostCalculator() {
                       disabled={!canSubmit}
                       className="group w-full flex items-center justify-center gap-2 px-8 py-4 bg-accent hover:bg-accent-light disabled:bg-gray-200 disabled:text-gray-400 text-white rounded-xl text-lg font-semibold transition-all hover:shadow-lg hover:shadow-accent/25 disabled:shadow-none disabled:cursor-not-allowed"
                     >
-                      Confirm Booking — &pound;{totalPrice.toFixed(2)}
+                      Submit Booking — Estimated &pound;{total.toFixed(2)}
                       <HiArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </button>
 
                     <p className="text-xs text-gray-400 text-center">
-                      We&rsquo;ll call to confirm your appointment. No payment taken until the job is complete.
+                      Estimated price — to be confirmed on booking. We&rsquo;ll call to confirm your appointment. No payment taken until the job is complete.
                     </p>
                   </form>
                 </div>

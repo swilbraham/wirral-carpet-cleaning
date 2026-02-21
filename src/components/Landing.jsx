@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { HiPhone, HiArrowRight, HiStar, HiCheck, HiShieldCheck, HiClock, HiSparkles, HiMail } from 'react-icons/hi';
 import logo from '../assets/logo.png';
 import carpetImg from '../assets/carpet.jpg';
@@ -35,35 +35,16 @@ const reviews = [
 export default function Landing() {
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const data = new FormData(e.target);
-
-    const jsonData = {};
-    data.forEach((value, key) => {
-      if (!key.startsWith('_') || key === '_subject' || key === '_captcha' || key === '_template') {
-        jsonData[key] = value;
-      }
-    });
-    jsonData['_subject'] = 'Landing Page Quote - Wirral Carpet Cleaning';
-    jsonData['_captcha'] = 'false';
-    jsonData['_template'] = 'table';
-
-    try {
-      await fetch('https://formsubmit.co/ajax/contact@wirralcarpetcleaning.com', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify(jsonData),
-      });
-    } catch {
-      // Submit anyway
+  // Detect ?submitted=true in URL after FormSubmit redirect
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('submitted') === 'true') {
+      setSubmitted(true);
+      window.history.replaceState({}, '', window.location.pathname);
+      const el = document.getElementById('quote');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
     }
-    setSubmitted(true);
-    e.target.reset();
-  };
+  }, []);
 
   return (
     <div className="min-h-screen bg-white">
@@ -230,9 +211,11 @@ export default function Landing() {
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form action="https://formsubmit.co/contact@wirralcarpetcleaning.com" method="POST" className="space-y-4">
               <input type="hidden" name="_captcha" value="false" />
               <input type="hidden" name="_subject" value="Landing Page Quote - Wirral Carpet Cleaning" />
+              <input type="hidden" name="_next" value="https://www.wirralcarpetcleaning.com/landing?submitted=true" />
+              <input type="hidden" name="_template" value="table" />
               <input type="text" name="_honey" style={{ display: 'none' }} />
 
               <div className="grid sm:grid-cols-2 gap-4">

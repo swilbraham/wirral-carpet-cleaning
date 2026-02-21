@@ -1,5 +1,5 @@
 import { motion, useInView } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { HiPhone, HiMail, HiLocationMarker, HiClock, HiArrowRight } from 'react-icons/hi';
 
 const contactInfo = [
@@ -14,37 +14,18 @@ export default function CTA() {
   const headingInView = useInView(headingRef, { once: true, margin: '-50px' });
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const form = e.target;
-    const data = new FormData(form);
-
-    // Convert FormData to JSON for reliable AJAX delivery
-    const jsonData = {};
-    data.forEach((value, key) => {
-      if (!key.startsWith('_') || key === '_subject' || key === '_captcha' || key === '_template') {
-        jsonData[key] = value;
-      }
-    });
-    jsonData['_subject'] = 'New Quote Request - Wirral Carpet Cleaning';
-    jsonData['_captcha'] = 'false';
-    jsonData['_template'] = 'table';
-
-    try {
-      await fetch('https://formsubmit.co/ajax/contact@wirralcarpetcleaning.com', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify(jsonData),
-      });
+  // Detect ?submitted=true in URL after FormSubmit redirect
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('submitted') === 'true') {
       setSubmitted(true);
-      form.reset();
-    } catch {
-      setSubmitted(true);
+      // Clean up the URL without reloading
+      window.history.replaceState({}, '', window.location.pathname);
+      // Scroll to the contact section
+      const el = document.getElementById('contact');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
     }
-  };
+  }, []);
 
   return (
     <section id="contact" className="relative py-20 md:py-28 bg-dark overflow-hidden">
@@ -138,9 +119,11 @@ export default function CTA() {
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form action="https://formsubmit.co/contact@wirralcarpetcleaning.com" method="POST" className="space-y-5">
                   <input type="hidden" name="_captcha" value="false" />
                   <input type="hidden" name="_subject" value="New Quote Request - Wirral Carpet Cleaning" />
+                  <input type="hidden" name="_next" value="https://www.wirralcarpetcleaning.com/?submitted=true" />
+                  <input type="hidden" name="_template" value="table" />
                   <input type="text" name="_honey" style={{ display: 'none' }} />
 
                   <div className="grid sm:grid-cols-2 gap-5">

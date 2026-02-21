@@ -130,46 +130,18 @@ export default function CostCalculator() {
     formData.date &&
     formData.timeSlot;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Compute derived values for hidden fields
+  const selectedRoomNames = useMemo(
+    () => selectedRooms.map((id) => rooms.find((r) => r.id === id)?.name).join(', '),
+    [selectedRooms]
+  );
 
-    const selectedRoomNames = selectedRooms
-      .map((id) => rooms.find((r) => r.id === id)?.name)
-      .join(', ');
+  const selectedDateFormatted = useMemo(() => {
+    const d = availableDates.find((d) => formatDateValue(d) === formData.date);
+    return d ? formatDate(d) : formData.date;
+  }, [availableDates, formData.date]);
 
-    const selectedDate = availableDates.find(
-      (d) => formatDateValue(d) === formData.date
-    );
-
-    const jsonData = {
-      name: formData.name,
-      phone: formData.phone,
-      postcode: formData.postcode,
-      date: selectedDate ? formatDate(selectedDate) : formData.date,
-      timeSlot: formData.timeSlot === 'am' ? 'Morning (AM)' : 'Afternoon (PM)',
-      rooms: selectedRoomNames,
-      totalRooms: selectedRooms.length.toString(),
-      estimatedCost: `£${total.toFixed(2)} (estimated)`,
-      _subject: 'New Booking Request - Wirral Carpet Cleaning',
-      _captcha: 'false',
-      _template: 'table',
-    };
-
-    try {
-      await fetch('https://formsubmit.co/ajax/contact@wirralcarpetcleaning.com', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify(jsonData),
-      });
-    } catch {
-      // Submit anyway
-    }
-
-    setSubmitted(true);
-  };
+  const timeSlotLabel = formData.timeSlot === 'am' ? 'Morning (AM)' : formData.timeSlot === 'pm' ? 'Afternoon (PM)' : '';
 
   const resetAll = () => {
     setSelectedRooms([]);
@@ -384,8 +356,18 @@ export default function CostCalculator() {
 
                 {/* Booking form */}
                 <div className="lg:col-span-3">
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <input type="hidden" name="_honey" style={{ display: 'none' }} />
+                  <form action="https://formsubmit.co/contact@wirralcarpetcleaning.com" method="POST" className="space-y-6">
+                    <input type="hidden" name="_captcha" value="false" />
+                    <input type="hidden" name="_subject" value="New Booking Request - Wirral Carpet Cleaning" />
+                    <input type="hidden" name="_next" value="https://www.wirralcarpetcleaning.com/?submitted=true" />
+                    <input type="hidden" name="_template" value="table" />
+                    <input type="text" name="_honey" style={{ display: 'none' }} />
+                    {/* Hidden fields for dynamic data */}
+                    <input type="hidden" name="rooms" value={selectedRoomNames} />
+                    <input type="hidden" name="totalRooms" value={selectedRooms.length} />
+                    <input type="hidden" name="estimatedCost" value={`£${total.toFixed(2)} (estimated)`} />
+                    <input type="hidden" name="date" value={selectedDateFormatted} />
+                    <input type="hidden" name="timeSlot" value={timeSlotLabel} />
 
                     {/* Personal details */}
                     <div>

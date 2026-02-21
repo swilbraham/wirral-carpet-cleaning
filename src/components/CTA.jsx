@@ -13,6 +13,15 @@ export default function CTA() {
   const headingRef = useRef(null);
   const headingInView = useInView(headingRef, { once: true, margin: '-50px' });
   const [submitted, setSubmitted] = useState(false);
+  const [submittedData, setSubmittedData] = useState(null);
+
+  const serviceLabels = {
+    domestic: 'Domestic Carpet Cleaning',
+    upholstery: 'Upholstery Cleaning',
+    commercial: 'Commercial Carpet Cleaning',
+    biohazard: 'Biohazard Cleaning',
+    other: 'Other / Multiple',
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,12 +32,16 @@ export default function CTA() {
     data.forEach((value, key) => {
       if (!key.startsWith('_')) jsonData[key] = value;
     });
+
+    // Save submitted data for the summary popup
+    setSubmittedData({ ...jsonData });
+
     jsonData['_subject'] = 'New Quote Request - Wirral Carpet Cleaning';
     jsonData['_captcha'] = 'false';
     jsonData['_template'] = 'table';
 
     try {
-      const res = await fetch('https://formsubmit.co/ajax/contact@wirralcarpetcleaning.com', {
+      await fetch('https://formsubmit.co/ajax/contact@wirralcarpetcleaning.com', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -36,18 +49,12 @@ export default function CTA() {
         },
         body: JSON.stringify(jsonData),
       });
-      const result = await res.json();
-      if (result.success) {
-        setSubmitted(true);
-        form.reset();
-      } else {
-        setSubmitted(true);
-        form.reset();
-      }
     } catch {
-      setSubmitted(true);
-      form.reset();
+      // Submit anyway
     }
+
+    setSubmitted(true);
+    form.reset();
   };
 
   return (
@@ -123,23 +130,66 @@ export default function CTA() {
           {/* Quote Form */}
           <div className="lg:col-span-3">
             <div className="glass rounded-2xl p-6 md:p-8">
-              {submitted ? (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-8 h-8 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
+              {submitted && submittedData ? (
+                <div className="py-6">
+                  <div className="text-center mb-6">
+                    <div className="w-14 h-14 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-3">
+                      <svg className="w-7 h-7 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-1">Quote Request Sent!</h3>
+                    <p className="text-gray-400 text-sm">
+                      Here&rsquo;s a summary of what you submitted:
+                    </p>
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-2">Quote Request Sent!</h3>
-                  <p className="text-gray-300">
-                    Thank you. We'll be in touch shortly with your free quote.
+
+                  {/* Submission summary */}
+                  <div className="bg-white/5 rounded-xl border border-white/10 divide-y divide-white/5 mb-6">
+                    {submittedData.name && (
+                      <div className="px-5 py-3 flex justify-between items-center">
+                        <span className="text-sm text-gray-400">Name</span>
+                        <span className="text-sm font-semibold text-white">{submittedData.name}</span>
+                      </div>
+                    )}
+                    {submittedData.email && (
+                      <div className="px-5 py-3 flex justify-between items-center">
+                        <span className="text-sm text-gray-400">Email</span>
+                        <span className="text-sm font-semibold text-white">{submittedData.email}</span>
+                      </div>
+                    )}
+                    {submittedData.phone && (
+                      <div className="px-5 py-3 flex justify-between items-center">
+                        <span className="text-sm text-gray-400">Phone</span>
+                        <span className="text-sm font-semibold text-white">{submittedData.phone}</span>
+                      </div>
+                    )}
+                    {submittedData.service && (
+                      <div className="px-5 py-3 flex justify-between items-center">
+                        <span className="text-sm text-gray-400">Service</span>
+                        <span className="text-sm font-semibold text-white">{serviceLabels[submittedData.service] || submittedData.service}</span>
+                      </div>
+                    )}
+                    {submittedData.message && (
+                      <div className="px-5 py-3">
+                        <span className="text-sm text-gray-400 block mb-1">Message</span>
+                        <span className="text-sm text-white/80 leading-relaxed">{submittedData.message}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <p className="text-xs text-gray-500 text-center mb-4">
+                    We typically respond within 2 hours.
                   </p>
-                  <button
-                    onClick={() => setSubmitted(false)}
-                    className="mt-6 text-accent hover:text-accent-light text-sm font-medium transition-colors"
-                  >
-                    Send another enquiry
-                  </button>
+
+                  <div className="text-center">
+                    <button
+                      onClick={() => { setSubmitted(false); setSubmittedData(null); }}
+                      className="text-accent hover:text-accent-light text-sm font-medium transition-colors"
+                    >
+                      Send another enquiry
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-5">

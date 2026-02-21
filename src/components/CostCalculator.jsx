@@ -241,28 +241,76 @@ export default function CostCalculator() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="text-center py-16 bg-gray-50 rounded-2xl border border-gray-100"
+              className="bg-gray-50 rounded-2xl border border-gray-100 p-6 md:p-10"
             >
-              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-                <HiCheck className="w-8 h-8 text-green-600" />
+              <div className="text-center mb-8">
+                <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+                  <HiCheck className="w-8 h-8 text-green-600" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-1">Booking Request Sent!</h3>
+                <p className="text-gray-500">
+                  Thank you, {formData.name}. We&rsquo;ll be in touch shortly to confirm.
+                </p>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Booking Request Sent!</h3>
-              <p className="text-gray-500 mb-2 max-w-md mx-auto">
-                Thank you, {formData.name}. We&rsquo;ll confirm your{' '}
-                {formData.timeSlot === 'am' ? 'morning' : 'afternoon'} appointment shortly.
+
+              {/* Submission summary */}
+              <div className="max-w-lg mx-auto bg-white rounded-xl border border-gray-200 divide-y divide-gray-100 mb-8">
+                <div className="px-5 py-3 flex justify-between items-center">
+                  <span className="text-sm font-medium text-gray-500">Name</span>
+                  <span className="text-sm font-semibold text-gray-900">{formData.name}</span>
+                </div>
+                <div className="px-5 py-3 flex justify-between items-center">
+                  <span className="text-sm font-medium text-gray-500">Phone</span>
+                  <span className="text-sm font-semibold text-gray-900">{formData.phone}</span>
+                </div>
+                <div className="px-5 py-3 flex justify-between items-center">
+                  <span className="text-sm font-medium text-gray-500">Postcode</span>
+                  <span className="text-sm font-semibold text-gray-900 uppercase">{formData.postcode}</span>
+                </div>
+                <div className="px-5 py-3 flex justify-between items-start">
+                  <span className="text-sm font-medium text-gray-500">Rooms Requested</span>
+                  <span className="text-sm font-semibold text-gray-900 text-right">
+                    {selectedRooms.map((id) => {
+                      const room = rooms.find((r) => r.id === id);
+                      return room ? (
+                        <span key={id} className="block">{room.icon} {room.name}</span>
+                      ) : null;
+                    })}
+                  </span>
+                </div>
+                <div className="px-5 py-3 flex justify-between items-center">
+                  <span className="text-sm font-medium text-gray-500">Preferred Date</span>
+                  <span className="text-sm font-semibold text-gray-900">
+                    {(() => {
+                      const d = availableDates.find((d) => formatDateValue(d) === formData.date);
+                      return d ? formatDate(d) : formData.date;
+                    })()}
+                  </span>
+                </div>
+                <div className="px-5 py-3 flex justify-between items-center">
+                  <span className="text-sm font-medium text-gray-500">Preferred Time</span>
+                  <span className="text-sm font-semibold text-gray-900">
+                    {formData.timeSlot === 'am' ? '🌅 Morning (AM)' : '☀️ Afternoon (PM)'}
+                  </span>
+                </div>
+                <div className="px-5 py-4 flex justify-between items-center bg-primary/5">
+                  <span className="text-sm font-bold text-gray-900">Estimated Price</span>
+                  <span className="text-xl font-bold text-primary">&pound;{total.toFixed(2)}</span>
+                </div>
+              </div>
+
+              <p className="text-xs text-gray-400 text-center mb-6">
+                Final price to be confirmed on booking. We&rsquo;ll call to confirm your appointment.
               </p>
-              <p className="text-2xl font-bold text-primary mb-1">
-                Estimated Price: &pound;{total.toFixed(2)}
-              </p>
-              <p className="text-sm text-gray-400 mb-6">
-                Final price to be confirmed on booking.
-              </p>
-              <button
-                onClick={resetAll}
-                className="px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl font-semibold transition-colors"
-              >
-                Start New Quote
-              </button>
+
+              <div className="text-center">
+                <button
+                  onClick={resetAll}
+                  className="px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl font-semibold transition-colors"
+                >
+                  Start New Quote
+                </button>
+              </div>
             </motion.div>
           ) : step === 1 ? (
             <motion.div

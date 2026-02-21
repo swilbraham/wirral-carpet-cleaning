@@ -3,7 +3,7 @@ import { HiPhone, HiMail, HiLocationMarker } from 'react-icons/hi';
 import logo from '../assets/logo.png';
 
 const quickLinks = [
-  { name: 'Domestic Cleaning', href: '#services' },
+  { name: 'Domestic Carpet Cleaning', href: '#services' },
   { name: 'Upholstery Cleaning', href: '#services' },
   { name: 'Commercial Carpet Cleaning', href: '#services' },
   { name: 'Biohazard Cleaning', href: '#services' },

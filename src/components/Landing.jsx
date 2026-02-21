@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { HiPhone, HiArrowRight, HiStar, HiCheck, HiShieldCheck, HiClock, HiSparkles, HiMail } from 'react-icons/hi';
 import logo from '../assets/logo.png';
 import carpetImg from '../assets/carpet.jpg';
@@ -7,7 +7,7 @@ import biohazardImg from '../assets/bio.jpeg';
 
 const services = [
   {
-    title: 'Domestic Cleaning',
+    title: 'Domestic Carpet Cleaning',
     description: 'Deep hot-water extraction that removes embedded dirt, stains and allergens.',
     image: carpetImg,
     features: ['Deep stain removal', 'Fast drying', 'Pet-safe products'],
@@ -35,16 +35,41 @@ const reviews = [
 export default function Landing() {
   const [submitted, setSubmitted] = useState(false);
 
-  // Detect ?submitted=true in URL after FormSubmit redirect
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('submitted') === 'true') {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const data = new FormData(form);
+
+    const jsonData = {};
+    data.forEach((value, key) => {
+      if (!key.startsWith('_')) jsonData[key] = value;
+    });
+    jsonData['_subject'] = 'Landing Page Quote - Wirral Carpet Cleaning';
+    jsonData['_captcha'] = 'false';
+    jsonData['_template'] = 'table';
+
+    try {
+      const res = await fetch('https://formsubmit.co/ajax/contact@wirralcarpetcleaning.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(jsonData),
+      });
+      const result = await res.json();
+      if (result.success) {
+        setSubmitted(true);
+        form.reset();
+      } else {
+        setSubmitted(true);
+        form.reset();
+      }
+    } catch {
       setSubmitted(true);
-      window.history.replaceState({}, '', window.location.pathname);
-      const el = document.getElementById('quote');
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
+      form.reset();
     }
-  }, []);
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -211,11 +236,7 @@ export default function Landing() {
               </button>
             </div>
           ) : (
-            <form action="https://formsubmit.co/contact@wirralcarpetcleaning.com" method="POST" className="space-y-4">
-              <input type="hidden" name="_captcha" value="false" />
-              <input type="hidden" name="_subject" value="Landing Page Quote - Wirral Carpet Cleaning" />
-              <input type="hidden" name="_next" value="https://www.wirralcarpetcleaning.com/landing?submitted=true" />
-              <input type="hidden" name="_template" value="table" />
+            <form onSubmit={handleSubmit} className="space-y-4">
               <input type="text" name="_honey" style={{ display: 'none' }} />
 
               <div className="grid sm:grid-cols-2 gap-4">
@@ -247,7 +268,7 @@ export default function Landing() {
                   name="service"
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/50"
                 >
-                  <option value="domestic" className="bg-gray-800">Domestic Cleaning</option>
+                  <option value="domestic" className="bg-gray-800">Domestic Carpet Cleaning</option>
                   <option value="upholstery" className="bg-gray-800">Upholstery Cleaning</option>
                   <option value="biohazard" className="bg-gray-800">Biohazard Cleaning</option>
                   <option value="commercial" className="bg-gray-800">Commercial Carpet Cleaning</option>

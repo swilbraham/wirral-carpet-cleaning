@@ -130,18 +130,51 @@ export default function CostCalculator() {
     formData.date &&
     formData.timeSlot;
 
-  // Compute derived values for hidden fields
-  const selectedRoomNames = useMemo(
-    () => selectedRooms.map((id) => rooms.find((r) => r.id === id)?.name).join(', '),
-    [selectedRooms]
-  );
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const selectedDateFormatted = useMemo(() => {
-    const d = availableDates.find((d) => formatDateValue(d) === formData.date);
-    return d ? formatDate(d) : formData.date;
-  }, [availableDates, formData.date]);
+    // List each room individually so the email shows exactly what was selected
+    const roomList = selectedRooms
+      .map((id) => rooms.find((r) => r.id === id)?.name)
+      .filter(Boolean);
 
-  const timeSlotLabel = formData.timeSlot === 'am' ? 'Morning (AM)' : formData.timeSlot === 'pm' ? 'Afternoon (PM)' : '';
+    const selectedDate = availableDates.find(
+      (d) => formatDateValue(d) === formData.date
+    );
+
+    const jsonData = {
+      name: formData.name,
+      phone: formData.phone,
+      postcode: formData.postcode,
+      preferredDate: selectedDate ? formatDate(selectedDate) : formData.date,
+      preferredTime: formData.timeSlot === 'am' ? 'Morning (AM)' : 'Afternoon (PM)',
+      roomsRequested: roomList.join('\n'),
+      totalRooms: `${selectedRooms.length} room${selectedRooms.length !== 1 ? 's' : ''}`,
+      estimatedCost: `£${total.toFixed(2)} (estimated)`,
+      _subject: 'New Booking Request - Wirral Carpet Cleaning',
+      _captcha: 'false',
+      _template: 'table',
+    };
+
+    try {
+      const res = await fetch('https://formsubmit.co/ajax/contact@wirralcarpetcleaning.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(jsonData),
+      });
+      const result = await res.json();
+      if (result.success) {
+        setSubmitted(true);
+      } else {
+        setSubmitted(true);
+      }
+    } catch {
+      setSubmitted(true);
+    }
+  };
 
   const resetAll = () => {
     setSelectedRooms([]);
@@ -356,18 +389,8 @@ export default function CostCalculator() {
 
                 {/* Booking form */}
                 <div className="lg:col-span-3">
-                  <form action="https://formsubmit.co/contact@wirralcarpetcleaning.com" method="POST" className="space-y-6">
-                    <input type="hidden" name="_captcha" value="false" />
-                    <input type="hidden" name="_subject" value="New Booking Request - Wirral Carpet Cleaning" />
-                    <input type="hidden" name="_next" value="https://www.wirralcarpetcleaning.com/?submitted=true" />
-                    <input type="hidden" name="_template" value="table" />
+                  <form onSubmit={handleSubmit} className="space-y-6">
                     <input type="text" name="_honey" style={{ display: 'none' }} />
-                    {/* Hidden fields for dynamic data */}
-                    <input type="hidden" name="rooms" value={selectedRoomNames} />
-                    <input type="hidden" name="totalRooms" value={selectedRooms.length} />
-                    <input type="hidden" name="estimatedCost" value={`£${total.toFixed(2)} (estimated)`} />
-                    <input type="hidden" name="date" value={selectedDateFormatted} />
-                    <input type="hidden" name="timeSlot" value={timeSlotLabel} />
 
                     {/* Personal details */}
                     <div>

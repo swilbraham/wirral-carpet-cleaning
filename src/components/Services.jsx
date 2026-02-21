@@ -16,7 +16,7 @@ import biohazardImg from '../assets/bio.jpeg';
 const services = [
   {
     icon: HiSparkles,
-    title: 'Domestic Cleaning',
+    title: 'Domestic Carpet Cleaning',
     description:
       'Deep hot-water extraction that removes embedded dirt, stains and allergens — restoring your carpets to like-new condition.',
     features: [

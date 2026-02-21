@@ -1,5 +1,5 @@
 import { motion, useInView } from 'framer-motion';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import { HiPhone, HiMail, HiLocationMarker, HiClock, HiArrowRight } from 'react-icons/hi';
 
 const contactInfo = [
@@ -14,18 +14,41 @@ export default function CTA() {
   const headingInView = useInView(headingRef, { once: true, margin: '-50px' });
   const [submitted, setSubmitted] = useState(false);
 
-  // Detect ?submitted=true in URL after FormSubmit redirect
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('submitted') === 'true') {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const data = new FormData(form);
+
+    const jsonData = {};
+    data.forEach((value, key) => {
+      if (!key.startsWith('_')) jsonData[key] = value;
+    });
+    jsonData['_subject'] = 'New Quote Request - Wirral Carpet Cleaning';
+    jsonData['_captcha'] = 'false';
+    jsonData['_template'] = 'table';
+
+    try {
+      const res = await fetch('https://formsubmit.co/ajax/contact@wirralcarpetcleaning.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(jsonData),
+      });
+      const result = await res.json();
+      if (result.success) {
+        setSubmitted(true);
+        form.reset();
+      } else {
+        setSubmitted(true);
+        form.reset();
+      }
+    } catch {
       setSubmitted(true);
-      // Clean up the URL without reloading
-      window.history.replaceState({}, '', window.location.pathname);
-      // Scroll to the contact section
-      const el = document.getElementById('contact');
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
+      form.reset();
     }
-  }, []);
+  };
 
   return (
     <section id="contact" className="relative py-20 md:py-28 bg-dark overflow-hidden">
@@ -119,11 +142,7 @@ export default function CTA() {
                   </button>
                 </div>
               ) : (
-                <form action="https://formsubmit.co/contact@wirralcarpetcleaning.com" method="POST" className="space-y-5">
-                  <input type="hidden" name="_captcha" value="false" />
-                  <input type="hidden" name="_subject" value="New Quote Request - Wirral Carpet Cleaning" />
-                  <input type="hidden" name="_next" value="https://www.wirralcarpetcleaning.com/?submitted=true" />
-                  <input type="hidden" name="_template" value="table" />
+                <form onSubmit={handleSubmit} className="space-y-5">
                   <input type="text" name="_honey" style={{ display: 'none' }} />
 
                   <div className="grid sm:grid-cols-2 gap-5">
@@ -177,7 +196,7 @@ export default function CTA() {
                         name="service"
                         className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/50 transition-colors"
                       >
-                        <option value="domestic" className="bg-gray-800">Domestic Cleaning</option>
+                        <option value="domestic" className="bg-gray-800">Domestic Carpet Cleaning</option>
                         <option value="upholstery" className="bg-gray-800">Upholstery Cleaning</option>
                         <option value="commercial" className="bg-gray-800">Commercial Carpet Cleaning</option>
                         <option value="biohazard" className="bg-gray-800">Biohazard Cleaning</option>

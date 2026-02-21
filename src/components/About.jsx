@@ -41,6 +41,7 @@ const areas = [
   'Widnes',
   'Crosby',
   'Formby',
+  'Prenton',
 ];
 
 export default function About() {
@@ -52,7 +53,7 @@ export default function About() {
   const imageInView = useInView(imageRef, { once: true, margin: '-50px' });
 
   return (
-    <section id="about" className="py-20 md:py-28 bg-gray-50">
+    <section id="about" className="py-20 md:py-28 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           ref={headingRef}
@@ -67,7 +68,7 @@ export default function About() {
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-5">
             Your Local Carpet Cleaning
             <br />
-            <span className="text-primary">Experts in Wirral &amp; Merseyside</span>
+            <span className="text-primary">Experts throughout Merseyside &amp; Cheshire</span>
           </h2>
         </motion.div>
 
@@ -117,7 +118,7 @@ export default function About() {
               {credentials.map(({ icon: Icon, label }) => (
                 <div
                   key={label}
-                  className="flex items-center gap-3 p-3 rounded-xl bg-white border border-gray-100"
+                  className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100"
                 >
                   <Icon className="w-5 h-5 text-primary shrink-0" />
                   <span className="text-sm font-medium text-gray-700">{label}</span>
@@ -134,7 +135,7 @@ export default function About() {
           animate={contentInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
         >
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 md:p-8">
+          <div className="bg-gray-50 rounded-2xl border border-gray-100 p-6 md:p-8">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
                 <HiLocationMarker className="w-5 h-5 text-primary" />

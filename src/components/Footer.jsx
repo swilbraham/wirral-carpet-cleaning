@@ -3,9 +3,9 @@ import { HiPhone, HiMail, HiLocationMarker } from 'react-icons/hi';
 import logo from '../assets/logo.png';
 
 const quickLinks = [
-  { name: 'Carpet Cleaning', href: '#services' },
+  { name: 'Domestic Cleaning', href: '#services' },
   { name: 'Upholstery Cleaning', href: '#services' },
-  { name: 'Commercial Cleaning', href: '#services' },
+  { name: 'Commercial Carpet Cleaning', href: '#services' },
   { name: 'Biohazard Cleaning', href: '#services' },
 ];
 
@@ -18,7 +18,7 @@ const companyLinks = [
 
 const areas = [
   'Liverpool', 'Wirral', 'Chester', 'Birkenhead', 'Wallasey',
-  'Southport', 'St Helens', 'Warrington', 'Ellesmere Port',
+  'Southport', 'St Helens', 'Warrington', 'Ellesmere Port', 'Prenton',
 ];
 
 export default function Footer() {

@@ -19,10 +19,25 @@ export default function CTA() {
     const form = e.target;
     const data = new FormData(form);
 
+    // Convert FormData to JSON for reliable AJAX delivery
+    const jsonData = {};
+    data.forEach((value, key) => {
+      if (!key.startsWith('_') || key === '_subject' || key === '_captcha' || key === '_template') {
+        jsonData[key] = value;
+      }
+    });
+    jsonData['_subject'] = 'New Quote Request - Wirral Carpet Cleaning';
+    jsonData['_captcha'] = 'false';
+    jsonData['_template'] = 'table';
+
     try {
       await fetch('https://formsubmit.co/ajax/contact@wirralcarpetcleaning.com', {
         method: 'POST',
-        body: data,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(jsonData),
       });
       setSubmitted(true);
       form.reset();
@@ -179,9 +194,9 @@ export default function CTA() {
                         name="service"
                         className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/50 transition-colors"
                       >
-                        <option value="carpet" className="bg-gray-800">Carpet Cleaning</option>
+                        <option value="domestic" className="bg-gray-800">Domestic Cleaning</option>
                         <option value="upholstery" className="bg-gray-800">Upholstery Cleaning</option>
-                        <option value="commercial" className="bg-gray-800">Commercial Cleaning</option>
+                        <option value="commercial" className="bg-gray-800">Commercial Carpet Cleaning</option>
                         <option value="biohazard" className="bg-gray-800">Biohazard Cleaning</option>
                         <option value="other" className="bg-gray-800">Other / Multiple</option>
                       </select>

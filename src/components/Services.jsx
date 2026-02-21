@@ -16,7 +16,7 @@ import biohazardImg from '../assets/bio.jpeg';
 const services = [
   {
     icon: HiSparkles,
-    title: 'Carpet Cleaning',
+    title: 'Domestic Cleaning',
     description:
       'Deep hot-water extraction that removes embedded dirt, stains and allergens — restoring your carpets to like-new condition.',
     features: [
@@ -48,9 +48,9 @@ const services = [
   },
   {
     icon: HiOfficeBuilding,
-    title: 'Commercial Cleaning',
+    title: 'Commercial Carpet Cleaning',
     description:
-      'Keep your business premises pristine. Contract and one-off services for offices, restaurants, hotels and more.',
+      'Keep your business premises pristine. Contract and one-off carpet cleaning services for offices, restaurants, hotels and more.',
     features: [
       'Flexible scheduling',
       'Minimal disruption',

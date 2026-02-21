@@ -4,7 +4,7 @@ import { HiChevronDown } from 'react-icons/hi';
 
 const faqs = [
   {
-    question: 'How much does carpet cleaning cost in Wirral?',
+    question: 'How much does carpet cleaning cost?',
     answer:
       'Carpet cleaning prices vary depending on the size of the area and condition of the carpets. We offer free, no-obligation quotes tailored to your specific needs. Contact us on 0151 936 9664 or fill in our quote form for a personalised estimate.',
   },
@@ -21,7 +21,7 @@ const faqs = [
   {
     question: 'What areas do you cover for carpet cleaning?',
     answer:
-      'We serve the entire Wirral peninsula, Liverpool, Chester and surrounding areas across Merseyside and Cheshire. This includes Birkenhead, Wallasey, Heswall, West Kirby, Bebington, Bromborough, Ellesmere Port, Neston, Hoylake, Southport, St Helens, Warrington and more.',
+      'We serve the entire Wirral peninsula, Liverpool, Chester and surrounding areas across Merseyside and Cheshire. This includes Birkenhead, Prenton, Wallasey, Heswall, West Kirby, Bebington, Bromborough, Ellesmere Port, Neston, Hoylake, Southport, St Helens, Warrington and more.',
   },
   {
     question: 'Are your carpet cleaning products safe for pets and children?',
@@ -85,7 +85,7 @@ export default function FAQ() {
   const headingInView = useInView(headingRef, { once: true, margin: '-50px' });
 
   return (
-    <section id="faq" aria-label="Frequently asked questions" className="py-20 md:py-28 bg-white">
+    <section id="faq" aria-label="Frequently asked questions" className="py-20 md:py-28 bg-gray-50">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           ref={headingRef}

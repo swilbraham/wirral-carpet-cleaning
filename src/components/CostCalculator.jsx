@@ -141,23 +141,28 @@ export default function CostCalculator() {
       (d) => formatDateValue(d) === formData.date
     );
 
-    const body = new FormData();
-    body.append('name', formData.name);
-    body.append('phone', formData.phone);
-    body.append('postcode', formData.postcode);
-    body.append('date', selectedDate ? formatDate(selectedDate) : formData.date);
-    body.append('timeSlot', formData.timeSlot === 'am' ? 'Morning (AM)' : 'Afternoon (PM)');
-    body.append('rooms', selectedRoomNames);
-    body.append('totalRooms', selectedRooms.length.toString());
-    body.append('estimatedCost', `£${total.toFixed(2)} (estimated)`);
-    body.append('_subject', 'New Booking Request - Wirral Carpet Cleaning');
-    body.append('_captcha', 'false');
-    body.append('_template', 'table');
+    const jsonData = {
+      name: formData.name,
+      phone: formData.phone,
+      postcode: formData.postcode,
+      date: selectedDate ? formatDate(selectedDate) : formData.date,
+      timeSlot: formData.timeSlot === 'am' ? 'Morning (AM)' : 'Afternoon (PM)',
+      rooms: selectedRoomNames,
+      totalRooms: selectedRooms.length.toString(),
+      estimatedCost: `£${total.toFixed(2)} (estimated)`,
+      _subject: 'New Booking Request - Wirral Carpet Cleaning',
+      _captcha: 'false',
+      _template: 'table',
+    };
 
     try {
       await fetch('https://formsubmit.co/ajax/contact@wirralcarpetcleaning.com', {
         method: 'POST',
-        body,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(jsonData),
       });
     } catch {
       // Submit anyway

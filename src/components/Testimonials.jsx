@@ -67,7 +67,7 @@ function TestimonialCard({ testimonial, index }) {
       initial={{ opacity: 0, y: 30 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.4, delay: index * 0.1 }}
-      className="relative p-6 md:p-8 rounded-2xl bg-gray-50 border border-gray-100 hover:shadow-lg transition-shadow"
+      className="relative p-6 md:p-8 rounded-2xl bg-white border border-gray-100 hover:shadow-lg transition-shadow"
     >
       <StarRating rating={testimonial.rating} />
       <p className="mt-4 mb-6 text-gray-600 leading-relaxed">
@@ -99,7 +99,7 @@ export default function Testimonials() {
   );
 
   return (
-    <section id="testimonials" className="py-20 md:py-28 bg-white">
+    <section id="testimonials" className="py-20 md:py-28 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           ref={headingRef}

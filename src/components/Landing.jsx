@@ -197,7 +197,7 @@ export default function Landing() {
       </section>
 
       {/* Reviews */}
-      <section className="py-14 md:py-20 bg-white">
+      <section className="pt-14 md:pt-20 pb-6 md:pb-8 bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 text-center mb-10">
             What Our <span className="text-primary">Customers Say</span>
@@ -223,7 +223,9 @@ export default function Landing() {
       </section>
 
       {/* Cost Calculator */}
-      <CostCalculator />
+      <div className="-mt-10 md:-mt-16">
+        <CostCalculator />
+      </div>
 
       {/* Quote Form */}
       <section id="quote" className="py-14 md:py-20 bg-dark">

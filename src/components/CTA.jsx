@@ -164,6 +164,12 @@ export default function CTA() {
                         <span className="text-sm font-semibold text-white">{submittedData.phone}</span>
                       </div>
                     )}
+                    {submittedData.postcode && (
+                      <div className="px-5 py-3 flex justify-between items-center">
+                        <span className="text-sm text-gray-400">Postcode</span>
+                        <span className="text-sm font-semibold text-white uppercase">{submittedData.postcode}</span>
+                      </div>
+                    )}
                     {submittedData.service && (
                       <div className="px-5 py-3 flex justify-between items-center">
                         <span className="text-sm text-gray-400">Service</span>
@@ -238,21 +244,34 @@ export default function CTA() {
                       />
                     </div>
                     <div>
-                      <label htmlFor="service" className="block text-sm font-medium text-gray-300 mb-2">
-                        Service Required
+                      <label htmlFor="postcode" className="block text-sm font-medium text-gray-300 mb-2">
+                        Postcode
                       </label>
-                      <select
-                        id="service"
-                        name="service"
-                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/50 transition-colors"
-                      >
-                        <option value="domestic" className="bg-gray-800">Domestic Carpet Cleaning</option>
-                        <option value="upholstery" className="bg-gray-800">Upholstery Cleaning</option>
-                        <option value="commercial" className="bg-gray-800">Commercial Carpet Cleaning</option>
-                        <option value="biohazard" className="bg-gray-800">Biohazard Cleaning</option>
-                        <option value="other" className="bg-gray-800">Other / Multiple</option>
-                      </select>
+                      <input
+                        type="text"
+                        id="postcode"
+                        name="postcode"
+                        placeholder="CH63 1AA"
+                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/50 transition-colors uppercase"
+                      />
                     </div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="service" className="block text-sm font-medium text-gray-300 mb-2">
+                      Service Required
+                    </label>
+                    <select
+                      id="service"
+                      name="service"
+                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/50 transition-colors"
+                    >
+                      <option value="domestic" className="bg-gray-800">Domestic Carpet Cleaning</option>
+                      <option value="upholstery" className="bg-gray-800">Upholstery Cleaning</option>
+                      <option value="commercial" className="bg-gray-800">Commercial Carpet Cleaning</option>
+                      <option value="biohazard" className="bg-gray-800">Biohazard Cleaning</option>
+                      <option value="other" className="bg-gray-800">Other / Multiple</option>
+                    </select>
                   </div>
 
                   <div>

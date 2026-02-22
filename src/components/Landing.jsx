@@ -4,6 +4,7 @@ import logo from '../assets/logo.png';
 import carpetImg from '../assets/carpet.jpg';
 import upholsteryImg from '../assets/upholstery.jpg';
 import biohazardImg from '../assets/bio.jpeg';
+import CostCalculator from './CostCalculator';
 
 const services = [
   {
@@ -220,6 +221,9 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Cost Calculator */}
+      <CostCalculator />
+
       {/* Quote Form */}
       <section id="quote" className="py-14 md:py-20 bg-dark">
         <div className="max-w-2xl mx-auto px-4 sm:px-6">
@@ -247,16 +251,22 @@ export default function Landing() {
                     <span className="text-sm font-semibold text-white">{submittedData.name}</span>
                   </div>
                 )}
+                {submittedData.email && (
+                  <div className="px-5 py-3 flex justify-between items-center">
+                    <span className="text-sm text-gray-400">Email</span>
+                    <span className="text-sm font-semibold text-white">{submittedData.email}</span>
+                  </div>
+                )}
                 {submittedData.phone && (
                   <div className="px-5 py-3 flex justify-between items-center">
                     <span className="text-sm text-gray-400">Phone</span>
                     <span className="text-sm font-semibold text-white">{submittedData.phone}</span>
                   </div>
                 )}
-                {submittedData.email && (
+                {submittedData.postcode && (
                   <div className="px-5 py-3 flex justify-between items-center">
-                    <span className="text-sm text-gray-400">Email</span>
-                    <span className="text-sm font-semibold text-white">{submittedData.email}</span>
+                    <span className="text-sm text-gray-400">Postcode</span>
+                    <span className="text-sm font-semibold text-white uppercase">{submittedData.postcode}</span>
                   </div>
                 )}
                 {submittedData.service && (
@@ -282,61 +292,107 @@ export default function Landing() {
               </div>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-5">
               <input type="text" name="_honey" style={{ display: 'none' }} />
 
-              <div className="grid sm:grid-cols-2 gap-4">
-                <input
-                  type="text"
-                  name="name"
-                  required
-                  placeholder="Full Name"
-                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/50"
-                />
-                <input
-                  type="tel"
-                  name="phone"
-                  required
-                  placeholder="Phone Number"
-                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/50"
-                />
+              <div className="grid sm:grid-cols-2 gap-5">
+                <div>
+                  <label htmlFor="landing-name" className="block text-sm font-medium text-gray-300 mb-2">
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    id="landing-name"
+                    name="name"
+                    required
+                    placeholder="John Smith"
+                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/50 transition-colors"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="landing-email" className="block text-sm font-medium text-gray-300 mb-2">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    id="landing-email"
+                    name="email"
+                    required
+                    placeholder="john@example.com"
+                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/50 transition-colors"
+                  />
+                </div>
               </div>
 
-              <div className="grid sm:grid-cols-2 gap-4">
-                <input
-                  type="email"
-                  name="email"
-                  required
-                  placeholder="Email Address"
-                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/50"
-                />
+              <div className="grid sm:grid-cols-2 gap-5">
+                <div>
+                  <label htmlFor="landing-phone" className="block text-sm font-medium text-gray-300 mb-2">
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    id="landing-phone"
+                    name="phone"
+                    placeholder="07123 456789"
+                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/50 transition-colors"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="landing-postcode" className="block text-sm font-medium text-gray-300 mb-2">
+                    Postcode
+                  </label>
+                  <input
+                    type="text"
+                    id="landing-postcode"
+                    name="postcode"
+                    placeholder="CH63 1AA"
+                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/50 transition-colors uppercase"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="landing-service" className="block text-sm font-medium text-gray-300 mb-2">
+                  Service Required
+                </label>
                 <select
+                  id="landing-service"
                   name="service"
-                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/50"
+                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/50 transition-colors"
                 >
                   <option value="domestic" className="bg-gray-800">Domestic Carpet Cleaning</option>
                   <option value="upholstery" className="bg-gray-800">Upholstery Cleaning</option>
-                  <option value="biohazard" className="bg-gray-800">Biohazard Cleaning</option>
                   <option value="commercial" className="bg-gray-800">Commercial Carpet Cleaning</option>
-                  <option value="other" className="bg-gray-800">Other</option>
+                  <option value="biohazard" className="bg-gray-800">Biohazard Cleaning</option>
+                  <option value="other" className="bg-gray-800">Other / Multiple</option>
                 </select>
               </div>
 
-              <textarea
-                name="message"
-                rows={3}
-                required
-                placeholder="Tell us about your needs..."
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/50 resize-none"
-              />
+              <div>
+                <label htmlFor="landing-message" className="block text-sm font-medium text-gray-300 mb-2">
+                  Tell Us About Your Needs
+                </label>
+                <textarea
+                  id="landing-message"
+                  name="message"
+                  rows={4}
+                  required
+                  placeholder="e.g. 3-bed house, living room and hallway carpets, pet stains..."
+                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/50 transition-colors resize-none"
+                />
+              </div>
 
               <button
                 type="submit"
-                className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-accent hover:bg-accent-light text-white rounded-xl font-semibold text-lg transition-all hover:shadow-lg hover:shadow-accent/25"
+                className="group w-full flex items-center justify-center gap-2 px-6 py-4 bg-accent hover:bg-accent-light text-white rounded-xl font-semibold text-lg transition-all hover:shadow-lg hover:shadow-accent/25"
               >
                 Get My Free Quote
-                <HiArrowRight className="w-5 h-5" />
+                <HiArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
+
+              <p className="text-xs text-gray-500 text-center">
+                No spam, no obligation. We typically respond within 2 hours.
+              </p>
             </form>
           )}
         </div>

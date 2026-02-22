@@ -219,10 +219,6 @@ export default function Landing() {
             ))}
           </div>
 
-          {/* Facebook Reviews via Elfsight */}
-          <div className="mt-10">
-            <div className="elfsight-app-f893a40e-e7cc-4133-92cf-971a41463d25" data-elfsight-app-lazy></div>
-          </div>
         </div>
       </section>
 

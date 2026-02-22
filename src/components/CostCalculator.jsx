@@ -13,7 +13,7 @@ import {
 } from 'react-icons/hi';
 
 const FIRST_CARPET_PRICE = 60;
-const ADDITIONAL_CARPET_PRICE = 20;
+const ADDITIONAL_CARPET_PRICE = 30;
 
 const rooms = [
   { id: 'living-room', name: 'Living Room', icon: '🛋️' },
@@ -75,12 +75,11 @@ function calculatePrice(selectedRooms) {
 
   let total = breakdown.reduce((sum, item) => sum + item.price, 0);
 
-  // Silent combo discount: hall+stairs, stairs+landing, or hall+stairs+landing = -£20
-  const hasHall = selectedRooms.includes('hallway');
+  // Silent combo discount: stairs+landing or hall+stairs+landing = -£30
   const hasStairs = selectedRooms.includes('stairs');
   const hasLanding = selectedRooms.includes('landing');
-  if ((hasHall && hasStairs) || (hasStairs && hasLanding)) {
-    total = Math.max(0, total - 20);
+  if (hasStairs && hasLanding) {
+    total = Math.max(0, total - 30);
   }
 
   return { total, breakdown };

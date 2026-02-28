@@ -13,6 +13,7 @@ import Footer from './components/Footer';
 import MobileCallButton from './components/MobileCallButton';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import Landing from './components/Landing';
+import SpinWheel from './components/SpinWheel';
 
 function HomePage() {
   return (
@@ -49,6 +50,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/landing" element={<Landing />} />
+        <Route path="/spin-wheel" element={<SpinWheel />} />
         <Route path="/*" element={<MainLayout />} />
       </Routes>
     </BrowserRouter>

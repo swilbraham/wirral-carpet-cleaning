@@ -10,14 +10,14 @@ import {
 import logo from '../assets/logo.png';
 
 const SEGMENTS = [
-  { id: 0, label: '10% Off',               fullLabel: '10% Off Your Clean',               color: '#1e73be', weight: 25 },
-  { id: 1, label: 'Free Stain\nTreatment',  fullLabel: 'Free Stain Treatment',             color: '#155a96', weight: 20 },
-  { id: 2, label: '15% Off',               fullLabel: '15% Off Your First Clean',          color: '#04a7eb', weight: 15 },
-  { id: 3, label: 'Free\nDeodoriser',       fullLabel: 'Free Deodoriser Treatment',         color: '#1e73be', weight: 15 },
-  { id: 4, label: '£10 Off',               fullLabel: '£10 Off Any Service',               color: '#155a96', weight: 10 },
-  { id: 5, label: '20% Off!',              fullLabel: '20% Off Your Clean',                color: '#0a1628', weight: 3  },
-  { id: 6, label: 'Free Room\nFreshener',   fullLabel: 'Free Room Freshener',               color: '#04a7eb', weight: 7  },
-  { id: 7, label: '£20 Off\n3+ Rooms',     fullLabel: '£20 Off When You Book 3+ Rooms',    color: '#155a96', weight: 5  },
+  { id: 0, label: '£10 Off',               fullLabel: '£10 Off Any Clean',                 color: '#1e73be', weight: 30 },
+  { id: 1, label: '£15 Off',               fullLabel: '£15 Off Any Clean',                 color: '#155a96', weight: 20 },
+  { id: 2, label: 'Free\nDeodoriser',      fullLabel: 'Free Deodoriser Upgrade',            color: '#04a7eb', weight: 15 },
+  { id: 3, label: '£20 Off\n£100+',        fullLabel: '£20 Off Orders Over £100',           color: '#1e73be', weight: 15 },
+  { id: 4, label: 'Free\nHallway',         fullLabel: 'Free Hallway Clean',                 color: '#155a96', weight: 10 },
+  { id: 5, label: '£25 Off\nFull House',   fullLabel: '£25 Off Full House Clean',           color: '#0a1628', weight: 5  },
+  { id: 6, label: 'Free Sofa\nClean',      fullLabel: 'Free Sofa Clean With Carpet Clean',  color: '#04a7eb', weight: 3  },
+  { id: 7, label: '£15 Off\nUpholstery',   fullLabel: '£15 Off Upholstery Cleaning',        color: '#155a96', weight: 2  },
 ];
 
 const serviceLabels = {
@@ -172,9 +172,13 @@ export default function SpinWheel() {
   const [winningSegment, setWinningSegment] = useState(null);
   const [rotation, setRotation] = useState(0);
   const [submittedData, setSubmittedData] = useState(null);
+  const [preName, setPreName] = useState('');
+  const [prePhone, setPrePhone] = useState('');
+
+  const canSpin = preName.trim() !== '' && prePhone.trim() !== '';
 
   const handleSpin = useCallback(() => {
-    if (phase !== 'idle') return;
+    if (phase !== 'idle' || !canSpin) return;
     const winner = pickWinningSegment();
     setWinningSegment(winner);
     setPhase('spinning');
@@ -184,7 +188,7 @@ export default function SpinWheel() {
     const jitter = (Math.random() - 0.5) * (SEG_ANGLE * 0.55);
     const fullSpins = (5 + Math.floor(Math.random() * 4)) * 360;
     setRotation((prev) => prev + fullSpins + alignTo + jitter);
-  }, [phase]);
+  }, [phase, canSpin]);
 
   const handleSpinComplete = useCallback(() => {
     if (phase === 'spinning') setPhase('won');
@@ -216,6 +220,7 @@ export default function SpinWheel() {
       // submit anyway
     }
 
+    if (typeof fbq === 'function') fbq('track', 'Lead');
     setPhase('submitted');
     form.reset();
   };
@@ -251,7 +256,7 @@ export default function SpinWheel() {
       {/* Header */}
       <div className="relative z-10 flex justify-center pt-8 pb-4">
         <a href="/">
-          <img src={logo} alt="Wirral Carpet Cleaning" className="h-14 md:h-16 w-auto" />
+          <img src={logo} alt="Wirral Carpet Cleaning" className="h-14 md:h-16 w-auto drop-shadow-[0_0_20px_rgba(255,255,255,0.9)] brightness-125" />
         </a>
       </div>
 
@@ -291,9 +296,26 @@ export default function SpinWheel() {
                 />
               </div>
 
+              <div className="grid sm:grid-cols-2 gap-4 max-w-md mx-auto mb-6">
+                <input
+                  type="text"
+                  value={preName}
+                  onChange={(e) => setPreName(e.target.value)}
+                  placeholder="Your Name"
+                  className={inputCls}
+                />
+                <input
+                  type="tel"
+                  value={prePhone}
+                  onChange={(e) => setPrePhone(e.target.value)}
+                  placeholder="Phone Number"
+                  className={inputCls}
+                />
+              </div>
+
               <button
                 onClick={handleSpin}
-                disabled={phase === 'spinning'}
+                disabled={phase === 'spinning' || !canSpin}
                 className="group inline-flex items-center gap-2 px-10 py-4 bg-accent hover:bg-accent-light text-white rounded-xl text-lg font-semibold transition-all hover:shadow-xl hover:shadow-accent/25 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {phase === 'spinning' ? (
@@ -305,6 +327,13 @@ export default function SpinWheel() {
                   </>
                 )}
               </button>
+
+              <div className="mt-6">
+                <a href="/" className="inline-flex items-center gap-1.5 text-gray-400 text-sm font-medium hover:text-white transition-colors">
+                  Visit our website
+                  <HiArrowRight className="w-4 h-4" />
+                </a>
+              </div>
             </motion.div>
           )}
 
@@ -388,7 +417,7 @@ export default function SpinWheel() {
                     <label htmlFor="sw-name" className="block text-sm font-medium text-gray-300 mb-2">
                       Full Name
                     </label>
-                    <input type="text" id="sw-name" name="name" required placeholder="John Smith" className={inputCls} />
+                    <input type="text" id="sw-name" name="name" required placeholder="John Smith" defaultValue={preName} className={inputCls} />
                   </div>
                   <div>
                     <label htmlFor="sw-email" className="block text-sm font-medium text-gray-300 mb-2">
@@ -403,7 +432,7 @@ export default function SpinWheel() {
                     <label htmlFor="sw-phone" className="block text-sm font-medium text-gray-300 mb-2">
                       Phone Number
                     </label>
-                    <input type="tel" id="sw-phone" name="phone" placeholder="07123 456789" className={inputCls} />
+                    <input type="tel" id="sw-phone" name="phone" placeholder="07123 456789" defaultValue={prePhone} className={inputCls} />
                   </div>
                   <div>
                     <label htmlFor="sw-postcode" className="block text-sm font-medium text-gray-300 mb-2">
@@ -524,9 +553,10 @@ export default function SpinWheel() {
               <p className="text-xs text-gray-500 text-center mb-4">We typically respond within 2 hours.</p>
 
               <div className="text-center">
-                <button onClick={resetAll} className="text-accent text-sm font-medium hover:text-accent-light transition-colors">
-                  Spin again
-                </button>
+                <a href="/" className="inline-flex items-center gap-1.5 text-accent text-sm font-medium hover:text-accent-light transition-colors">
+                  Visit our website
+                  <HiArrowRight className="w-4 h-4" />
+                </a>
               </div>
             </motion.div>
           )}

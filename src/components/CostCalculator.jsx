@@ -174,6 +174,7 @@ export default function CostCalculator() {
     } catch {
       setSubmitted(true);
     }
+    if (typeof fbq === 'function') fbq('track', 'Lead');
   };
 
   const resetAll = () => {

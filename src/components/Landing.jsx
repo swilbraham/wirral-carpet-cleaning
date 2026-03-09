@@ -74,6 +74,7 @@ export default function Landing() {
       // Submit anyway
     }
 
+    if (typeof fbq === 'function') fbq('track', 'Lead');
     setSubmitted(true);
     form.reset();
   };

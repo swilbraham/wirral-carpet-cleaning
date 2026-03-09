@@ -220,6 +220,22 @@ export default function SpinWheel() {
       // submit anyway
     }
 
+    // Send to Make.com webhook for automated SMS
+    try {
+      fetch('https://hook.eu1.make.com/jdpn9ibrgfcr6mttj0qibxtrujq91prp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: jsonData.name,
+          phone: jsonData.phone,
+          email: jsonData.email,
+          offer: winningSegment.fullLabel,
+        }),
+      });
+    } catch {
+      // non-critical, don't block submission
+    }
+
     if (typeof fbq === 'function') fbq('track', 'Lead');
     setPhase('submitted');
     form.reset();

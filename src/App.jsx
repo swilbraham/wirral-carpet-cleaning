@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import PainPoints from './components/PainPoints';
@@ -18,6 +19,11 @@ import SpinWheel from './components/SpinWheel';
 function HomePage() {
   return (
     <>
+      <Helmet>
+        <title>Wirral Carpet Cleaning | Domestic & Commercial Carpet, Upholstery & Biohazard Cleaning in Merseyside & Cheshire</title>
+        <meta name="description" content="Domestic & commercial carpet cleaning, sofa & upholstery cleaning and biohazard cleaning across Wirral, Liverpool, Birkenhead, Prenton, Chester & Merseyside. 15+ years experience, fully insured, eco-friendly. Free quotes — call 0151 936 9664." />
+        <link rel="canonical" href="https://www.wirralcarpetcleaning.com/" />
+      </Helmet>
       <Hero />
       <PainPoints />
       <Services />

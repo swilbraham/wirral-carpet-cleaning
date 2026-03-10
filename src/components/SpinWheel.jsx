@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   HiArrowRight,
@@ -253,6 +254,15 @@ export default function SpinWheel() {
 
   return (
     <div className="min-h-screen bg-dark relative overflow-hidden">
+      <Helmet>
+        <title>Spin to Win a Discount | Wirral Carpet Cleaning</title>
+        <meta name="description" content="Spin the wheel for an exclusive carpet or upholstery cleaning discount. Every spin wins! Claim your offer from Wirral Carpet Cleaning — serving Wirral, Liverpool & Cheshire." />
+        <link rel="canonical" href="https://www.wirralcarpetcleaning.com/spin-wheel" />
+        <meta property="og:title" content="Spin to Win a Discount | Wirral Carpet Cleaning" />
+        <meta property="og:description" content="Spin the wheel for an exclusive carpet or upholstery cleaning discount. Every spin wins!" />
+        <meta property="og:url" content="https://www.wirralcarpetcleaning.com/spin-wheel" />
+        <meta name="robots" content="noindex, follow" />
+      </Helmet>
       {/* Background effects */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-br from-dark via-dark-secondary/95 to-primary/30" />

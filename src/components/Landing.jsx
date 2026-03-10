@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { HiPhone, HiArrowRight, HiStar, HiCheck, HiShieldCheck, HiClock, HiSparkles, HiMail } from 'react-icons/hi';
 import logo from '../assets/logo.png';
 import carpetImg from '../assets/carpet.jpg';
@@ -81,6 +82,14 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>Carpet Cleaning Wirral | Free Quote | Wirral Carpet Cleaning</title>
+        <meta name="description" content="Professional carpet, upholstery & biohazard cleaning across Wirral, Liverpool & Cheshire. Get a free instant quote online. Fully insured, eco-friendly. Call 0151 936 9664." />
+        <link rel="canonical" href="https://www.wirralcarpetcleaning.com/landing" />
+        <meta property="og:title" content="Carpet Cleaning Wirral | Free Quote | Wirral Carpet Cleaning" />
+        <meta property="og:description" content="Professional carpet, upholstery & biohazard cleaning across Wirral, Liverpool & Cheshire. Get a free instant quote online." />
+        <meta property="og:url" content="https://www.wirralcarpetcleaning.com/landing" />
+      </Helmet>
       {/* Hero */}
       <section className="relative bg-dark overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-dark via-dark-secondary/95 to-primary/30" />
@@ -151,7 +160,7 @@ export default function Landing() {
             {services.map((service) => (
               <div key={service.title} className="rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="h-40 overflow-hidden">
-                  <img src={service.image} alt={service.title} className="w-full h-full object-cover" />
+                  <img src={service.image} alt={`${service.title} service in Wirral and Merseyside`} className="w-full h-full object-cover" />
                 </div>
                 <div className="p-5">
                   <h3 className="text-lg font-bold text-gray-900 mb-2">{service.title}</h3>

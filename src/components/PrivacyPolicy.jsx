@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { HiArrowLeft } from 'react-icons/hi';
+import { Helmet } from 'react-helmet-async';
 
 export default function PrivacyPolicy() {
   useEffect(() => {
@@ -9,6 +10,11 @@ export default function PrivacyPolicy() {
 
   return (
     <section className="pt-28 pb-20 bg-white min-h-screen">
+      <Helmet>
+        <title>Privacy Policy | Wirral Carpet Cleaning</title>
+        <meta name="description" content="Privacy policy for Wirral Carpet Cleaning Limited. Learn how we collect, use and protect your personal data." />
+        <link rel="canonical" href="https://www.wirralcarpetcleaning.com/privacy-policy" />
+      </Helmet>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back link */}
         <Link

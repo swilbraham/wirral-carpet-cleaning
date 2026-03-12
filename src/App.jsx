@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -15,8 +16,20 @@ import MobileCallButton from './components/MobileCallButton';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import Landing from './components/Landing';
 import SpinWheel from './components/SpinWheel';
+import CarpetGame from './components/CarpetGame';
 
 function HomePage() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      setTimeout(() => {
+        const el = document.querySelector(location.hash);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  }, [location.hash]);
+
   return (
     <>
       <Helmet>
@@ -57,6 +70,7 @@ export default function App() {
       <Routes>
         <Route path="/landing" element={<Landing />} />
         <Route path="/spin-wheel" element={<SpinWheel />} />
+        <Route path="/game" element={<CarpetGame />} />
         <Route path="/*" element={<MainLayout />} />
       </Routes>
     </BrowserRouter>

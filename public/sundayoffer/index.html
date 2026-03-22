@@ -136,10 +136,69 @@
 .fu{animation:fadeUp .6s ease both;}
 .d1{animation-delay:.1s;}.d2{animation-delay:.22s;}.d3{animation-delay:.34s;}.d4{animation-delay:.46s;}
 @media(max-width:700px){.navbar{padding:0 16px;}.nav-phone{display:none;}.cyo-body,.cyo-top{padding:20px 18px;}}
+/* Spinner for form submission */
 .sending-state{display:none;text-align:center;padding:30px 0 10px;}
 .spinner{width:40px;height:40px;border:4px solid var(--border);border-top-color:var(--cyan);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .sending-state p{font-size:.9rem;color:var(--text-soft);font-weight:600;}
+/* BOOKING MODAL */
+.modal-overlay{
+  display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(10,22,40,0.82);backdrop-filter:blur(4px);
+  align-items:center;justify-content:center;padding:20px;
+}
+.modal-overlay.open{display:flex;}
+@keyframes modalIn{from{opacity:0;transform:translateY(32px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+.modal{
+  background:var(--white);border-radius:var(--radius);
+  width:100%;max-width:520px;max-height:90vh;overflow-y:auto;
+  box-shadow:0 32px 80px rgba(0,0,0,.5);
+  animation:modalIn .3s ease both;
+  position:relative;
+}
+.modal-header{
+  background:var(--navy);padding:24px 28px 20px;
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+}
+.modal-header-left{}
+.modal-pkg-name{font-weight:900;font-size:1.15rem;color:#fff;margin-bottom:2px;}
+.modal-pkg-price{font-size:.85rem;color:var(--cyan);font-weight:700;}
+.modal-close{
+  background:rgba(255,255,255,.1);border:none;color:#fff;
+  width:32px;height:32px;border-radius:50%;cursor:pointer;flex-shrink:0;
+  font-size:1.1rem;display:flex;align-items:center;justify-content:center;
+  transition:background .15s;margin-top:2px;
+}
+.modal-close:hover{background:rgba(255,255,255,.25);}
+.modal-body{padding:28px;}
+.modal-body h3{font-weight:800;font-size:1rem;color:var(--text-dark);margin-bottom:4px;}
+.modal-body .modal-sub{font-size:.82rem;color:var(--text-soft);margin-bottom:22px;line-height:1.6;}
+.mfg{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+.mfg label{font-size:.75rem;font-weight:700;color:var(--text-soft);text-transform:uppercase;letter-spacing:.5px;}
+.mfg input,.mfg select{
+  border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  padding:11px 14px;font-family:'Nunito',sans-serif;font-size:.9rem;color:var(--text-dark);
+  background:#fff;transition:border-color .2s;width:100%;
+}
+.mfg input:focus,.mfg select:focus{outline:none;border-color:var(--cyan-dark);}
+.modal-submit{
+  width:100%;padding:15px;margin-top:6px;
+  background:var(--cyan);color:var(--navy);border:none;border-radius:50px;cursor:pointer;
+  font-family:'Nunito',sans-serif;font-weight:900;font-size:1rem;letter-spacing:.3px;
+  transition:background .2s,transform .15s;box-shadow:0 6px 20px rgba(41,182,246,.3);
+}
+.modal-submit:hover{background:#45c5f8;transform:translateY(-2px);}
+.modal-submit:disabled{background:#b0bec5;cursor:not-allowed;transform:none;box-shadow:none;}
+.modal-note{font-size:.72rem;color:var(--text-soft);text-align:center;margin-top:10px;line-height:1.65;}
+/* success state */
+.modal-success{display:none;text-align:center;padding:40px 28px;}
+.modal-success .ms-icon{width:70px;height:70px;border-radius:50%;background:var(--green);color:#fff;font-size:2rem;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
+.modal-success h3{font-weight:900;font-size:1.2rem;color:var(--text-dark);margin-bottom:10px;}
+.modal-success p{font-size:.88rem;color:var(--text-soft);line-height:1.75;}
+/* modal spinner */
+.modal-spinner-wrap{display:none;text-align:center;padding:16px 0 6px;}
+.modal-spinner{width:36px;height:36px;border:4px solid var(--border);border-top-color:var(--cyan);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px;}
+.modal-spinner-wrap p{font-size:.85rem;color:var(--text-soft);font-weight:600;}
 </style>
 </head>
 <body>
@@ -234,7 +293,7 @@
             <li>Deodoriser &amp; protector spray</li>
             <li>Fast 2&#8211;4 hour dry time</li>
           </ul>
-          <a href="#contact" class="pkg-cta" onclick="prefillPackage('The Freshener — £89')">Book The Freshener &#8594;</a>
+          <button class="pkg-cta" onclick="openModal('The Freshener', '&pound;89')">Book The Freshener &#8594;</button>
         </div>
       </div>
       <div class="pkg-card featured">
@@ -256,7 +315,7 @@
             <li>Stain protection treatment</li>
             <li>Spot stain removal included</li>
           </ul>
-          <a href="#contact" class="pkg-cta" onclick="prefillPackage('The Full Works — £169')">Book The Full Works &#8594;</a>
+          <button class="pkg-cta" onclick="openModal('The Full Works', '&pound;169')">Book The Full Works &#8594;</button>
         </div>
       </div>
       <div class="pkg-card">
@@ -279,7 +338,7 @@
             <li>Spot stain removal included</li>
             <li>Priority booking &amp; scheduling</li>
           </ul>
-          <a href="#contact" class="pkg-cta" onclick="prefillPackage('The Prestige — £249')">Book The Prestige &#8594;</a>
+          <button class="pkg-cta" onclick="openModal('The Prestige', '&pound;249')">Book The Prestige &#8594;</button>
         </div>
       </div>
     </div>
@@ -306,7 +365,7 @@
               action="https://formsubmit.co/contact@wirralcarpetcleaning.com"
               method="POST"
               onsubmit="handleSubmit(event)">
-          <input type="hidden" name="_subject" value="&#9889; Super Sunday Booking Request — Wirral Carpet Cleaning">
+          <input type="hidden" name="_subject" value="&#9889; Super Sunday Booking Request &#8212; Wirral Carpet Cleaning">
           <input type="hidden" name="_captcha" value="false">
           <input type="hidden" name="_template" value="table">
           <input type="hidden" name="_next" value="https://www.wirralcarpetcleaning.com/?sunday_booked=true">
@@ -421,31 +480,149 @@
   </div>
   <div class="sf-copy">&copy; 2026 Wirral Carpet Cleaning Limited. All rights reserved. &middot; Super Sunday offer valid this Sunday only.</div>
 </footer>
+<!-- BOOKING MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="overlayClick(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <div class="modal-pkg-name" id="modal-pkg-name">Package Name</div>
+        <div class="modal-pkg-price" id="modal-pkg-price">&pound;0</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()" aria-label="Close">&#10005;</button>
+    </div>
+    <div class="modal-body" id="modal-form-wrap">
+      <h3>Complete Your Booking</h3>
+      <p class="modal-sub">Fill in your details below and a member of the team will be in contact within 24 hours to confirm your booking.</p>
+      <form id="modal-form"
+            action="https://formsubmit.co/contact@wirralcarpetcleaning.com"
+            method="POST"
+            onsubmit="handleModalSubmit(event)">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_next" value="https://www.wirralcarpetcleaning.com/">
+        <input type="hidden" name="Package Selected" id="modal-hidden-pkg" value="">
+        <input type="text" name="_honey" style="display:none;" tabindex="-1" autocomplete="off">
+        <div class="mfg">
+          <label for="m-name">Full Name *</label>
+          <input type="text" id="m-name" name="Name" placeholder="e.g. Jane Smith" required>
+        </div>
+        <div class="mfg">
+          <label for="m-postcode">Postcode *</label>
+          <input type="text" id="m-postcode" name="Postcode" placeholder="e.g. CH43 1AB" required>
+        </div>
+        <div class="mfg">
+          <label for="m-phone">Contact Number *</label>
+          <input type="tel" id="m-phone" name="Phone Number" placeholder="e.g. 07700 900 000" required>
+        </div>
+        <div class="mfg">
+          <label for="m-date">Preferred Date</label>
+          <input type="date" id="m-date" name="Preferred Date" min="">
+        </div>
+        <div class="mfg">
+          <label for="m-time">Preferred Time</label>
+          <select id="m-time" name="Preferred Time">
+            <option value="Flexible — any time">Flexible &#8212; any time</option>
+            <option value="Morning (8am–12pm)">Morning (8am &#8211; 12pm)</option>
+            <option value="Afternoon (12pm–4pm)">Afternoon (12pm &#8211; 4pm)</option>
+            <option value="Late afternoon (4pm–6pm)">Late afternoon (4pm &#8211; 6pm)</option>
+          </select>
+        </div>
+        <div class="modal-spinner-wrap" id="modal-spinner">
+          <div class="modal-spinner"></div>
+          <p>Sending your booking request...</p>
+        </div>
+        <button type="submit" class="modal-submit" id="modal-submit-btn">&#128197; Confirm My Booking</button>
+        <p class="modal-note">A member of the team will be in contact within 24 hours to confirm your booking. &middot; <strong>0151 936 9664</strong></p>
+      </form>
+    </div>
+    <div class="modal-success" id="modal-success">
+      <div class="ms-icon">&#10003;</div>
+      <h3>Booking Request Received!</h3>
+      <p>Thank you! A member of the team will be in contact within 24 hours to confirm your booking.<br><br>
+      Any questions in the meantime, give us a call on <strong>0151 936 9664</strong> or WhatsApp <strong>07724 564683</strong>.</p>
+    </div>
+  </div>
+</div>
 <script>
-function prefillPackage(pkg) {
-  document.getElementById('hidden-package').value = pkg;
-  var needs = document.getElementById('f-needs');
-  if (!needs.value.trim()) {
-    needs.placeholder = 'I would like to book: ' + pkg + ' — please confirm my booking within 24 hours.';
-  }
+// MODAL
+function openModal(pkgName, pkgPrice) {
+  document.getElementById('modal-pkg-name').textContent = pkgName;
+  document.getElementById('modal-pkg-price').textContent = pkgPrice + ' — Super Sunday Booking';
+  document.getElementById('modal-hidden-pkg').value = pkgName + ' — ' + pkgPrice;
+  var today = new Date().toISOString().split('T')[0];
+  document.getElementById('m-date').min = today;
+  document.getElementById('modal-form-wrap').style.display = 'block';
+  document.getElementById('modal-success').style.display = 'none';
+  document.getElementById('modal-submit-btn').disabled = false;
+  document.getElementById('modal-submit-btn').textContent = '\u{1F4C5} Confirm My Booking';
+  document.getElementById('modal-spinner').style.display = 'none';
+  document.getElementById('modal-form').reset();
+  document.getElementById('modal-hidden-pkg').value = pkgName + ' — ' + pkgPrice;
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function overlayClick(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
+});
+function handleModalSubmit(e) {
+  e.preventDefault();
+  var btn = document.getElementById('modal-submit-btn');
+  var spinner = document.getElementById('modal-spinner');
+  btn.disabled = true;
+  btn.style.display = 'none';
+  spinner.style.display = 'block';
+  var form = document.getElementById('modal-form');
+  var formData = new FormData(form);
+  fetch('https://formsubmit.co/contact@wirralcarpetcleaning.com', {
+    method: 'POST',
+    body: formData,
+    headers: { 'Accept': 'application/json' }
+  })
+  .then(function() {
+    spinner.style.display = 'none';
+    document.getElementById('modal-form-wrap').style.display = 'none';
+    document.getElementById('modal-success').style.display = 'block';
+    setTimeout(function() {
+      closeModal();
+      window.location.href = 'https://www.wirralcarpetcleaning.com/';
+    }, 3000);
+  })
+  .catch(function() {
+    spinner.style.display = 'none';
+    document.getElementById('modal-form-wrap').style.display = 'none';
+    document.getElementById('modal-success').style.display = 'block';
+    setTimeout(function() {
+      closeModal();
+      window.location.href = 'https://www.wirralcarpetcleaning.com/';
+    }, 3000);
+  });
+}
+// CHIPS
 function addChip(el, text) {
   el.classList.toggle('on');
   var ta = document.getElementById('f-needs');
+  if (!ta) return;
   if (el.classList.contains('on')) {
     var cur = ta.value.trim();
     ta.value = cur ? cur + ', ' + text : text;
   } else {
     var esc = text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    ta.value = ta.value.replace(new RegExp(',?\\s*' + esc, 'gi'), '').replace(/^,\\s*/, '').trim();
+    ta.value = ta.value.replace(new RegExp(',?\\s*' + esc, 'gi'), '').replace(/^,\s*/, '').trim();
   }
 }
+// CYO FORM
 function handleSubmit(e) {
   var btn = document.getElementById('send-btn');
   var spinner = document.getElementById('sending-state');
-  btn.disabled = true;
-  btn.style.display = 'none';
-  spinner.style.display = 'block';
+  if (btn) { btn.disabled = true; btn.style.display = 'none'; }
+  if (spinner) spinner.style.display = 'block';
 }
 </script>
 </body>

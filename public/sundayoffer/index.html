@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Super Sunday Offer — Book This Sunday — Wirral Carpet Cleaning LTD</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0d1b2e;--navy-mid:#112240;--navy-light:#1a2f4a;--cyan:#29b6f6;--cyan-dark:#0288d1;--cyan-glow:rgba(41,182,246,0.15);--white:#ffffff;--offwhite:#f0f4f8;--card-bg:#ffffff;--text-dark:#1a2332;--text-mid:#3d4f63;--text-soft:#6b7d90;--border:#dde4ee;--red:#e53935;--green:#00c896;--radius:12px;--radius-sm:8px;}
+*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}body{font-family:'Nunito',sans-serif;color:var(--text-dark);background:var(--offwhite);}
+.navbar{background:var(--white);display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:72px;box-shadow:0 2px 12px rgba(0,0,0,.08);position:sticky;top:0;z-index:999;}
+.nav-logo img{height:52px;width:auto;display:block;}
+.nav-right{display:flex;align-items:center;gap:14px;}
+.nav-phone{display:flex;align-items:center;gap:7px;color:var(--navy);font-weight:700;font-size:.9rem;text-decoration:none;}
+.nav-phone .ph{color:var(--cyan);}
+.nav-cta{background:var(--cyan);color:var(--white);font-weight:800;font-size:.88rem;padding:10px 22px;border-radius:50px;text-decoration:none;transition:background .2s,transform .15s;white-space:nowrap;}
+.nav-cta:hover{background:var(--cyan-dark);transform:translateY(-1px);}
+.strip{background:var(--red);text-align:center;padding:10px 20px;font-weight:700;font-size:.85rem;color:#fff;letter-spacing:.3px;}
+.strip span{opacity:.85;font-weight:500;}
+.hero{background:linear-gradient(160deg,var(--navy) 0%,var(--navy-mid) 55%,var(--navy-light) 100%);padding:70px 24px 0;text-align:center;position:relative;overflow:hidden;}
+.hero::after{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:var(--cyan-glow);top:-200px;left:50%;transform:translateX(-50%);pointer-events:none;}
+.hero-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(41,182,246,.12);border:1px solid rgba(41,182,246,.3);color:var(--cyan);font-weight:700;font-size:.8rem;letter-spacing:1px;text-transform:uppercase;padding:6px 18px;border-radius:50px;margin-bottom:22px;position:relative;z-index:1;}
+.pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--red);animation:blink 1.2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.hero h1{font-size:clamp(2.4rem,7vw,4.8rem);font-weight:900;color:var(--white);line-height:1.05;letter-spacing:-.5px;margin-bottom:10px;position:relative;z-index:1;}
+.hero h1 em{color:var(--cyan);font-style:normal;}
+.hero-sub{font-size:clamp(1rem,2.5vw,1.2rem);color:rgba(255,255,255,.75);font-weight:500;margin:0 auto 34px;position:relative;z-index:1;max-width:580px;}
+.slots-group{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:34px;position:relative;z-index:1;}
+.slots-row{display:flex;gap:10px;}
+.slot{width:46px;height:46px;border-radius:50%;border:2px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1rem;color:rgba(255,255,255,.6);background:rgba(255,255,255,.05);}
+.slot.gone{background:var(--red);border-color:var(--red);color:#fff;}
+.slots-label{font-size:.78rem;color:rgba(255,255,255,.5);letter-spacing:.5px;}
+.hero-btns{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;position:relative;z-index:1;}
+.btn-primary{background:var(--cyan);color:var(--navy);font-weight:800;font-size:1rem;padding:15px 34px;border-radius:50px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:background .2s,transform .2s;box-shadow:0 8px 28px rgba(41,182,246,.35);}
+.btn-primary:hover{background:#45c5f8;transform:translateY(-2px);}
+.btn-outline{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.3);font-weight:700;font-size:1rem;padding:13px 28px;border-radius:50px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:border-color .2s,background .2s;}
+.btn-outline:hover{border-color:rgba(255,255,255,.7);background:rgba(255,255,255,.06);}
+.stats-row{display:flex;flex-wrap:wrap;justify-content:center;background:rgba(255,255,255,.05);border-top:1px solid rgba(255,255,255,.08);margin-top:50px;padding:28px 0 0;position:relative;z-index:1;}
+.stat{flex:1;min-width:130px;text-align:center;padding:0 20px 28px;border-right:1px solid rgba(255,255,255,.08);}
+.stat:last-child{border-right:none;}
+.stat-num{font-size:2rem;font-weight:900;color:var(--cyan);}
+.stat-lab{font-size:.78rem;color:rgba(255,255,255,.55);margin-top:2px;}
+.section{max-width:1100px;margin:0 auto;padding:72px 20px;}
+.sec-label{display:inline-flex;align-items:center;gap:8px;background:var(--cyan-glow);border:1px solid rgba(41,182,246,.25);color:var(--cyan-dark);font-weight:700;font-size:.75rem;letter-spacing:1.5px;text-transform:uppercase;padding:5px 16px;border-radius:50px;margin-bottom:14px;}
+.sec-head{text-align:center;margin-bottom:48px;}
+.sec-head h2{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:900;color:var(--text-dark);line-height:1.15;margin-bottom:10px;}
+.sec-head h2 em{color:var(--cyan-dark);font-style:normal;}
+.sec-head p{font-size:.98rem;color:var(--text-soft);line-height:1.75;max-width:620px;margin:0 auto;}
+.hiw-bg{background:var(--white);}
+.hiw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;}
+.hiw-card{background:var(--offwhite);border-radius:var(--radius);padding:30px 22px;text-align:center;position:relative;}
+.hiw-num{width:48px;height:48px;border-radius:50%;background:var(--navy);color:var(--cyan);font-weight:900;font-size:1.1rem;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
+.hiw-card h3{font-weight:800;font-size:1rem;color:var(--text-dark);margin-bottom:6px;}
+.hiw-card p{font-size:.85rem;color:var(--text-soft);line-height:1.65;}
+.hiw-arrow{position:absolute;right:-14px;top:50%;transform:translateY(-50%);font-size:1.4rem;color:var(--cyan);font-weight:900;z-index:2;}
+@media(max-width:640px){.hiw-arrow{display:none;}}
+.packages-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:24px;}
+.pkg-card{background:var(--card-bg);border:2px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:transform .2s,border-color .2s,box-shadow .2s;position:relative;}
+.pkg-card:hover{transform:translateY(-5px);border-color:var(--cyan);box-shadow:0 16px 48px rgba(41,182,246,.15);}
+.pkg-card.featured{border-color:var(--cyan);box-shadow:0 12px 40px rgba(41,182,246,.2);}
+.pkg-badge{position:absolute;top:16px;right:16px;background:var(--cyan);color:var(--navy);font-weight:800;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;padding:5px 12px;border-radius:50px;}
+.pkg-header{background:var(--navy);padding:26px 28px 22px;}
+.pkg-card.featured .pkg-header{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%);}
+.pkg-name{font-weight:900;font-size:1.25rem;color:#fff;margin-bottom:4px;}
+.pkg-tagline{font-size:.82rem;color:rgba(255,255,255,.55);font-weight:500;}
+.pkg-price-row{display:flex;align-items:baseline;gap:10px;margin-top:16px;}
+.pkg-was{font-size:.88rem;color:rgba(255,255,255,.4);text-decoration:line-through;}
+.pkg-now{font-size:2.5rem;font-weight:900;color:var(--cyan);line-height:1;}
+.pkg-now sup{font-size:1rem;vertical-align:top;margin-top:5px;}
+.pkg-save{display:inline-block;background:var(--red);color:#fff;font-size:.7rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;padding:3px 10px;border-radius:50px;margin-top:8px;}
+.pkg-body{padding:24px 28px 28px;}
+.pkg-items{list-style:none;margin-bottom:22px;}
+.pkg-items li{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:.88rem;color:var(--text-mid);line-height:1.4;}
+.pkg-items li:last-child{border:none;}
+.pkg-items li::before{content:'\2713';color:var(--green);font-weight:900;font-size:.9rem;flex-shrink:0;margin-top:1px;}
+.pkg-cta{display:block;text-align:center;width:100%;background:var(--navy);color:#fff;border:none;font-family:'Nunito',sans-serif;font-weight:800;font-size:.95rem;letter-spacing:.3px;padding:14px;border-radius:var(--radius-sm);cursor:pointer;transition:background .2s,transform .15s;text-decoration:none;}
+.pkg-cta:hover{background:var(--navy-light);transform:translateY(-1px);}
+.pkg-card.featured .pkg-cta{background:var(--cyan);color:var(--navy);}
+.pkg-card.featured .pkg-cta:hover{background:#45c5f8;}
+.cyo-bg{background:var(--navy);}
+.cyo-inner{max-width:860px;margin:0 auto;padding:72px 20px;}
+.cyo-inner .sec-head h2{color:#fff;}
+.cyo-inner .sec-head p{color:rgba(255,255,255,.65);}
+.cyo-inner .sec-label{background:rgba(41,182,246,.1);border-color:rgba(41,182,246,.2);color:var(--cyan);}
+.cyo-card{background:var(--white);border-radius:var(--radius);overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.35);}
+.cyo-top{background:var(--navy-light);padding:24px 34px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:16px;}
+.cyo-icon{width:52px;height:52px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--cyan-dark),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:1.5rem;}
+.cyo-top h3{font-weight:900;font-size:1.15rem;color:#fff;margin-bottom:3px;}
+.cyo-top p{font-size:.82rem;color:rgba(255,255,255,.55);}
+.cyo-body{padding:32px 34px;}
+.chips-label{font-size:.75rem;font-weight:700;color:var(--text-soft);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;}
+.chip{background:var(--offwhite);border:1.5px solid var(--border);border-radius:50px;padding:6px 14px;font-size:.78rem;font-weight:700;color:var(--text-mid);cursor:pointer;transition:border-color .15s,background .15s,color .15s;user-select:none;}
+.chip:hover,.chip.on{background:#e6f5ff;border-color:var(--cyan-dark);color:var(--cyan-dark);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+@media(max-width:540px){.form-grid{grid-template-columns:1fr;}}
+.fg{display:flex;flex-direction:column;gap:5px;}
+.fg label{font-size:.75rem;font-weight:700;color:var(--text-soft);text-transform:uppercase;letter-spacing:.5px;}
+.fg input,.fg select,.fg textarea{border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:11px 14px;font-family:'Nunito',sans-serif;font-size:.88rem;color:var(--text-dark);background:#fff;transition:border-color .2s;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--cyan-dark);}
+.fg textarea{resize:vertical;min-height:110px;}
+.send-btn{width:100%;padding:15px;margin-top:6px;background:var(--cyan);color:var(--navy);border:none;border-radius:50px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:900;font-size:1rem;letter-spacing:.3px;transition:background .2s,transform .15s;box-shadow:0 6px 20px rgba(41,182,246,.3);}
+.send-btn:hover{background:#45c5f8;transform:translateY(-2px);}
+.form-note{font-size:.73rem;color:var(--text-soft);text-align:center;margin-top:12px;line-height:1.7;}
+.form-note a{color:var(--cyan-dark);font-weight:700;}
+.or-div{display:flex;align-items:center;gap:14px;margin:20px 0;}
+.or-div::before,.or-div::after{content:'';flex:1;height:1px;background:var(--border);}
+.or-div span{font-size:.78rem;color:var(--text-soft);font-weight:700;white-space:nowrap;}
+.alt-btns{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:480px){.alt-btns{grid-template-columns:1fr;}}
+.alt-btn{display:flex;align-items:center;justify-content:center;gap:8px;border:2px solid var(--border);border-radius:var(--radius-sm);padding:13px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.88rem;color:var(--text-dark);text-decoration:none;transition:border-color .15s,background .15s;}
+.alt-btn:hover{border-color:var(--cyan-dark);background:#f0f9ff;color:var(--cyan-dark);}
+.trust-bg{background:var(--white);}
+.trust-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:20px;}
+.trust-card{background:var(--offwhite);border-radius:var(--radius);padding:26px 18px;text-align:center;}
+.trust-icon{width:52px;height:52px;border-radius:12px;background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto 14px;}
+.trust-card h4{font-weight:800;font-size:.9rem;color:var(--text-dark);margin-bottom:4px;}
+.trust-card p{font-size:.78rem;color:var(--text-soft);line-height:1.55;}
+.footer-cta{background:var(--navy);padding:60px 20px;text-align:center;}
+.footer-cta h2{font-weight:900;font-size:clamp(1.6rem,4vw,2.4rem);color:#fff;margin-bottom:12px;}
+.footer-cta h2 em{color:var(--cyan);font-style:normal;}
+.footer-cta p{color:rgba(255,255,255,.6);font-size:.95rem;margin-bottom:28px;}
+.slots-warn{display:inline-block;background:var(--red);color:#fff;font-weight:800;font-size:.82rem;letter-spacing:.5px;padding:7px 20px;border-radius:50px;margin-bottom:22px;}
+.site-footer{background:#080f1a;padding:40px 20px;}
+.sf-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:center;}
+@media(max-width:600px){.sf-inner{grid-template-columns:1fr;text-align:center;}}
+.sf-brand{font-weight:900;font-size:1rem;color:#fff;}
+.sf-brand span{color:var(--cyan);}
+.sf-brand p{font-size:.78rem;color:rgba(255,255,255,.4);margin-top:4px;font-weight:400;}
+.sf-contact{display:flex;flex-direction:column;gap:6px;align-items:flex-end;}
+@media(max-width:600px){.sf-contact{align-items:center;}}
+.sf-contact a{font-size:.82rem;color:rgba(255,255,255,.6);text-decoration:none;font-weight:600;}
+.sf-contact a:hover{color:var(--cyan);}
+.sf-copy{max-width:1100px;margin:20px auto 0;padding-top:20px;border-top:1px solid rgba(255,255,255,.07);font-size:.72rem;color:rgba(255,255,255,.3);text-align:center;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+.fu{animation:fadeUp .6s ease both;}
+.d1{animation-delay:.1s;}.d2{animation-delay:.22s;}.d3{animation-delay:.34s;}.d4{animation-delay:.46s;}
+@media(max-width:700px){.navbar{padding:0 16px;}.nav-phone{display:none;}.cyo-body,.cyo-top{padding:20px 18px;}}
+.sending-state{display:none;text-align:center;padding:30px 0 10px;}
+.spinner{width:40px;height:40px;border:4px solid var(--border);border-top-color:var(--cyan);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.sending-state p{font-size:.9rem;color:var(--text-soft);font-weight:600;}
+</style>
+</head>
+<body>
+<!-- NAV -->
+<nav class="navbar">
+  <div class="nav-logo">
+    <img src="/logo.png" alt="Wirral Carpet Cleaning LTD">
+  </div>
+  <div class="nav-right">
+    <a href="tel:01519369664" class="nav-phone"><span class="ph">&#128222;</span> 0151 936 9664</a>
+    <a href="#contact" class="nav-cta">Book Now</a>
+  </div>
+</nav>
+<!-- URGENT STRIP -->
+<div class="strip">
+  &#9889; SUPER SUNDAY &#8212; Book your appointment this Sunday &nbsp;&middot;&nbsp; <span>1 slot already taken &#8212; don't miss out</span>
+</div>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-pill fu"><span class="pulse-dot"></span> Book Your Appointment This Sunday</div>
+  <h1 class="fu d1">Super <em>Sunday</em><br>Booking Offer</h1>
+  <p class="hero-sub fu d2">Book your professional clean this Sunday &amp; save big.<br>Carpets, sofas, mattresses &amp; more. Only 3 booking slots available.</p>
+  <div class="slots-group fu d3">
+    <div class="slots-row">
+      <div class="slot gone">&#10007;</div>
+      <div class="slot">2</div>
+      <div class="slot">3</div>
+    </div>
+    <p class="slots-label">&#9888;&#65039; 1 slot taken &middot; 2 Sunday booking slots remaining</p>
+  </div>
+  <div class="hero-btns fu d4">
+    <a href="#packages" class="btn-primary">&#127991;&#65039; View Packages</a>
+    <a href="tel:01519369664" class="btn-outline">&#128222; Call to Book</a>
+  </div>
+  <div class="stats-row fu d4">
+    <div class="stat"><div class="stat-num">5&#9733;</div><div class="stat-lab">Rated Service</div></div>
+    <div class="stat"><div class="stat-num">15+</div><div class="stat-lab">Years Experience</div></div>
+    <div class="stat"><div class="stat-num">100%</div><div class="stat-lab">Satisfaction Guarantee</div></div>
+    <div class="stat"><div class="stat-num">1,000+</div><div class="stat-lab">Happy Customers</div></div>
+  </div>
+</section>
+<!-- HOW IT WORKS -->
+<div class="hiw-bg">
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-label">&#128203; How It Works</div>
+      <h2>Three Simple Steps to a<br><em>Fresher Home</em> &#8212; Book This Sunday</h2>
+    </div>
+    <div class="hiw-grid">
+      <div class="hiw-card">
+        <div class="hiw-num">1</div>
+        <h3>Choose Your Package</h3>
+        <p>Pick one of our three Sunday booking packages below &#8212; or create your own. All cleans include pre-treatment, hot water extraction &amp; deodoriser as standard.</p>
+        <span class="hiw-arrow">&#8250;</span>
+      </div>
+      <div class="hiw-card">
+        <div class="hiw-num">2</div>
+        <h3>Book Your Slot This Sunday</h3>
+        <p>Call, WhatsApp, or fill in the form below. Secure your booking this Sunday and Simon will be in contact within 24 hours to confirm everything.</p>
+        <span class="hiw-arrow">&#8250;</span>
+      </div>
+      <div class="hiw-card">
+        <div class="hiw-num">3</div>
+        <h3>We Deep-Clean &amp; You Relax</h3>
+        <p>Once booked, Simon will professionally deep-clean everything at an agreed time, leaving your home looking and smelling brand new.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- PACKAGES -->
+<div id="packages" style="background:var(--offwhite);">
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-label">&#127991;&#65039; Sunday Booking Packages</div>
+      <h2>Pick Your <em>Super Sunday</em> Package</h2>
+      <p>Book your slot this Sunday and we'll arrange a clean at a time that suits you. All cleans include pre-spray treatment, professional hot water extraction, deodoriser &amp; spot stain removal. Sunday booking pricing only.</p>
+    </div>
+    <div class="packages-grid">
+      <div class="pkg-card">
+        <div class="pkg-header">
+          <div class="pkg-name">The Freshener</div>
+          <div class="pkg-tagline">Great for a quick refresh</div>
+          <div class="pkg-price-row"><span class="pkg-was">&pound;130</span><span class="pkg-now"><sup>&pound;</sup>89</span></div>
+          <div class="pkg-save">You save &pound;41</div>
+        </div>
+        <div class="pkg-body">
+          <ul class="pkg-items">
+            <li>3 Standard Carpeted Rooms</li>
+            <li>Hall, Stairs &amp; Landing</li>
+            <li>Pre-treatment spray on all areas</li>
+            <li>Hot water extraction clean</li>
+            <li>Deodoriser &amp; protector spray</li>
+            <li>Fast 2&#8211;4 hour dry time</li>
+          </ul>
+          <a href="#contact" class="pkg-cta" onclick="prefillPackage('The Freshener — £89')">Book The Freshener &#8594;</a>
+        </div>
+      </div>
+      <div class="pkg-card featured">
+        <div class="pkg-badge">&#11088; Most Popular</div>
+        <div class="pkg-header">
+          <div class="pkg-name">The Full Works</div>
+          <div class="pkg-tagline">Whole home transformed</div>
+          <div class="pkg-price-row"><span class="pkg-was">&pound;245</span><span class="pkg-now"><sup>&pound;</sup>169</span></div>
+          <div class="pkg-save">You save &pound;76 &#8212; Best Value</div>
+        </div>
+        <div class="pkg-body">
+          <ul class="pkg-items">
+            <li>5 Carpeted Rooms (any size)</li>
+            <li>Hall, Stairs &amp; Landing</li>
+            <li>3-Seater Sofa &amp; 1 Armchair</li>
+            <li>Pre-treatment on all surfaces</li>
+            <li>Hot water extraction clean</li>
+            <li>Fabric deodoriser throughout</li>
+            <li>Stain protection treatment</li>
+            <li>Spot stain removal included</li>
+          </ul>
+          <a href="#contact" class="pkg-cta" onclick="prefillPackage('The Full Works — £169')">Book The Full Works &#8594;</a>
+        </div>
+      </div>
+      <div class="pkg-card">
+        <div class="pkg-header">
+          <div class="pkg-name">The Prestige</div>
+          <div class="pkg-tagline">The ultimate deep clean</div>
+          <div class="pkg-price-row"><span class="pkg-was">&pound;360</span><span class="pkg-now"><sup>&pound;</sup>249</span></div>
+          <div class="pkg-save">You save &pound;111</div>
+        </div>
+        <div class="pkg-body">
+          <ul class="pkg-items">
+            <li>All Carpets in the Home (unlimited rooms)</li>
+            <li>Hall, Stairs &amp; Landing</li>
+            <li>Full 3-Piece Suite (sofa + 2 chairs)</li>
+            <li>1 x Mattress (any size)</li>
+            <li>Pre-treatment &amp; deep agitation</li>
+            <li>Hot water extraction clean</li>
+            <li>Anti-bacterial deodoriser</li>
+            <li>Premium stain guard protection</li>
+            <li>Spot stain removal included</li>
+            <li>Priority booking &amp; scheduling</li>
+          </ul>
+          <a href="#contact" class="pkg-cta" onclick="prefillPackage('The Prestige — £249')">Book The Prestige &#8594;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- CREATE YOUR OWN -->
+<div class="cyo-bg" id="contact">
+  <div class="cyo-inner">
+    <div class="sec-head">
+      <div class="sec-label">&#9999;&#65039; Create Your Own Super Sunday Booking</div>
+      <h2>Want Something <em>Different?</em></h2>
+      <p style="color:rgba(255,255,255,.65);">None of the packages quite right? No problem. Book your slot this Sunday and tell us exactly what you need &#8212; we'll put together a bespoke price just for you and arrange the clean at a time that suits.</p>
+    </div>
+    <div class="cyo-card">
+      <div class="cyo-top">
+        <div class="cyo-icon">&#9999;&#65039;</div>
+        <div>
+          <h3>Book Your Slot &amp; Tell Us What You Need</h3>
+          <p>Carpets, sofas, mattresses, rugs &#8212; anything at all. Book this Sunday and we'll be in contact within 24 hours to agree a clean date &amp; price.</p>
+        </div>
+      </div>
+      <div class="cyo-body">
+        <form id="quote-form"
+              action="https://formsubmit.co/contact@wirralcarpetcleaning.com"
+              method="POST"
+              onsubmit="handleSubmit(event)">
+          <input type="hidden" name="_subject" value="&#9889; Super Sunday Booking Request — Wirral Carpet Cleaning">
+          <input type="hidden" name="_captcha" value="false">
+          <input type="hidden" name="_template" value="table">
+          <input type="hidden" name="_next" value="https://www.wirralcarpetcleaning.com/?sunday_booked=true">
+          <input type="hidden" name="Package Selected" id="hidden-package" value="Custom / Create Your Own">
+          <input type="text" name="_honey" style="display:none;" tabindex="-1" autocomplete="off">
+          <p class="chips-label">Quick-select what you need:</p>
+          <div class="chips">
+            <span class="chip" onclick="addChip(this,'Lounge carpet')">&#127968; Lounge carpet</span>
+            <span class="chip" onclick="addChip(this,'Bedroom carpets')">&#128716; Bedroom carpets</span>
+            <span class="chip" onclick="addChip(this,'Hall, stairs and landing')">&#129692; Hall, stairs &amp; landing</span>
+            <span class="chip" onclick="addChip(this,'3-piece suite')">&#128715;&#65039; 3-piece suite</span>
+            <span class="chip" onclick="addChip(this,'Sofa')">&#128715;&#65039; Sofa</span>
+            <span class="chip" onclick="addChip(this,'Mattress')">&#128716; Mattress</span>
+            <span class="chip" onclick="addChip(this,'Dining chairs')">&#129682; Dining chairs</span>
+            <span class="chip" onclick="addChip(this,'Area rug')">&#129467; Area rug</span>
+            <span class="chip" onclick="addChip(this,'Car interior')">&#128663; Car interior</span>
+          </div>
+          <div class="form-grid">
+            <div class="fg">
+              <label for="f-name">Your Name *</label>
+              <input type="text" id="f-name" name="Name" placeholder="e.g. Jane Smith" required>
+            </div>
+            <div class="fg">
+              <label for="f-phone">Phone Number *</label>
+              <input type="tel" id="f-phone" name="Phone Number" placeholder="e.g. 07700 900 000" required>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="fg">
+              <label for="f-email">Email Address *</label>
+              <input type="email" id="f-email" name="Email" placeholder="your@email.com" required>
+            </div>
+            <div class="fg">
+              <label for="f-area">Your Area</label>
+              <input type="text" id="f-area" name="Area" placeholder="e.g. Birkenhead, Prenton...">
+            </div>
+          </div>
+          <div class="fg" style="margin-bottom:14px;">
+            <label for="f-needs">What would you like us to clean? *</label>
+            <textarea id="f-needs" name="Cleaning Requirements" placeholder="e.g. 3 bedroom carpets, lounge carpet, hall stairs and landing, 3-seater sofa and armchair..." required></textarea>
+          </div>
+          <div class="fg" style="margin-bottom:16px;">
+            <label for="f-time">Preferred Clean Date &amp; Time</label>
+            <select id="f-time" name="Preferred Time">
+              <option value="Flexible">Any time &#8212; I'm flexible</option>
+              <option value="Weekday morning">Weekday morning</option>
+              <option value="Weekday afternoon">Weekday afternoon</option>
+              <option value="Saturday">Saturday</option>
+              <option value="Sunday">Sunday</option>
+            </select>
+          </div>
+          <div class="sending-state" id="sending-state">
+            <div class="spinner"></div>
+            <p>Sending your request to Simon...</p>
+          </div>
+          <button type="submit" class="send-btn" id="send-btn">&#128197; Book My Super Sunday Slot</button>
+          <p class="form-note">
+            Your booking request goes directly to Simon at <strong>contact@wirralcarpetcleaning.com</strong>.<br>
+            We'll be in contact within 24 hours to confirm your booking &amp; arrange your clean.<br>
+            Or reach us directly: <a href="tel:01519369664">0151 936 9664</a> &middot; <a href="tel:07724564683">07724 564683</a>
+          </p>
+        </form>
+        <div class="or-div"><span>or contact us directly</span></div>
+        <div class="alt-btns">
+          <a href="tel:01519369664" class="alt-btn">&#128222; Call: 0151 936 9664</a>
+          <a href="tel:07724564683" class="alt-btn">&#128172; WhatsApp: 07724 564683</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- TRUST -->
+<div class="trust-bg">
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-label">&#9989; Why Choose Us</div>
+      <h2>Trusted Across <em>Wirral &amp; Merseyside</em></h2>
+    </div>
+    <div class="trust-grid">
+      <div class="trust-card"><div class="trust-icon">&#11088;</div><h4>5-Star Rated</h4><p>Hundreds of verified reviews from satisfied customers across the Wirral</p></div>
+      <div class="trust-card"><div class="trust-icon">&#128104;&#8205;&#128295;</div><h4>Owner-Operated</h4><p>Simon cleans every job personally &#8212; no contractors or sub-contractors, ever</p></div>
+      <div class="trust-card"><div class="trust-icon">&#128167;</div><h4>Pro Equipment</h4><p>Commercial hot water extraction &#8212; not rental machines from a shop</p></div>
+      <div class="trust-card"><div class="trust-icon">&#127807;</div><h4>Eco &amp; Pet Safe</h4><p>Non-toxic, eco-friendly solutions safe for children and pets</p></div>
+      <div class="trust-card"><div class="trust-icon">&#9201;&#65039;</div><h4>Fast Dry Time</h4><p>Back on your carpets within 2&#8211;4 hours after we finish</p></div>
+      <div class="trust-card"><div class="trust-icon">&#128737;&#65039;</div><h4>100% Guarantee</h4><p>Not satisfied? We re-clean for free, no questions asked</p></div>
+    </div>
+  </div>
+</div>
+<!-- FOOTER CTA -->
+<div class="footer-cta">
+  <div class="slots-warn">&#9888;&#65039; Only 2 Sunday Slots Remaining</div>
+  <h2>Ready for a Fresher,<br><em>Cleaner Home?</em></h2>
+  <p>Don't miss out on Super Sunday pricing. Choose a package above, create your own, or call us directly.</p>
+  <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+    <a href="#contact" class="btn-primary">&#9999;&#65039; Create Your Own Offer</a>
+    <a href="tel:01519369664" class="btn-outline">&#128222; 0151 936 9664</a>
+  </div>
+</div>
+<!-- SITE FOOTER -->
+<footer class="site-footer">
+  <div class="sf-inner">
+    <div class="sf-brand">
+      Wirral Carpet Cleaning <span>LTD</span>
+      <p>Professional carpet, upholstery &amp; biohazard cleaning across Merseyside &amp; Cheshire</p>
+    </div>
+    <div class="sf-contact">
+      <a href="tel:01519369664">&#128222; 0151 936 9664</a>
+      <a href="tel:07724564683">&#128241; 07724 564683</a>
+      <a href="mailto:contact@wirralcarpetcleaning.com">&#9993;&#65039; contact@wirralcarpetcleaning.com</a>
+      <a href="https://www.wirralcarpetcleaning.com" target="_blank">&#127760; wirralcarpetcleaning.com</a>
+    </div>
+  </div>
+  <div class="sf-copy">&copy; 2026 Wirral Carpet Cleaning Limited. All rights reserved. &middot; Super Sunday offer valid this Sunday only.</div>
+</footer>
+<script>
+function prefillPackage(pkg) {
+  document.getElementById('hidden-package').value = pkg;
+  var needs = document.getElementById('f-needs');
+  if (!needs.value.trim()) {
+    needs.placeholder = 'I would like to book: ' + pkg + ' — please confirm my booking within 24 hours.';
+  }
+}
+function addChip(el, text) {
+  el.classList.toggle('on');
+  var ta = document.getElementById('f-needs');
+  if (el.classList.contains('on')) {
+    var cur = ta.value.trim();
+    ta.value = cur ? cur + ', ' + text : text;
+  } else {
+    var esc = text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    ta.value = ta.value.replace(new RegExp(',?\\s*' + esc, 'gi'), '').replace(/^,\\s*/, '').trim();
+  }
+}
+function handleSubmit(e) {
+  var btn = document.getElementById('send-btn');
+  var spinner = document.getElementById('sending-state');
+  btn.disabled = true;
+  btn.style.display = 'none';
+  spinner.style.display = 'block';
+}
+</script>
+</body>
+</html>

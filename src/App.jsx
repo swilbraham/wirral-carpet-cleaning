@@ -17,6 +17,8 @@ import PrivacyPolicy from './components/PrivacyPolicy';
 import Landing from './components/Landing';
 import SpinWheel from './components/SpinWheel';
 import CarpetGame from './components/CarpetGame';
+import PaymentPage from './components/PaymentPage';
+import PaymentSuccess from './components/PaymentSuccess';
 
 function HomePage() {
   const location = useLocation();
@@ -57,6 +59,8 @@ function MainLayout() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/pay" element={<PaymentPage />} />
+        <Route path="/pay/success" element={<PaymentSuccess />} />
       </Routes>
       <Footer />
       <MobileCallButton />

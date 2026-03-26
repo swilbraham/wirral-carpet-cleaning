@@ -3,10 +3,10 @@ import { HiPhone, HiMail, HiLocationMarker } from 'react-icons/hi';
 import logo from '../assets/logo.png';
 
 const quickLinks = [
-  { name: 'Domestic Carpet Cleaning', href: '#services' },
-  { name: 'Upholstery Cleaning', href: '#services' },
-  { name: 'Commercial Carpet Cleaning', href: '#services' },
-  { name: 'Biohazard Cleaning', href: '#services' },
+  { name: 'Domestic Carpet Cleaning', href: '/services/carpet-cleaning' },
+  { name: 'Upholstery Cleaning', href: '/services/upholstery-cleaning' },
+  { name: 'Commercial Carpet Cleaning', href: '/services/commercial-cleaning' },
+  { name: 'Biohazard Cleaning', href: '/services/biohazard-cleaning' },
 ];
 
 const companyLinks = [
@@ -17,8 +17,16 @@ const companyLinks = [
 ];
 
 const areas = [
-  'Liverpool', 'Wirral', 'Chester', 'Birkenhead', 'Wallasey',
-  'Southport', 'St Helens', 'Warrington', 'Ellesmere Port', 'Prenton',
+  { name: 'Liverpool', slug: 'liverpool' },
+  { name: 'Wirral', slug: 'wirral' },
+  { name: 'Chester', slug: 'chester' },
+  { name: 'Birkenhead', slug: 'birkenhead' },
+  { name: 'Wallasey', slug: 'wallasey' },
+  { name: 'Southport', slug: 'southport' },
+  { name: 'St Helens', slug: 'st-helens' },
+  { name: 'Warrington', slug: 'warrington' },
+  { name: 'Ellesmere Port', slug: 'ellesmere-port' },
+  { name: 'Prenton', slug: 'prenton' },
 ];
 
 export default function Footer() {
@@ -57,9 +65,9 @@ export default function Footer() {
             <ul className="space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.name}>
-                  <a href={link.href} className="text-sm hover:text-white transition-colors">
+                  <Link to={link.href} className="text-sm hover:text-white transition-colors">
                     {link.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -84,12 +92,13 @@ export default function Footer() {
             <h4 className="text-white font-semibold mb-4">Areas Covered</h4>
             <div className="flex flex-wrap gap-2">
               {areas.map((area) => (
-                <span
-                  key={area}
-                  className="px-2.5 py-1 rounded-md bg-gray-800 text-xs text-gray-400"
+                <Link
+                  key={area.slug}
+                  to={`/areas/${area.slug}`}
+                  className="px-2.5 py-1 rounded-md bg-gray-800 text-xs text-gray-400 hover:bg-gray-700 hover:text-white transition-colors"
                 >
-                  {area}
-                </span>
+                  {area.name}
+                </Link>
               ))}
             </div>
           </div>

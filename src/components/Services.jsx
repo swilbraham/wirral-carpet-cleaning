@@ -1,84 +1,8 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
-import {
-  HiSparkles,
-  HiHome,
-  HiOfficeBuilding,
-  HiShieldCheck,
-  HiCheck,
-  HiArrowRight,
-} from 'react-icons/hi';
-import carpetImg from '../assets/carpet.jpg';
-import upholsteryImg from '../assets/upholstery.jpg';
-import commercialImg from '../assets/commercial-cleaning.jpg';
-import biohazardImg from '../assets/bio.jpeg';
-
-const services = [
-  {
-    icon: HiSparkles,
-    title: 'Domestic Carpet Cleaning',
-    description:
-      'Deep hot-water extraction that removes embedded dirt, stains and allergens — restoring your carpets to like-new condition.',
-    features: [
-      'Deep stain removal',
-      'Hot-water extraction',
-      'Fast drying times',
-      'Pet-safe products',
-    ],
-    accent: 'from-primary to-primary-light',
-    iconBg: 'bg-primary/10',
-    iconColor: 'text-primary',
-    image: carpetImg,
-  },
-  {
-    icon: HiHome,
-    title: 'Upholstery Cleaning',
-    description:
-      'Specialist fabric cleaning for sofas, chairs and mattresses. We treat every piece with the care it deserves.',
-    features: [
-      'All fabric types',
-      'Colour-safe cleaning',
-      'Odour elimination',
-      'Stain protection',
-    ],
-    accent: 'from-accent to-accent-light',
-    iconBg: 'bg-accent/10',
-    iconColor: 'text-accent',
-    image: upholsteryImg,
-  },
-  {
-    icon: HiOfficeBuilding,
-    title: 'Commercial Carpet Cleaning',
-    description:
-      'Keep your business premises pristine. Contract and one-off carpet cleaning services for offices, restaurants, hotels and more.',
-    features: [
-      'Flexible scheduling',
-      'Minimal disruption',
-      'Contract options',
-      'All commercial spaces',
-    ],
-    accent: 'from-primary-dark to-primary',
-    iconBg: 'bg-primary-dark/10',
-    iconColor: 'text-primary-dark',
-    image: commercialImg,
-  },
-  {
-    icon: HiShieldCheck,
-    title: 'Biohazard Cleaning',
-    description:
-      'Certified biohazard and trauma cleaning. Discreet, compassionate service when you need it most.',
-    features: [
-      'Certified & compliant',
-      'Discreet service',
-      'Rapid response',
-      '24/7 availability',
-    ],
-    accent: 'from-emerald-500 to-emerald-400',
-    iconBg: 'bg-emerald-100',
-    iconColor: 'text-emerald-600',
-    image: biohazardImg,
-  },
-];
+import { Link } from 'react-router-dom';
+import { HiCheck, HiArrowRight } from 'react-icons/hi';
+import services from '../data/services';
 
 function ServiceCard({ service, index }) {
   const ref = useRef(null);
@@ -99,15 +23,19 @@ function ServiceCard({ service, index }) {
           alt={`${service.title} service in Wirral and Merseyside`}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
-        <div className={`absolute inset-0 bg-gradient-to-t from-black/50 to-transparent`} />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
         <div className={`absolute top-4 left-4 w-12 h-12 rounded-xl ${service.iconBg} backdrop-blur-sm bg-white/80 flex items-center justify-center`}>
           <service.icon className={`w-6 h-6 ${service.iconColor}`} />
+        </div>
+        {/* Pricing badge */}
+        <div className="absolute top-4 right-4 px-3 py-1.5 rounded-lg bg-white/90 backdrop-blur-sm">
+          <span className="text-sm font-bold text-gray-900">{service.price}</span>
         </div>
       </div>
 
       <div className="p-6 md:p-8">
         <h3 className="text-xl font-bold text-gray-900 mb-3">{service.title}</h3>
-        <p className="text-gray-500 leading-relaxed mb-6">{service.description}</p>
+        <p className="text-gray-500 leading-relaxed mb-6">{service.shortDescription}</p>
 
         <ul className="space-y-3 mb-6">
           {service.features.map((feature) => (
@@ -118,13 +46,13 @@ function ServiceCard({ service, index }) {
           ))}
         </ul>
 
-        <a
-          href="#contact"
+        <Link
+          to={`/services/${service.slug}`}
           className={`inline-flex items-center gap-2 text-sm font-semibold ${service.iconColor} group-hover:gap-3 transition-all`}
         >
-          Get a Quote
+          Learn More
           <HiArrowRight className="w-4 h-4" />
-        </a>
+        </Link>
       </div>
     </motion.div>
   );
@@ -160,7 +88,7 @@ export default function Services() {
 
         <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
           {services.map((service, i) => (
-            <ServiceCard key={service.title} service={service} index={i} />
+            <ServiceCard key={service.slug} service={service} index={i} />
           ))}
         </div>
       </div>

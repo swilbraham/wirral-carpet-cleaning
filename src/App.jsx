@@ -19,6 +19,8 @@ import SpinWheel from './components/SpinWheel';
 import CarpetGame from './components/CarpetGame';
 import PaymentPage from './components/PaymentPage';
 import PaymentSuccess from './components/PaymentSuccess';
+import ServicePage from './components/ServicePage';
+import LocationPage from './components/LocationPage';
 
 function HomePage() {
   const location = useLocation();
@@ -61,6 +63,8 @@ function MainLayout() {
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/pay" element={<PaymentPage />} />
         <Route path="/pay/success" element={<PaymentSuccess />} />
+        <Route path="/services/:slug" element={<ServicePage />} />
+        <Route path="/areas/:slug" element={<LocationPage />} />
       </Routes>
       <Footer />
       <MobileCallButton />

@@ -16,6 +16,7 @@ import {
 
 const FIRST_CARPET_PRICE = 60;
 const ADDITIONAL_CARPET_PRICE = 30;
+const MIN_CHARGE = 60;
 
 const rooms = [
   { id: 'living-room', name: 'Living Room', icon: '🛋️' },
@@ -33,6 +34,16 @@ const rooms = [
   { id: 'conservatory', name: 'Conservatory', icon: '☀️' },
   { id: 'playroom', name: 'Playroom', icon: '🧸' },
   { id: 'other', name: 'Other', icon: '📋' },
+];
+
+const upholsteryItems = [
+  { id: 'sofa-2-seater', name: '2-Seater Sofa', icon: '🛋️', price: 50 },
+  { id: 'sofa-3-seater', name: '3-Seater Sofa', icon: '🛋️', price: 70 },
+  { id: 'corner-sofa', name: 'Corner Sofa', icon: '🛋️', price: 90 },
+  { id: 'armchair', name: 'Armchair', icon: '💺', price: 30 },
+  { id: 'dining-chair', name: 'Dining Chair', icon: '🪑', price: 15 },
+  { id: 'mattress-single', name: 'Single Mattress', icon: '🛏️', price: 30 },
+  { id: 'mattress-double', name: 'Double Mattress', icon: '🛏️', price: 40 },
 ];
 
 function generateDates() {
@@ -60,8 +71,9 @@ function formatDateValue(date) {
   return date.toISOString().split('T')[0];
 }
 
-function calculatePrice(selectedRooms) {
-  if (selectedRooms.length === 0) return { total: 0, breakdown: [] };
+function calculatePrice(selectedRooms, selectedUpholstery) {
+  if (selectedRooms.length === 0 && selectedUpholstery.length === 0)
+    return { total: 0, breakdown: [], minApplied: false };
 
   const breakdown = [];
   let count = 0;
@@ -75,6 +87,12 @@ function calculatePrice(selectedRooms) {
     breakdown.push({ name: room.name, price, icon: room.icon });
   });
 
+  selectedUpholstery.forEach((id) => {
+    const item = upholsteryItems.find((u) => u.id === id);
+    if (!item) return;
+    breakdown.push({ name: item.name, price: item.price, icon: item.icon });
+  });
+
   let total = breakdown.reduce((sum, item) => sum + item.price, 0);
 
   // Silent combo discount: hall+stairs, stairs+landing, or hall+stairs+landing = -£30
@@ -85,7 +103,11 @@ function calculatePrice(selectedRooms) {
     total = Math.max(0, total - 30);
   }
 
-  return { total, breakdown };
+  // Minimum cleaning charge of £60
+  const minApplied = total > 0 && total < MIN_CHARGE;
+  if (minApplied) total = MIN_CHARGE;
+
+  return { total, breakdown, minApplied };
 }
 
 export default function CostCalculator() {
@@ -94,6 +116,7 @@ export default function CostCalculator() {
   const klarnaContainerRef = useRef(null);
 
   const [selectedRooms, setSelectedRooms] = useState([]);
+  const [selectedUpholstery, setSelectedUpholstery] = useState([]);
   const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
 
@@ -115,9 +138,9 @@ export default function CostCalculator() {
 
   const availableDates = useMemo(() => generateDates(), []);
 
-  const { total, breakdown } = useMemo(
-    () => calculatePrice(selectedRooms),
-    [selectedRooms]
+  const { total, breakdown, minApplied } = useMemo(
+    () => calculatePrice(selectedRooms, selectedUpholstery),
+    [selectedRooms, selectedUpholstery]
   );
 
   const toggleRoom = (roomId) => {
@@ -128,12 +151,21 @@ export default function CostCalculator() {
     );
   };
 
+  const toggleUpholstery = (itemId) => {
+    setSelectedUpholstery((prev) =>
+      prev.includes(itemId)
+        ? prev.filter((id) => id !== itemId)
+        : [...prev, itemId]
+    );
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const canProceed = selectedRooms.length > 0;
+  const canProceed = selectedRooms.length > 0 || selectedUpholstery.length > 0;
+  const totalItems = selectedRooms.length + selectedUpholstery.length;
   const canSubmit =
     formData.name.trim() &&
     formData.phone.trim() &&
@@ -147,10 +179,16 @@ export default function CostCalculator() {
     setKlarnaError('');
     setKlarnaReady(false);
 
-    const roomData = selectedRooms.map((id) => {
-      const room = rooms.find((r) => r.id === id);
-      return { id, name: room?.name || id };
-    });
+    const roomData = [
+      ...selectedRooms.map((id) => {
+        const room = rooms.find((r) => r.id === id);
+        return { id, name: room?.name || id };
+      }),
+      ...selectedUpholstery.map((id) => {
+        const item = upholsteryItems.find((u) => u.id === id);
+        return { id, name: item?.name || id };
+      }),
+    ];
 
     try {
       const res = await fetch('/api/klarna/create-session', {
@@ -247,10 +285,16 @@ export default function CostCalculator() {
           }
 
           // Create the order on our backend
-          const roomData = selectedRooms.map((id) => {
-            const room = rooms.find((r) => r.id === id);
-            return { id, name: room?.name || id };
-          });
+          const roomData = [
+            ...selectedRooms.map((id) => {
+              const room = rooms.find((r) => r.id === id);
+              return { id, name: room?.name || id };
+            }),
+            ...selectedUpholstery.map((id) => {
+              const item = upholsteryItems.find((u) => u.id === id);
+              return { id, name: item?.name || id };
+            }),
+          ];
 
           try {
             const orderRes = await fetch('/api/klarna/create-order', {
@@ -296,6 +340,10 @@ export default function CostCalculator() {
     const roomList = selectedRooms
       .map((id) => rooms.find((r) => r.id === id)?.name)
       .filter(Boolean);
+    const uphList = selectedUpholstery
+      .map((id) => upholsteryItems.find((u) => u.id === id)?.name)
+      .filter(Boolean);
+    const allItems = [...roomList, ...uphList];
 
     const selectedDate = availableDates.find(
       (d) => formatDateValue(d) === formData.date
@@ -307,8 +355,8 @@ export default function CostCalculator() {
       postcode: formData.postcode,
       preferredDate: selectedDate ? formatDate(selectedDate) : formData.date,
       preferredTime: formData.timeSlot === 'am' ? 'Morning (AM)' : 'Afternoon (PM)',
-      roomsRequested: roomList.join('\n'),
-      totalRooms: `${selectedRooms.length} room${selectedRooms.length !== 1 ? 's' : ''}`,
+      roomsRequested: allItems.join('\n'),
+      totalItems: `${allItems.length} item${allItems.length !== 1 ? 's' : ''}`,
       estimatedCost: `£${total.toFixed(2)}`,
       paymentMethod: 'Klarna',
       klarnaOrderId: orderId || '',
@@ -336,6 +384,7 @@ export default function CostCalculator() {
 
   const resetAll = () => {
     setSelectedRooms([]);
+    setSelectedUpholstery([]);
     setStep(1);
     setSubmitted(false);
     setFormData({ name: '', phone: '', postcode: '', date: '', timeSlot: '' });
@@ -373,7 +422,7 @@ export default function CostCalculator() {
         {/* Step indicators */}
         <div className="flex items-center justify-center gap-4 mb-10">
           {[
-            { num: 1, label: 'Select Rooms' },
+            { num: 1, label: 'Select Items' },
             { num: 2, label: 'Your Details' },
             { num: 3, label: 'Payment' },
           ].map(({ num, label }) => (
@@ -435,12 +484,18 @@ export default function CostCalculator() {
                   <span className="text-sm font-semibold text-gray-900 uppercase">{formData.postcode}</span>
                 </div>
                 <div className="px-5 py-3 flex justify-between items-start">
-                  <span className="text-sm font-medium text-gray-500">Rooms</span>
+                  <span className="text-sm font-medium text-gray-500">Items</span>
                   <span className="text-sm font-semibold text-gray-900 text-right">
                     {selectedRooms.map((id) => {
                       const room = rooms.find((r) => r.id === id);
                       return room ? (
                         <span key={id} className="block">{room.icon} {room.name}</span>
+                      ) : null;
+                    })}
+                    {selectedUpholstery.map((id) => {
+                      const item = upholsteryItems.find((u) => u.id === id);
+                      return item ? (
+                        <span key={id} className="block">{item.icon} {item.name}</span>
                       ) : null;
                     })}
                   </span>
@@ -496,36 +551,77 @@ export default function CostCalculator() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
             >
-              {/* Room selection grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 mb-8">
-                {rooms.map((room) => {
-                  const isSelected = selectedRooms.includes(room.id);
-                  return (
-                    <button
-                      key={room.id}
-                      onClick={() => toggleRoom(room.id)}
-                      className={`relative flex flex-col items-center gap-2 p-4 md:p-5 rounded-xl border-2 transition-all duration-200 ${
-                        isSelected
-                          ? 'border-primary bg-primary/5 shadow-md shadow-primary/10'
-                          : 'border-gray-100 bg-white hover:border-gray-200 hover:shadow-sm'
-                      }`}
-                    >
-                      {isSelected && (
-                        <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                          <HiCheck className="w-3 h-3 text-white" />
-                        </span>
-                      )}
-                      <span className="text-2xl">{room.icon}</span>
-                      <span
-                        className={`text-sm font-medium text-center ${
-                          isSelected ? 'text-primary' : 'text-gray-700'
+              {/* Carpet Rooms */}
+              <div className="mb-6">
+                <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">Carpet Cleaning</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
+                  {rooms.map((room) => {
+                    const isSelected = selectedRooms.includes(room.id);
+                    return (
+                      <button
+                        key={room.id}
+                        onClick={() => toggleRoom(room.id)}
+                        className={`relative flex flex-col items-center gap-2 p-4 md:p-5 rounded-xl border-2 transition-all duration-200 ${
+                          isSelected
+                            ? 'border-primary bg-primary/5 shadow-md shadow-primary/10'
+                            : 'border-gray-100 bg-white hover:border-gray-200 hover:shadow-sm'
                         }`}
                       >
-                        {room.name}
-                      </span>
-                    </button>
-                  );
-                })}
+                        {isSelected && (
+                          <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                            <HiCheck className="w-3 h-3 text-white" />
+                          </span>
+                        )}
+                        <span className="text-2xl">{room.icon}</span>
+                        <span
+                          className={`text-sm font-medium text-center ${
+                            isSelected ? 'text-primary' : 'text-gray-700'
+                          }`}
+                        >
+                          {room.name}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Upholstery */}
+              <div className="mb-8">
+                <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">Upholstery Cleaning</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
+                  {upholsteryItems.map((item) => {
+                    const isSelected = selectedUpholstery.includes(item.id);
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => toggleUpholstery(item.id)}
+                        className={`relative flex flex-col items-center gap-2 p-4 md:p-5 rounded-xl border-2 transition-all duration-200 ${
+                          isSelected
+                            ? 'border-accent bg-accent/5 shadow-md shadow-accent/10'
+                            : 'border-gray-100 bg-white hover:border-gray-200 hover:shadow-sm'
+                        }`}
+                      >
+                        {isSelected && (
+                          <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-accent flex items-center justify-center">
+                            <HiCheck className="w-3 h-3 text-white" />
+                          </span>
+                        )}
+                        <span className="text-2xl">{item.icon}</span>
+                        <span
+                          className={`text-sm font-medium text-center ${
+                            isSelected ? 'text-accent' : 'text-gray-700'
+                          }`}
+                        >
+                          {item.name}
+                        </span>
+                        <span className={`text-xs ${isSelected ? 'text-accent/70' : 'text-gray-400'}`}>
+                          &pound;{item.price}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               {/* Price summary bar */}
@@ -536,16 +632,16 @@ export default function CostCalculator() {
                       <HiCurrencyPound className="w-6 h-6 text-primary" />
                       <h3 className="text-lg font-bold text-gray-900">Your Estimated Price</h3>
                     </div>
-                    {selectedRooms.length === 0 ? (
+                    {totalItems === 0 ? (
                       <p className="text-gray-500">
-                        Select rooms above to see your estimated price. First room from &pound;{FIRST_CARPET_PRICE}.
+                        Select items above to see your estimated price. Minimum charge &pound;{MIN_CHARGE}.
                       </p>
                     ) : (
                       <div className="space-y-1">
                         <p className="text-sm text-gray-500">
-                          {selectedRooms.length === 1
-                            ? '1 room selected'
-                            : `${selectedRooms.length} rooms selected`}
+                          {totalItems === 1
+                            ? '1 item selected'
+                            : `${totalItems} items selected`}
                         </p>
                         <div className="flex items-baseline gap-2">
                           <span className="text-3xl md:text-4xl font-bold text-primary">
@@ -556,6 +652,11 @@ export default function CostCalculator() {
                         <p className="text-xs text-gray-400">
                           To be confirmed on booking.
                         </p>
+                        {minApplied && (
+                          <p className="text-xs text-amber-600 font-medium">
+                            Minimum cleaning charge of &pound;{MIN_CHARGE} applies.
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>

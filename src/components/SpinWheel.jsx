@@ -200,6 +200,9 @@ export default function SpinWheel() {
     const form = e.target;
     const data = new FormData(form);
 
+    // Honeypot — silently drop bot submissions
+    if (data.get('_honey')) return;
+
     const jsonData = {};
     data.forEach((value, key) => {
       if (!key.startsWith('_')) jsonData[key] = value;

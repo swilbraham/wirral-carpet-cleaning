@@ -574,13 +574,17 @@ document.addEventListener('keydown', function(e) {
 });
 function handleModalSubmit(e) {
   e.preventDefault();
+  var form = document.getElementById('modal-form');
+  var formData = new FormData(form);
+
+  // Honeypot — silently drop bot submissions
+  if (formData.get('_honey')) return;
+
   var btn = document.getElementById('modal-submit-btn');
   var spinner = document.getElementById('modal-spinner');
   btn.disabled = true;
   btn.style.display = 'none';
   spinner.style.display = 'block';
-  var form = document.getElementById('modal-form');
-  var formData = new FormData(form);
   fetch('https://formsubmit.co/contact@wirralcarpetcleaning.com', {
     method: 'POST',
     body: formData,

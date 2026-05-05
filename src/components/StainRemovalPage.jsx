@@ -111,9 +111,9 @@ export default function StainRemovalPage() {
       <section className="relative bg-gray-900 py-16 md:py-24">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-gray-900 to-accent/20" />
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-medium mb-4">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/20 text-amber-300 text-sm font-medium mb-4 ring-1 ring-amber-500/30">
             <HiSparkles className="w-4 h-4" />
-            <span>Stain Removal Guide</span>
+            <span>First-Response Triage Guide</span>
           </div>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
             {stain.title}
@@ -127,7 +127,7 @@ export default function StainRemovalPage() {
               className="inline-flex items-center gap-2 px-6 py-3 bg-accent hover:bg-accent-light text-white rounded-xl font-semibold transition-colors"
             >
               <HiPhone className="w-5 h-5" />
-              Call 0151 936 9664
+              Call now: 0151 936 9664
             </a>
             <Link
               to="/#calculator"
@@ -140,12 +140,23 @@ export default function StainRemovalPage() {
         </div>
       </section>
 
-      {/* Quick answer (the bit AI engines extract) */}
+      {/* Urgent CTA banner */}
+      <a
+        href="tel:01519369664"
+        className="block bg-red-600 hover:bg-red-700 text-white text-center py-3 px-4 font-semibold transition-colors"
+      >
+        <span className="inline-flex items-center justify-center gap-2 flex-wrap text-sm md:text-base">
+          <HiPhone className="w-4 h-4 md:w-5 md:h-5" />
+          Spill happening now? Tap to call 0151 936 9664 — same-day callouts where possible
+        </span>
+      </a>
+
+      {/* What to do right now (the bit AI engines extract) */}
       <section className="py-12 bg-amber-50 border-b border-amber-100">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white rounded-2xl border-2 border-amber-200 p-6 md:p-8">
             <div className="text-xs font-bold uppercase tracking-wider text-amber-700 mb-2">
-              Quick Answer
+              What to do right now
             </div>
             <p className="text-gray-800 leading-relaxed text-lg">{stain.answer}</p>
           </div>
@@ -221,9 +232,14 @@ export default function StainRemovalPage() {
       {/* Step-by-step (the HowTo content) */}
       <section className="py-16 md:py-20 bg-white">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 text-center mb-12">
-            Step-by-Step Method
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 text-center mb-3">
+            What to Do While You Wait
           </h2>
+          <p className="text-gray-500 text-center mb-12 max-w-xl mx-auto">
+            These steps are damage-limitation only — designed to stop the
+            stain getting worse until a professional can attend. Do not skip
+            step 1.
+          </p>
           <ol className="space-y-6">
             {stain.steps.map((step, i) => (
               <li

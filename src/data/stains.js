@@ -1,68 +1,81 @@
-// Stain-removal guide data — used by /stain-removal/:slug pages
-// Each entry generates a Schema.org HowTo schema for AI-search extraction.
+// Stain-removal guides — used by /stain-removal/:slug pages
+//
+// FRAMING:
+// These are NOT DIY removal guides. They are FIRST-RESPONSE TRIAGE
+// guides — what a customer should do in the first few minutes
+// after a spill while waiting for the professional cleaner to attend.
+// The first step on every page is "call us now". The remaining steps
+// are damage-limitation actions that any customer can perform safely
+// without specialist products. They are NOT designed to remove the
+// stain — only to stop it getting worse.
 
 const stains = [
   // ─────────────────────────────────────────────────────────
   {
     slug: 'red-wine',
-    title: 'How to Remove Red Wine Stains From Carpet',
-    metaTitle: 'How to Remove Red Wine From Carpet | Wirral Carpet Cleaning',
+    title: 'Red Wine Spilled on Your Carpet? First-Response Guide',
+    metaTitle: 'Red Wine Spilled on Carpet — What to Do Now | Wirral Carpet Cleaning',
     metaDescription:
-      'Step-by-step guide to removing fresh and dried red wine stains from carpet. DIY method that works for most spills, plus when to call in the professionals. Wirral, Liverpool & Cheshire.',
+      "Red wine on carpet? Call 0151 936 9664 first, then follow these damage-limiting steps while you wait. Don't make it worse with the wrong cleaner. Same-day callouts across Wirral, Liverpool & Cheshire.",
     shortDesc:
-      'A spilled glass of red wine can become a permanent stain in minutes if you treat it the wrong way. Here is the right way.',
+      "A red wine spill becomes harder to remove every minute it sits. Don't reach for the cleaning cupboard — call us now and follow these damage-limiting steps while we're on our way.",
     answer:
-      'To remove a red wine stain from carpet, blot (do not rub) the spill with a clean white cloth straight away, sprinkle salt or baking soda to absorb the remaining liquid, then dab with a 1:2 white-vinegar-and-water solution. For dried stains, hydrogen peroxide and washing-up liquid work for most carpet types. If the stain remains after two attempts, call a professional carpet cleaner — fresh hot-water extraction lifts even old red-wine stains.',
-    totalTime: '15-30 minutes',
-    estimatedCost: '£0-£5 (household items)',
-    tools: ['Clean white cloths or paper towels', 'Spray bottle', 'Soft-bristled brush'],
-    supplies: ['Salt or baking soda', 'White vinegar', 'Washing-up liquid', 'Hydrogen peroxide (3%) for old stains'],
+      "If you have just spilled red wine on a carpet, the first thing to do is call a professional carpet cleaner — we can often attend within hours and fresh stains are far easier to lift than older ones. While you wait: BLOT (never rub) with a clean white cloth, then sprinkle salt or baking soda to absorb the rest of the liquid. Do not apply hydrogen peroxide, vinegar, hot water or shop-bought stain removers — these can permanently damage the carpet and make professional removal harder. Call Wirral Carpet Cleaning on 0151 936 9664.",
+    totalTime: 'Damage-limitation steps: 5 minutes. Professional removal: same day or next.',
+    estimatedCost: 'First response: free. Professional spot-clean: from £35.',
+    tools: ['Clean white cloths or paper towels', 'Salt or baking soda from your kitchen'],
+    supplies: ['Nothing else — please do not apply household chemistry to a carpet you care about'],
     steps: [
       {
-        name: 'Blot, do not rub',
-        text: 'Within seconds of the spill, press a clean white cloth or paper towel firmly into the stain. Lift, refold to a clean section, and repeat. Rubbing pushes the wine deeper into the carpet fibres and grinds the pigment into the backing — never rub.',
+        name: '1. Call us now on 0151 936 9664',
+        text: "Wine pigment is at its most removable in the first 24 hours, before it bonds chemically with the carpet fibre. We do same-day callouts across Wirral, Liverpool, Birkenhead and Chester whenever a slot is free — call us first, follow the steps below while you wait. Spot-clean from £35, or free if combined with a room clean.",
       },
       {
-        name: 'Cover with salt or baking soda',
-        text: 'Sprinkle a generous layer of table salt or baking soda over the entire wet area. Both pull the remaining liquid up out of the fibres. Leave for 10–15 minutes, then vacuum up the now-pink powder.',
+        name: '2. Blot the spill — never rub',
+        text: "Press a clean white cloth or paper towel firmly straight down into the wet area. Lift, refold to a clean section, repeat until no more wine transfers to the cloth. Rubbing pushes the pigment deeper into the fibres and grinds it into the backing — once a stain has been rubbed, even professional cleaning may not fully recover it.",
       },
       {
-        name: 'Apply a vinegar solution',
-        text: 'Mix 1 tablespoon of white vinegar, 1 tablespoon of washing-up liquid and 2 cups of warm water in a spray bottle. Spray the stain lightly — soak it, do not flood it — and dab with a clean cloth. Work from the outside of the stain inward to stop it spreading.',
+        name: '3. Cover with salt or baking soda',
+        text: 'Sprinkle a generous layer of table salt or baking soda over the entire wet area. Both pull remaining liquid up out of the fibres and are completely safe for any carpet type. Leave them in place until we arrive — no need to vacuum yet, the powder is doing useful work.',
       },
       {
-        name: 'For dried or old stains, use hydrogen peroxide',
-        text: 'Mix one part 3% hydrogen peroxide with two parts washing-up liquid. Test on a hidden area first to check the carpet does not bleach. Apply to the stain, leave for 20 minutes, blot up, then rinse with clean cool water.',
+        name: '4. Stop here. Do NOT do these things',
+        text: "This is where home advice goes wrong and carpets get destroyed. Do not pour white wine or vinegar onto the stain — they damage wool and can set the pigment. Do not use hydrogen peroxide — it bleaches most carpets, leaving a permanent pale patch. Do not use hot water — it cooks the tannins into the fibre. Do not use shop-bought \"red wine remover\" sprays — many contain bleaching agents. Doing nothing beyond steps 2 and 3 is far better than doing the wrong thing.",
       },
       {
-        name: 'Rinse and dry',
-        text: 'Lightly mist the area with clean water, blot dry, and place a thick towel over the patch with a heavy book on top to draw out any remaining moisture as it dries. Allow 4–6 hours before walking on the area.',
+        name: '5. Keep traffic off the area',
+        text: 'Walking on a wet stain spreads the pigment, transfers it to the underlay and tracks it across other parts of the carpet. Move furniture and pets out of the room if you can, or place a folding chair over the spot to mark it. We will handle the rest when we arrive.',
       },
       {
-        name: 'When DIY is not enough — call us',
-        text: 'If the stain remains after two attempts, call Wirral Carpet Cleaning on 0151 936 9664. Our hot-water extraction equipment lifts wine pigment that home methods cannot reach. We have removed Christmas and New Year wine stains that homeowners have lived with for years. Free quotes.',
+        name: '6. Send us a photo if it is older than a few hours',
+        text: 'If the spill happened earlier in the day or last night, do nothing beyond gentle blotting and send us a photo on 0151 936 9664. We can give an honest assessment of recovery before sending anyone out. Most older red wine stains still come out cleanly with our process.',
       },
     ],
     faqs: [
       {
+        question: 'How quickly can you attend a fresh wine spill?',
+        answer:
+          "Same day where possible — usually within 2–4 hours during weekday working hours, longer at weekends. Call 0151 936 9664 and we'll tell you the soonest slot. If we can't attend the same day, we will guide you through how to keep the stain stable until we can.",
+      },
+      {
+        question: "Why shouldn't I use hydrogen peroxide on a wine stain?",
+        answer:
+          "Hydrogen peroxide is a bleaching agent. On most carpets it removes the carpet's own dye along with the wine, leaving a visible pale patch where the stain was. On wool it permanently weakens the fibres. Some online guides recommend it because it does sometimes work — but the carpets it doesn't work for end up worse than the original stain. Not worth the risk.",
+      },
+      {
+        question: 'Will white wine over red wine actually work?',
+        answer:
+          "It dilutes the pigment slightly but adds more liquid to the carpet (which can soak into the underlay), and it trains people to keep pouring liquid onto a spill. Salt and baking soda are safer and more effective. Skip the white-wine trick.",
+      },
+      {
         question: 'Can old, dried red wine stains still be removed?',
         answer:
-          'Yes — most old red wine stains can be lifted with professional hot-water extraction even months or years after the spill. The success rate is around 90%. Call us with a photo of the stain on 0151 936 9664 and we will tell you honestly if we think it will fully come out.',
+          'Most can. Recovery rate is around 90% for stains under one year old, dropping to about 70% for older ones. Send us a photo with a 50p coin for scale on 0151 936 9664 and we will give you an honest assessment before you book.',
       },
       {
-        question: 'Does white wine over red wine actually work?',
+        question: 'How much does it cost?',
         answer:
-          'Partially — white wine dilutes the red pigment which makes it easier to lift, but you still need to blot and treat the stain afterwards. Salt and baking soda are more effective and you probably already have them in the kitchen.',
-      },
-      {
-        question: 'What about red wine on a wool carpet?',
-        answer:
-          'Wool is more delicate. Skip the hydrogen peroxide entirely (it can bleach), use only the vinegar method, and do not let it sit longer than 5 minutes. If the stain remains, call a professional — wool needs specific treatment to avoid felting and shrinkage.',
-      },
-      {
-        question: 'How much does it cost to professionally remove a red wine stain?',
-        answer:
-          'A targeted spot-clean is included free with any room clean (from £60). If you only need the one stain treated and nothing else, we can do a stain-only call-out for £35–£50 depending on location.',
+          'Spot-clean from £35–£50, or free as part of any room clean (room clean from £60). Free quote on 0151 936 9664.',
       },
     ],
   },
@@ -70,49 +83,59 @@ const stains = [
   // ─────────────────────────────────────────────────────────
   {
     slug: 'pet-urine',
-    title: 'How to Remove Pet Urine From Carpet',
-    metaTitle: 'How to Remove Dog & Cat Urine From Carpet | Wirral Carpet Cleaning',
+    title: 'Pet Urine on Carpet? First-Response Guide',
+    metaTitle: 'Pet Urine on Carpet — What to Do Now | Wirral Carpet Cleaning',
     metaDescription:
-      'Remove pet urine smell and stains from carpet permanently. Step-by-step DIY method, why old urine smells come back, and when to call professionals. Wirral, Liverpool & Cheshire.',
+      "Dog or cat urine on carpet? Surface cleaning rarely fully removes the smell because the urine soaks into the underlay. Here's what to do in the first 5 minutes and why a professional sub-surface clean is usually needed.",
     shortDesc:
-      'Pet urine soaks into the underlay and re-activates every time it gets damp — that is why the smell keeps coming back. Treating it properly means treating both layers.',
+      "Pet urine soaks through the carpet pile into the underlay — that is why the smell keeps coming back when the room gets damp. Surface cleaning will not reach it. Here is what to do while you wait for a proper sub-surface treatment.",
     answer:
-      'To remove pet urine from carpet, blot up as much fresh urine as possible with paper towels, then saturate the area with an enzyme-based cleaner (not vinegar — vinegar is acidic and can set the stain). Enzymes break down the uric acid crystals that cause the smell to return whenever the area gets damp. For old or repeated soiling, professional sub-surface extraction reaches the underlay and the floor beneath, which is where the smell actually lives.',
-    totalTime: '30 minutes (plus 24h drying)',
-    estimatedCost: '£8-£15 (enzyme cleaner)',
-    tools: ['Thick stack of paper towels', 'Heavy book or weight', 'Rubber gloves'],
-    supplies: ['Enzyme-based pet stain cleaner (e.g. Simple Solution, Urine-Off, Bissell Pet Pro)', 'Cool water', 'Optional: baking soda for residual smell'],
+      "If a pet has just urinated on the carpet, blot up as much liquid as possible with a thick stack of paper towels — stand on them to force the urine up. Then dab gently with cool tap water and blot dry. Do NOT use vinegar (it sets the stain), ammonia (smells like urine to pets and trains them to repeat), hot water (cooks the proteins) or shop-bought \"pet sprays\" containing bleach. For any incident larger than a 10p coin, or any repeat soiling, call Wirral Carpet Cleaning on 0151 936 9664 — surface cleaning never fully reaches the underlay where the smell actually lives, but our sub-surface extraction does.",
+    totalTime: 'Damage-limitation steps: 5 minutes. Professional treatment: 30–60 minutes.',
+    estimatedCost: 'First response: free. Professional treatment: from £75.',
+    tools: ['Thick stack of paper towels', 'Heavy book or weight (for after)'],
+    supplies: ['Cool tap water for the rinse step — please do not apply anything else'],
     steps: [
       {
-        name: 'Soak up fresh urine immediately',
-        text: 'Place a thick stack of paper towels over the wet patch and stand on it (with shoes off — wear something you do not mind getting wet). The body weight forces the urine up into the towels. Replace the towels and repeat until they come up almost dry. The more you absorb now, the less penetrates the underlay.',
+        name: '1. Call us — we deal with this every week',
+        text: 'Pet urine is one of the hardest things to remove from carpet because the liquid soaks past the pile into the underlay and sometimes into the wooden subfloor. Surface cleaning physically cannot reach those layers. Sub-surface extraction is the only method that fully eliminates the smell. Call Wirral Carpet Cleaning on 0151 936 9664 — discreet, judgement-free, effective. Treatment for one room from £75.',
       },
       {
-        name: 'Do NOT use vinegar, ammonia, or hot water on fresh urine',
-        text: 'Vinegar is acidic and chemically locks the stain in. Ammonia smells like urine to a pet and trains them to soil the same spot again. Hot water sets the proteins. Always use a cool, enzyme-based cleaner.',
+        name: '2. Soak up the liquid by standing on paper towels',
+        text: 'Place a thick stack of paper towels over the wet patch and stand on it (with shoes off — wear something you do not mind getting wet). Body weight forces the urine up into the towels. Replace the towels and repeat until they come up almost dry. The more you absorb in the first 5 minutes, the less penetrates into the underlay.',
       },
       {
-        name: 'Saturate with an enzyme cleaner',
-        text: 'Apply enough enzyme cleaner to soak through to the underlay — the urine has gone there, the cleaner needs to follow. Read the bottle for dwell time (usually 10–15 minutes). The enzymes physically eat the uric-acid crystals; this is why enzyme cleaners are the only thing that fully removes the smell.',
+        name: '3. Rinse with COOL water only — never warm or hot',
+        text: 'Lightly dampen a clean cloth with cool tap water (do not pour or spray water onto the carpet). Dab the area gently to dilute residual urine. Blot dry. Repeat once. Hot water cooks protein stains permanently into the fibres — always use cool water.',
       },
       {
-        name: 'Blot dry, weight, and air',
-        text: 'After the dwell time, blot up the cleaner with paper towels. Place a folded clean towel over the patch with a heavy book on top, and let it draw out residual moisture overnight (24 hours is fine). Open a window if you can — drying speed matters.',
+        name: '4. Do NOT use any of these',
+        text: "Vinegar is acidic and chemically locks the stain in. Ammonia smells exactly like urine to a pet and trains them to soil the same spot every time. Bleach-based pet sprays decolour carpets. Most supermarket \"pet stain & odour\" sprays use enzymes that need to be applied correctly — applied wrongly they leave a wet residue that never reaches the underlay where the smell lives, and can mask the smell so you don't realise it's still there for weeks.",
       },
       {
-        name: 'Optional: baking soda for residual odour',
-        text: 'If the smell lingers after drying, sprinkle baking soda over the area, leave for several hours, then vacuum up. Repeat over a few days if needed.',
+        name: '5. Weight a clean towel and air-dry',
+        text: 'Place a folded clean towel over the patch with a heavy book on top, and let it draw out residual moisture overnight. Open a window. Drying speed matters — slow drying causes most pet-urine smells to fester.',
       },
       {
-        name: 'When to call a professional carpet cleaner',
-        text: 'If the smell returns within a few days of cleaning, the urine has reached the underlay or the sub-floor and home methods cannot reach it. We use sub-surface extraction with specialist enzyme treatments that flush all three layers. Call Wirral Carpet Cleaning on 0151 936 9664. We deal with this every week — judgement-free, discreet, and effective.',
+        name: '6. Confine the pet away from the area until we arrive',
+        text: 'Pets often re-mark a spot they have soiled once. Block the room or use a baby gate until the area is fully treated. This protects both the carpet and the pet from re-marking habits.',
       },
     ],
     faqs: [
       {
-        question: 'Why does the urine smell keep coming back even after I clean?',
+        question: "Why does the urine smell keep coming back even after I clean?",
         answer:
-          'Urine soaks through the carpet pile into the underlay and sometimes into the wooden subfloor. Surface cleaning never reaches those layers. The uric acid crystals re-activate every time the carpet gets humid (rain, mopping, even a sunny day). Professional sub-surface extraction is the only way to fully eliminate it.',
+          "Urine soaks through the carpet pile into the underlay — sometimes into the wooden subfloor below. Surface cleaning physically cannot reach those layers. The uric acid crystals re-activate every time the room gets humid (rain, mopping, even a sunny day). Professional sub-surface extraction is the only way to fully eliminate the smell.",
+      },
+      {
+        question: 'Is it worth me trying to clean it myself first?',
+        answer:
+          'Only the immediate blotting and water-only rinsing — those are safe and reduce how much liquid soaks into the underlay. Beyond that, we strongly recommend leaving it to a professional. Most home treatments either leave residue, set the smell in or damage the carpet. We are not saying that to sell — we re-do failed home treatments every week.',
+      },
+      {
+        question: 'How quickly can you attend a fresh accident?',
+        answer:
+          "Same day where possible — usually within a few hours during weekday working hours. The faster we get there, the less urine reaches the underlay. Call 0151 936 9664 for the soonest slot.",
       },
       {
         question: 'Will an old urine stain come out completely?',
@@ -120,14 +143,9 @@ const stains = [
           'Most urine smells can be eliminated, but if the urine has been sitting for years a permanent yellow stain may remain even after the smell goes. We are honest with you on the phone — send us a photo and we will tell you what to expect.',
       },
       {
-        question: 'Are pet-urine cleaners safe for children and pets?',
+        question: 'Are your products safe for pets and children after treatment?',
         answer:
-          'The enzyme cleaners we use are non-toxic, biodegradable and safe to walk on once dry (typically 2–4 hours). Pets can return to the room straight away after our visit.',
-      },
-      {
-        question: 'How much does professional pet-urine treatment cost?',
-        answer:
-          'A targeted urine treatment for one room with sub-surface extraction starts from £75. If multiple rooms or repeated incidents are involved, we quote in person — usually £150–£250 for a full house treatment. Call 0151 936 9664 for a free quote.',
+          'Yes — we use non-toxic, biodegradable, veterinary-grade enzyme cleaners. Pets and children can return to the room as soon as the carpet is dry, typically 2–4 hours.',
       },
     ],
   },
@@ -135,68 +153,69 @@ const stains = [
   // ─────────────────────────────────────────────────────────
   {
     slug: 'coffee',
-    title: 'How to Remove Coffee Stains From Carpet',
-    metaTitle: 'How to Remove Coffee Stains From Carpet | Wirral Carpet Cleaning',
+    title: 'Coffee Spilled on Your Carpet? First-Response Guide',
+    metaTitle: 'Coffee Spilled on Carpet — What to Do Now | Wirral Carpet Cleaning',
     metaDescription:
-      'Remove fresh and dried coffee stains from any carpet, with or without milk. Step-by-step home guide and when professional cleaning is the better option. Wirral, Liverpool & Cheshire.',
+      "Coffee on carpet? Call 0151 936 9664 first, then follow these damage-limiting steps. Don't reach for hydrogen peroxide or vinegar — they can permanently damage the carpet. Same-day callouts across Wirral, Liverpool & Cheshire.",
     shortDesc:
-      'A morning coffee spill is one of the easiest stains to remove if you act in the first 10 minutes. After that it darkens permanently — here is what to do.',
+      'Coffee tannins bond chemically with carpet fibres within hours. Done well in the first few minutes, the spill is barely visible afterwards — done badly, you can leave a permanent shadow.',
     answer:
-      'To remove a fresh coffee stain from carpet, blot up as much liquid as possible with a clean white cloth, then dab the area with a solution of one tablespoon of washing-up liquid, one tablespoon of white vinegar and two cups of warm water. Work from the edge of the stain inwards. For coffee with milk, treat the milk-protein component first with cold water — never hot, which sets it. Rinse and blot dry. If a brown shadow remains, professional hot-water extraction lifts the tannin pigment that home methods cannot.',
-    totalTime: '10-20 minutes',
-    estimatedCost: '£0 (household items)',
-    tools: ['Clean white cloths', 'Spray bottle (optional)'],
-    supplies: ['Washing-up liquid', 'White vinegar', 'Cool water (for milky coffee)', 'Optional: hydrogen peroxide for old stains'],
+      'If coffee has just spilled on the carpet, blot (never rub) with a clean white cloth and dab gently with COOL tap water — never warm or hot. Do NOT apply hydrogen peroxide (it bleaches most carpets), vinegar (it can damage wool and discolour synthetics) or shop-bought stain sprays. For any spill larger than a 50p coin, or coffee with milk, call Wirral Carpet Cleaning on 0151 936 9664 — same-day callouts where possible, and tannin pigment is far easier to lift in the first 24 hours than after it has bonded with the fibre.',
+    totalTime: 'Damage-limitation steps: 2 minutes. Professional spot-clean: 20 minutes.',
+    estimatedCost: 'First response: free. Professional spot-clean: from £35.',
+    tools: ['Clean white cloths or paper towels'],
+    supplies: ['Cool tap water — nothing else'],
     steps: [
       {
-        name: 'Blot up the spill straight away',
-        text: 'Within the first minute, press a thick clean white cloth or paper towel into the spill. Apply firm pressure and lift; refold and repeat. Coloured cloths can transfer dye into your carpet — only use white. Do not rub.',
+        name: '1. Call us before the tannins set',
+        text: 'Coffee tannins start bonding with carpet fibres within hours, after which the visible mark may remain even when the surface stain is lifted. Call Wirral Carpet Cleaning on 0151 936 9664 for a same-day or next-day slot. Spot-clean from £35, or free if combined with a room clean.',
       },
       {
-        name: 'For milky coffee, rinse with COLD water first',
-        text: 'If the coffee had milk, the protein needs to come out before the tannin. Hot water cooks milk protein into the fibres. Lightly dampen a cloth with cold water and dab — do not pour water onto the carpet.',
+        name: '2. Blot, never rub',
+        text: 'Press a thick clean white cloth or paper towel firmly down into the wet area. Lift, refold to a clean section, repeat until no more coffee transfers. Use only WHITE cloths — coloured cloths can transfer dye into the carpet. Rubbing grinds the pigment into the fibres and is the single most common reason coffee stains become permanent.',
       },
       {
-        name: 'Apply a vinegar-and-detergent solution',
-        text: 'Mix 1 tbsp washing-up liquid + 1 tbsp white vinegar + 2 cups warm water. Apply with a sponge or spray bottle. Soak the stain lightly (do not flood). Dab with a clean cloth, working from outside in to stop it spreading.',
+        name: '3. For milky coffee, dab with COOL water',
+        text: 'If the coffee had milk or cream, the protein needs to come out before the tannin. Hot water cooks milk protein permanently into the fibres. Lightly dampen a cloth with cool tap water — never hot — and dab gently. Blot dry between dabs.',
       },
       {
-        name: 'Rinse with clean water',
-        text: 'Spray or dab clean water onto the area to lift the soap residue, then blot dry. Detergent left in the carpet attracts dirt and the area will re-soil within days if you skip this step.',
+        name: '4. Stop and wait. Do NOT reach for the cupboard',
+        text: 'This is where most carpets get damaged. Hydrogen peroxide bleaches most carpets — pale patch where the stain was. Vinegar damages wool. Washing-up liquid leaves a sticky residue that re-attracts dirt within days. Hot water sets the tannin. Doing nothing beyond steps 2 and 3 is far better than doing the wrong thing.',
       },
       {
-        name: 'For dried or old stains: hydrogen peroxide',
-        text: 'Test 3% hydrogen peroxide on a hidden area of carpet first (some carpets bleach). If safe, mix 1 part peroxide with 2 parts washing-up liquid, apply, leave 20 minutes, blot, rinse, dry.',
+        name: '5. Keep the room ventilated until we arrive',
+        text: 'Open a window. Cover the spot with paper towels (no pressure) to absorb residual moisture. Keep traffic off it — walking on a wet stain spreads pigment to the underlay and across the rest of the carpet.',
       },
       {
-        name: 'Weight a towel on top to dry',
-        text: 'Cover with a folded clean towel and a heavy book. Leaves no water mark, draws out residual moisture, dries in 4–6 hours.',
-      },
-      {
-        name: 'When professionals are worth calling',
-        text: 'If a brown shadow remains after two DIY attempts, the tannin pigment has bonded with the fibre and home methods cannot reach it. Call Wirral Carpet Cleaning on 0151 936 9664 — most coffee stains are removed completely with a single hot-water extraction pass. £35–£50 for a stain-only visit, or free if combined with a room clean.',
+        name: '6. For dried or older spills, send us a photo',
+        text: "If the spill happened more than a few hours ago, do not attempt anything yourself. Send a photo (with a 50p coin for scale) to 0151 936 9664. We'll tell you honestly whether full recovery is realistic before sending anyone out.",
       },
     ],
     faqs: [
       {
-        question: 'How long do I have to clean up a coffee spill before it stains permanently?',
+        question: 'How long do I have before a coffee stain becomes permanent?',
         answer:
-          'You have about 10 minutes for a clean spot-clean to work easily. After 30 minutes the tannin starts bonding with the carpet fibres. After 24 hours the stain is set. The faster you blot, the better the outcome.',
+          'Around 10 minutes for safe blotting and water-only rinsing to be fully effective. After 30 minutes the tannins start bonding with the carpet fibres. After 24 hours the stain is set. We can usually still recover older stains professionally — but the sooner we treat it, the better the result.',
       },
       {
-        question: 'Will a coffee stain come out of a wool or natural-fibre carpet?',
+        question: 'How quickly can you attend a fresh spill?',
         answer:
-          'Yes, but skip hydrogen peroxide entirely on wool — use only the vinegar-and-detergent step, dab gently, and call a professional if anything remains. Wool is sensitive to alkaline cleaners and bleaching.',
+          'Same day where possible — usually within 2–4 hours during weekday working hours. Call 0151 936 9664 for the soonest slot.',
       },
       {
-        question: 'What about decaf or instant — does the method change?',
+        question: "Why shouldn't I use vinegar or hydrogen peroxide?",
         answer:
-          'No, all coffee contains tannins which are the staining compound. Treat the same way regardless of the type.',
+          "Vinegar is acidic and can damage wool fibres or discolour some synthetics. Hydrogen peroxide is a bleaching agent — on most carpets it removes the carpet's own dye alongside the coffee, leaving a pale patch. Both are common in online guides, but on the carpets they don't work for, they leave permanent damage.",
+      },
+      {
+        question: 'Is it OK to try anything myself on a wool or natural-fibre carpet?',
+        answer:
+          'Only blotting with cool water on wool, sisal or jute. No household chemistry. Wool needs specific pH-neutral treatment that the average kitchen does not have. Call us first before doing anything beyond blotting.',
       },
       {
         question: 'Can you remove a coffee stain that is months old?',
         answer:
-          'Most of them, yes. Old coffee stains usually lift with professional hot-water extraction. Send us a photo on 0151 936 9664 — we will tell you honestly if it will fully come out.',
+          'Most of them, yes. Old coffee stains usually lift with our specialist tannin solvent and hot-water extraction even months later. Send a photo to 0151 936 9664 for an honest assessment.',
       },
     ],
   },
@@ -204,64 +223,65 @@ const stains = [
   // ─────────────────────────────────────────────────────────
   {
     slug: 'mud-and-dirt',
-    title: 'How to Remove Mud and Dirt Stains From Carpet',
-    metaTitle: 'How to Remove Mud & Dirt From Carpet | Wirral Carpet Cleaning',
+    title: 'Mud or Dirt on Your Carpet? First-Response Guide',
+    metaTitle: 'Mud Spilled on Carpet — What to Do Now | Wirral Carpet Cleaning',
     metaDescription:
-      'Remove muddy footprints, garden dirt and pet paw prints from carpet without spreading the stain. The counter-intuitive first step nearly everyone gets wrong. Wirral, Liverpool & Cheshire.',
+      'Muddy footprints, dog paws or garden dirt on the carpet? The counter-intuitive first step that prevents the stain doubling in size. What to do now and when to call a professional. Wirral, Liverpool & Cheshire.',
     shortDesc:
-      'The mistake everyone makes with muddy carpet is treating it like a wet stain. Mud needs to dry first — here is the right method.',
+      'Wet mud on carpet is the one spill where doing nothing is better than doing something. Wet cloths spread it; dry mud crumbles out cleanly.',
     answer:
-      'To remove mud from carpet, the counter-intuitive first step is to let it dry completely before doing anything else. Wet mud smears and grinds into fibres; dried mud crumbles out. Once dry, vacuum thoroughly to lift loose particles, then dab any residual mark with a solution of washing-up liquid and warm water, working from the outside in. For deep-set or repeated mud (winter hallways, after dog walks) a professional deep-clean restores the carpet far more effectively than spot-cleaning.',
-    totalTime: '4-6 hours (most of which is drying time)',
-    estimatedCost: '£0 (household items)',
-    tools: ['Vacuum cleaner', 'Soft-bristled brush', 'Clean white cloths'],
-    supplies: ['Washing-up liquid', 'Warm water', 'Optional: white vinegar for residual marks'],
+      "If wet mud has just been walked onto your carpet, do NOT scrub it with a wet cloth — this spreads it to twice its original size and grinds the dirt into the fibres. Let the mud DRY completely (2–4 hours), then crumble and vacuum thoroughly. For any large area, set-in mud, or muddy paw prints across light-coloured carpet, call Wirral Carpet Cleaning on 0151 936 9664 — hot-water extraction restores it far more effectively than DIY. Free quote.",
+    totalTime: 'First response: 4-6 hours (mostly waiting for the mud to dry).',
+    estimatedCost: 'First response: free. Professional clean: from £60.',
+    tools: ['Vacuum cleaner', 'Clean white cloths'],
+    supplies: ['Patience for the drying step. No household chemistry needed.'],
     steps: [
       {
-        name: 'Resist the urge to scrub — let it dry',
-        text: 'The single biggest mistake people make is attacking wet mud with a wet cloth. This grinds the dirt deeper and spreads the stain to twice its original size. Cover the area loosely with paper towels to absorb surface moisture but do not press, do not scrub. Walk away for 2–4 hours and let the mud dry completely.',
+        name: '1. STOP — do not scrub',
+        text: 'The single biggest mistake people make is attacking wet mud with a wet cloth or kitchen roll. This grinds the dirt deeper into the fibres and spreads the stain to twice its original size. Resist the urge.',
       },
       {
-        name: 'Crack and crumble the dried mud',
-        text: 'Once fully dry, the mud should be crumbly rather than spread into the fibres. Use the back of a spoon or a soft brush to break it up. Most of it will release as small flakes.',
+        name: '2. Cover loosely with paper towels and walk away',
+        text: 'Lay a few sheets of paper towel over the muddy area to absorb surface moisture — but do not press, do not rub. Just rest them on top. Then walk away. Do something else for 2–4 hours.',
       },
       {
-        name: 'Vacuum thoroughly',
-        text: 'Vacuum the area in multiple directions — forward, backward, side to side. This is what actually removes most of the mud. Do this two or three times; do not rush.',
+        name: '3. Once fully dry, crumble and vacuum',
+        text: 'Once the mud is bone-dry, it should be crumbly rather than spread into the fibres. Use the back of a spoon or a soft brush to break it up. Most of it will release as small flakes. Vacuum the area thoroughly in multiple directions: forward, backward, side to side. Do this two or three times.',
       },
       {
-        name: 'Dab any residual mark',
-        text: 'If a mark remains, mix 1 tablespoon of washing-up liquid with 2 cups of warm water. Dampen a clean white cloth and dab — do not soak — the stain. Work from the outside of the mark inward.',
+        name: '4. For any residual mark, dab with cool water only',
+        text: 'If a faint mark remains after vacuuming, lightly dampen a clean white cloth with cool tap water and dab — do not soak — the area. Blot dry between dabs. Do not use shampoo, washing-up liquid or hot water; these leave residue that attracts new dirt.',
       },
       {
-        name: 'Rinse and blot dry',
-        text: 'Lightly dab with a clean cloth dampened only with water to lift any soap residue. Then blot with a dry towel. Place a folded towel and a weight over the area to draw out moisture overnight.',
-      },
-      {
-        name: 'When carpets are heavily soiled all over — call us',
-        text: 'A whole hallway, lounge or staircase that has had wet feet, paws and trolley wheels through it for months will not come back to life with spot-cleaning. Hot-water extraction restores it to genuinely-like-new in one visit. Call Wirral Carpet Cleaning on 0151 936 9664 for a free quote — our 4-room special covers a typical family-home main floor for £150–£200.',
+        name: '5. Call us if it is more than spot damage',
+        text: 'Spot-cleaning works for one or two paw prints. For a whole hallway, lounge or staircase that has had wet feet, dog paws or trolley wheels through it, no amount of vacuuming will recover it. Call Wirral Carpet Cleaning on 0151 936 9664 for a free quote — our 4-room special covers a typical family-home main floor for £150–£200.',
       },
     ],
     faqs: [
       {
         question: 'Why should I let mud dry instead of cleaning it straight away?',
         answer:
-          'Wet mud is liquid plus solids — wiping spreads the liquid and grinds the solids into the carpet fibres, doubling the size of the stain. Dry mud is just solids, which crumble and vacuum up cleanly.',
+          'Wet mud is liquid plus solids — wiping spreads the liquid and grinds the solids into the carpet fibres, doubling the size of the stain. Dry mud is just solids, which crumble and vacuum up cleanly. The "let it dry" rule applies to almost any mud, dirt or garden-soil spill on carpet.',
+      },
+      {
+        question: 'My dog has walked muddy paws across the whole hallway — what now?',
+        answer:
+          "Don't scrub. Cover the worst spots loosely with paper towels and call us on 0151 936 9664. For widespread mud across multiple rooms, professional hot-water extraction restores the carpet to like-new far more effectively than spot-cleaning, and prevents the dirt grinding deeper while you try to DIY it.",
       },
       {
         question: 'How often should I get carpets professionally cleaned if I have dogs?',
         answer:
-          'Every 6 months is the ideal interval for homes with dogs, especially over winter. The Wirral has muddy walks year-round, and twice-yearly professional cleans extend the life of the carpet by 30–40% versus annual cleans.',
+          'Every 6 months is the ideal interval for homes with dogs, especially over winter. The Wirral has wet weather year-round, and twice-yearly professional cleans extend carpet life by 30–40% versus annual cleans.',
       },
       {
-        question: 'Will the mud have caused permanent damage?',
+        question: 'Has the mud caused permanent damage to my carpet?',
         answer:
-          'Almost never — carpets are designed to take wear. The exception is mud left in for months on light-coloured carpets, where the dye sometimes shadows. Even then, professional hot-water extraction recovers most of it.',
+          'Almost never — carpets are designed to take wear. The exception is mud left in for months on light-coloured carpets, where the dye can shadow. Even then, professional hot-water extraction recovers most of it.',
       },
       {
         question: 'Do you offer pet-friendly contracts for regular cleans?',
         answer:
-          'Yes — repeat-customer dog owners get 15% off second and subsequent cleans. Most book us twice a year. Call 0151 936 9664 to set this up.',
+          'Yes — repeat-customer dog owners get 15% off second and subsequent cleans booked within 12 months. Most book us twice a year. Call 0151 936 9664 to set this up.',
       },
     ],
   },

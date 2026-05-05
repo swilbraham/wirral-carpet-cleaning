@@ -21,6 +21,7 @@ import PaymentPage from './components/PaymentPage';
 import PaymentSuccess from './components/PaymentSuccess';
 import ServicePage from './components/ServicePage';
 import LocationPage from './components/LocationPage';
+import StainRemovalPage from './components/StainRemovalPage';
 
 function HomePage() {
   const location = useLocation();
@@ -65,6 +66,7 @@ function MainLayout() {
         <Route path="/pay/success" element={<PaymentSuccess />} />
         <Route path="/services/:slug" element={<ServicePage />} />
         <Route path="/areas/:slug" element={<LocationPage />} />
+        <Route path="/stain-removal/:slug" element={<StainRemovalPage />} />
       </Routes>
       <Footer />
       <MobileCallButton />

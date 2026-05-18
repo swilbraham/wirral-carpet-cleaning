@@ -361,13 +361,13 @@ export default function CostCalculator() {
       paymentMethod: 'Klarna',
       klarnaOrderId: orderId || '',
       paymentStatus: 'PAID via Klarna',
-      _subject: 'New Paid Booking (Klarna) - Wirral Carpet Cleaning',
-      _captcha: 'false',
-      _template: 'table',
+      access_key: 'fae49abe-d4e1-4cdc-9ed1-a5ec3c116881',
+      subject: 'New Paid Booking (Klarna) - Wirral Carpet Cleaning',
+      from_name: 'Wirral Carpet Cleaning Website',
     };
 
     try {
-      await fetch('https://formsubmit.co/ajax/contact@wirralcarpetcleaning.com', {
+      await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

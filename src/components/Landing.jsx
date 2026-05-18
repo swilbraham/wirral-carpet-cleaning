@@ -61,12 +61,12 @@ export default function Landing() {
 
     setSubmittedData({ ...jsonData });
 
-    jsonData['_subject'] = 'Landing Page Quote - Wirral Carpet Cleaning';
-    jsonData['_captcha'] = 'false';
-    jsonData['_template'] = 'table';
+    jsonData['access_key'] = 'fae49abe-d4e1-4cdc-9ed1-a5ec3c116881';
+    jsonData['subject'] = 'Landing Page Quote - Wirral Carpet Cleaning';
+    jsonData['from_name'] = 'Wirral Carpet Cleaning Website';
 
     try {
-      await fetch('https://formsubmit.co/ajax/contact@wirralcarpetcleaning.com', {
+      await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -362,13 +362,13 @@
       </div>
       <div class="cyo-body">
         <form id="quote-form"
-              action="https://formsubmit.co/contact@wirralcarpetcleaning.com"
+              action="https://api.web3forms.com/submit"
               method="POST"
               onsubmit="handleSubmit(event)">
-          <input type="hidden" name="_subject" value="Sunday Offer">
-          <input type="hidden" name="_captcha" value="false">
-          <input type="hidden" name="_template" value="table">
-          <input type="hidden" name="_next" value="https://www.wirralcarpetcleaning.com/?sunday_booked=true">
+          <input type="hidden" name="access_key" value="fae49abe-d4e1-4cdc-9ed1-a5ec3c116881">
+          <input type="hidden" name="subject" value="Sunday Offer">
+          <input type="hidden" name="from_name" value="Wirral Carpet Cleaning Website">
+          <input type="hidden" name="redirect" value="https://www.wirralcarpetcleaning.com/?sunday_booked=true">
           <input type="hidden" name="Package Selected" id="hidden-package" value="Custom / Create Your Own">
           <input type="text" name="_honey" style="display:none;" tabindex="-1" autocomplete="off">
           <p class="chips-label">Quick-select what you need:</p>
@@ -494,13 +494,13 @@
       <h3>Complete Your Booking</h3>
       <p class="modal-sub">Fill in your details below and a member of the team will be in contact within 24 hours to confirm your booking.</p>
       <form id="modal-form"
-            action="https://formsubmit.co/contact@wirralcarpetcleaning.com"
+            action="https://api.web3forms.com/submit"
             method="POST"
             onsubmit="handleModalSubmit(event)">
-        <input type="hidden" name="_subject" value="Sunday Offer">
-        <input type="hidden" name="_captcha" value="false">
-        <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_next" value="https://www.wirralcarpetcleaning.com/">
+        <input type="hidden" name="access_key" value="fae49abe-d4e1-4cdc-9ed1-a5ec3c116881">
+        <input type="hidden" name="subject" value="Sunday Offer">
+        <input type="hidden" name="from_name" value="Wirral Carpet Cleaning Website">
+        <input type="hidden" name="redirect" value="https://www.wirralcarpetcleaning.com/">
         <input type="hidden" name="Package Selected" id="modal-hidden-pkg" value="">
         <input type="text" name="_honey" style="display:none;" tabindex="-1" autocomplete="off">
         <div class="mfg">
@@ -585,7 +585,7 @@ function handleModalSubmit(e) {
   btn.disabled = true;
   btn.style.display = 'none';
   spinner.style.display = 'block';
-  fetch('https://formsubmit.co/contact@wirralcarpetcleaning.com', {
+  fetch('https://api.web3forms.com/submit', {
     method: 'POST',
     body: formData,
     headers: { 'Accept': 'application/json' }

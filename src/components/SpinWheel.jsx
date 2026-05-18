@@ -210,12 +210,12 @@ export default function SpinWheel() {
     jsonData.offer = winningSegment.fullLabel;
     setSubmittedData({ ...jsonData });
 
-    jsonData['_subject'] = `Spin & Win: ${winningSegment.fullLabel} - Wirral Carpet Cleaning`;
-    jsonData['_captcha'] = 'false';
-    jsonData['_template'] = 'table';
+    jsonData['access_key'] = 'fae49abe-d4e1-4cdc-9ed1-a5ec3c116881';
+    jsonData['subject'] = `Spin & Win: ${winningSegment.fullLabel} - Wirral Carpet Cleaning`;
+    jsonData['from_name'] = 'Wirral Carpet Cleaning Website';
 
     try {
-      await fetch('https://formsubmit.co/ajax/contact@wirralcarpetcleaning.com', {
+      await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify(jsonData),

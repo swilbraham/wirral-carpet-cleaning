@@ -29,7 +29,7 @@ The CSP allows third parties the site actually uses:
 
 - **Google Fonts** — `fonts.googleapis.com` (style-src), `fonts.gstatic.com` (font-src)
 - **Facebook Pixel** — `connect.facebook.net` (script-src), `www.facebook.com` (img/connect-src)
-- **FormSubmit** — `formsubmit.co` (connect-src) for form posts
+- **Web3Forms** — `api.web3forms.com` (connect-src) for form posts
 - **Google Apps Script** — `script.google.com` (connect-src) for sheet logging on offer pages
 
 Everything else is blocked by default. `'unsafe-inline'` and `'unsafe-eval'` remain on `script-src` for Vite/React runtime — needed; tighten with nonces later if XSS posture matters.

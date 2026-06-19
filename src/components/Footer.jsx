@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { HiPhone, HiMail, HiLocationMarker } from 'react-icons/hi';
 import logo from '../assets/logo.png';
+import locations from '../data/locations';
 
 const quickLinks = [
   { name: 'Domestic Carpet Cleaning', href: '/services/carpet-cleaning' },
@@ -14,19 +15,6 @@ const companyLinks = [
   { name: 'How It Works', href: '#process' },
   { name: 'Reviews', href: '#testimonials' },
   { name: 'Get a Quote', href: '#contact' },
-];
-
-const areas = [
-  { name: 'Liverpool', slug: 'liverpool' },
-  { name: 'Wirral', slug: 'wirral' },
-  { name: 'Chester', slug: 'chester' },
-  { name: 'Birkenhead', slug: 'birkenhead' },
-  { name: 'Wallasey', slug: 'wallasey' },
-  { name: 'Southport', slug: 'southport' },
-  { name: 'St Helens', slug: 'st-helens' },
-  { name: 'Warrington', slug: 'warrington' },
-  { name: 'Ellesmere Port', slug: 'ellesmere-port' },
-  { name: 'Prenton', slug: 'prenton' },
 ];
 
 export default function Footer() {
@@ -91,7 +79,7 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-4">Areas Covered</h4>
             <div className="flex flex-wrap gap-2">
-              {areas.map((area) => (
+              {locations.map((area) => (
                 <Link
                   key={area.slug}
                   to={`/areas/${area.slug}`}

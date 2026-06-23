@@ -18,7 +18,7 @@ const posts = [
     metaTitle: 'How much does carpet cleaning cost in Wirral? | Wirral Carpet Cleaning',
     metaDescription:
       'Professional carpet cleaning in Wirral starts from £60 for the first room. Full pricing breakdown, what affects the cost, and how to get the best value. Free quotes from Wirral Carpet Cleaning.',
-    publishedDate: '2026-05-12',
+    publishedDate: '2026-04-14',
     readingTime: '4 min',
     quickAnswer:
       'Professional carpet cleaning in Wirral starts from £60 for the first room, with additional rooms from £30 each. A typical 3-bedroom semi with hall, stairs and landing is £120–£180 fully cleaned. Most jobs are completed in 1–2 hours and the carpets are dry in 2–4 hours. We provide a free written quote with no obligation — call 0151 936 9664 or use the online calculator.',
@@ -65,7 +65,7 @@ const posts = [
     metaTitle: 'How long do carpets take to dry after cleaning? | Wirral Carpet Cleaning',
     metaDescription:
       'Most professionally-cleaned carpets are dry within 2–4 hours. What affects drying time, how to speed it up safely, and when to worry. Wirral Carpet Cleaning explains.',
-    publishedDate: '2026-05-19',
+    publishedDate: '2026-04-21',
     readingTime: '3 min',
     quickAnswer:
       'Most professionally-cleaned carpets are dry within 2–4 hours when cleaned with hot-water extraction. The exact time depends on three things: the equipment used, the humidity in the room, and the carpet type. Wool and high-pile carpets can take up to 6 hours; low-pile synthetic carpets can be touch-dry in under 2 hours. Renting a domestic carpet cleaner from a supermarket typically leaves carpets wet for 12–24 hours.',
@@ -105,7 +105,7 @@ const posts = [
     metaTitle: 'Is professional carpet cleaning safe for pets? | Wirral Carpet Cleaning',
     metaDescription:
       'Professional carpet cleaning is safe for pets, children and allergy sufferers — when the right products are used. What to look for, what to avoid, and how to keep pets comfortable on cleaning day.',
-    publishedDate: '2026-05-26',
+    publishedDate: '2026-04-28',
     readingTime: '4 min',
     quickAnswer:
       'Yes — professional carpet cleaning is safe for pets, children and allergy sufferers when the cleaner uses eco-friendly, non-toxic products. The cleaning solution is rinsed out by the same machine that applies it, so almost no residue is left behind. Pets can return to the cleaned room as soon as the carpets are dry — typically 2–4 hours.',
@@ -151,7 +151,7 @@ const posts = [
     metaTitle: "Carpet cleaning vs steam cleaning — what's the difference? | Wirral Carpet Cleaning",
     metaDescription:
       'Steam cleaning and hot-water extraction are not the same. The difference matters for results, drying time and which carpet types are safe to clean. Wirral Carpet Cleaning explains.',
-    publishedDate: '2026-06-02',
+    publishedDate: '2026-05-05',
     readingTime: '4 min',
     quickAnswer:
       '"Carpet cleaning" is a category; "steam cleaning" is one method within it. What most people call steam cleaning is actually hot-water extraction — water heated to 60–80°C is injected under pressure and immediately extracted, taking dirt with it. True steam cleaning (above 100°C, water vapour only) is rare in carpet work because it can shrink wool and damage some adhesives. The terms are often used interchangeably in the trade, which causes confusion.',
@@ -191,7 +191,7 @@ const posts = [
     metaTitle: 'When should I get my carpets professionally cleaned? | Wirral Carpet Cleaning',
     metaDescription:
       "How often to professionally clean carpets — broken down by household type, lifestyle and the manufacturer warranty schedule. Wirral Carpet Cleaning's expert guide.",
-    publishedDate: '2026-06-09',
+    publishedDate: '2026-05-12',
     readingTime: '4 min',
     quickAnswer:
       "Most homes need professional carpet cleaning every 12–18 months. Homes with pets, smokers or young children should aim for every 6 months. Many carpet manufacturers void warranty if professional cleaning records can't be shown — usually requiring at least once every 18 months. End-of-tenancy and post-event (Christmas, parties) are common one-off triggers regardless of the schedule.",
@@ -241,7 +241,7 @@ const posts = [
     metaTitle: "What's the best carpet cleaner near Birkenhead? | Wirral Carpet Cleaning",
     metaDescription:
       "Looking for a reliable carpet cleaner in Birkenhead? Here's what to look for, what to avoid, and an honest comparison of local options. Wirral Carpet Cleaning explains.",
-    publishedDate: '2026-06-16',
+    publishedDate: '2026-05-19',
     readingTime: '5 min',
     quickAnswer:
       "The best carpet cleaner in Birkenhead is one that is (1) fully insured, (2) uses hot-water extraction equipment, (3) provides a written quote with no hidden fees, (4) is NCCA-trained or accredited, and (5) has a track record of local reviews. Wirral Carpet Cleaning Limited covers Birkenhead and the surrounding Wirral peninsula, has been trading 15+ years, holds public liability insurance, and is rated 5★ on Google. 0151 936 9664 for a free quote.",
@@ -285,7 +285,7 @@ const posts = [
     metaTitle: 'What does end-of-tenancy carpet cleaning include? | Wirral Carpet Cleaning',
     metaDescription:
       'End-of-tenancy carpet cleaning — what\'s included, what landlords legally can and cannot require, deposit-deductions you can dispute, and getting the cheapest compliant clean.',
-    publishedDate: '2026-06-23',
+    publishedDate: '2026-05-26',
     readingTime: '5 min',
     quickAnswer:
       'End-of-tenancy carpet cleaning includes deep hot-water extraction of all carpeted rooms, stain treatment, deodorising and a printed receipt for landlord/inventory company submission. UK law (Tenant Fees Act 2019) means a landlord cannot require a specific cleaner, only a "professional" clean — any reputable carpet-cleaning firm is fine. Typical cost for a 2-bed flat: £100–£140.',
@@ -342,7 +342,7 @@ const posts = [
     metaTitle: 'Can you remove old, set-in carpet stains? | Wirral Carpet Cleaning',
     metaDescription:
       'Most "permanent" carpet stains can still be lifted by professional hot-water extraction even years later. What works, what doesn\'t, and how to send us a photo for an honest assessment.',
-    publishedDate: '2026-06-30',
+    publishedDate: '2026-06-02',
     readingTime: '4 min',
     quickAnswer:
       'Yes — most "permanent" stains can still be removed by professional hot-water extraction even years after the original spill. Success rate varies by stain type: red wine and coffee around 90% recovery, pet urine 70–80%, mystery old stains 50–70%. Some stains will lighten significantly without disappearing entirely, and we always tell you honestly upfront what to expect.',
@@ -397,7 +397,7 @@ const posts = [
     metaTitle: 'How often should I clean carpets if I have a dog? | Wirral Carpet Cleaning',
     metaDescription:
       "Pet households need professional carpet cleaning every 6–9 months. Why pets are harder on carpet, how to keep them fresh between cleans, and our pet-friendly contract pricing.",
-    publishedDate: '2026-07-07',
+    publishedDate: '2026-06-09',
     readingTime: '4 min',
     quickAnswer:
       "Households with one dog should professionally clean carpets every 6–9 months; households with multiple dogs, every 6 months. Vacuum twice a week minimum (dog hair and dander build up faster than human-only households) and treat any urine accidents with an enzyme cleaner immediately. Twice-yearly deep cleans extend carpet life by 30–40% in pet households versus annual cleans.",
@@ -458,7 +458,7 @@ const posts = [
     metaTitle: 'Should I rent a carpet cleaner or hire a professional? | Wirral Carpet Cleaning',
     metaDescription:
       "Honest comparison of renting a Vax/Bissell vs hiring a professional carpet cleaner. The true total cost, results comparison, and when DIY makes genuine sense. Wirral Carpet Cleaning explains.",
-    publishedDate: '2026-07-14',
+    publishedDate: '2026-06-16',
     readingTime: '5 min',
     quickAnswer:
       "Hire a professional if any of these apply: you have multiple rooms to clean, pet stains, set-in stains, allergies in the household, or a wool carpet. Rent a domestic machine only for very specific small spot-cleans on synthetic carpets where you're not concerned about long drying times. The honest economics: a professional clean for £150 is similar to renting (£40 + £15 solution + 5–6 hours of your time + 12 hours of damp carpet), with a far better outcome.",
@@ -513,6 +513,91 @@ const posts = [
       {
         type: 'p',
         text: "For a £90 difference you save the labour, the wet carpet weekend and get a substantially better result. For one room only, rental might just edge it on cost — but if you're going to do the lounge anyway, asking us to do the whole floor is usually £30–£50 incremental.",
+      },
+    ],
+  },
+
+  // ─────────────────────────────────────────────────────────
+  {
+    slug: 'home-carpet-cleaning-remedies',
+    title: 'Home carpet cleaning remedies: do they actually work?',
+    metaTitle: 'Home carpet cleaning remedies: do they work? | Wirral Carpet Cleaning',
+    metaDescription:
+      'The honest truth about home carpet cleaning remedies — baking soda, vinegar, washing-up liquid, shaving foam and more. What buys you time, what does nothing, and what quietly ruins your carpet.',
+    publishedDate: '2026-06-23',
+    readingTime: '5 min',
+    quickAnswer:
+      "Home remedies can buy you time on a small, fresh spill — blotting with a little washing-up liquid, or baking soda for odours — but that is all they do. They only touch the surface of the pile, so they can never lift a set-in stain or a pet smell, which live deep in the carpet and underlay. Several popular 'hacks' (shaving foam, salt, neat vinegar) do little or actively damage the fibres. For anything beyond a fresh splash, a professional clean is faster, safer and works out cheaper than a ruined carpet. Send us a photo on 0151 936 9664 and we'll tell you honestly whether it's worth a go at home.",
+    body: [
+      {
+        type: 'p',
+        text: 'There are a lot of carpet-cleaning "hacks" floating around Facebook and TikTok. Some are harmless, a few genuinely help in the first few minutes of a spill, and several will quietly wreck a good carpet. Here is the honest picture from 15+ years of cleaning carpets across Wirral — including the jobs we get called to **after** a home remedy has gone wrong.',
+      },
+      {
+        type: 'callout',
+        text: 'The single most important thing: blot, never scrub, and never use hot water. Scrubbing frays the pile and pushes the stain deeper; heat permanently sets wine, coffee, blood and pet stains. If you do nothing else, get that right.',
+      },
+      { type: 'h2', text: 'Home remedies: an honest reality check' },
+      {
+        type: 'p',
+        text: 'These are the ones people ask us about most. The pattern is the same throughout — they can help a fresh splash, but none of them is a substitute for a proper clean:',
+      },
+      {
+        type: 'table',
+        headers: ['Remedy', 'Does it work?', 'The catch'],
+        rows: [
+          ['Baking soda', 'Partly', 'Absorbs odour and fresh grease, but only masks smells it cannot remove. Must be vacuumed out fully or it dulls the pile'],
+          ['A little washing-up liquid + cool water', 'On fresh spills only', 'Fine for a fresh food or drink splash. Use too much and the soapy residue left behind actually attracts more dirt'],
+          ['White vinegar', 'Limited', '**Damages wool, sisal and silk** — the acid harms natural fibres. The smell lingers and it does nothing for set-in stains'],
+          ['Club soda', 'Briefly', 'The fizz can help float a fresh wine or coffee spill in the first minutes. Useless once the stain has dried'],
+          ['Salt on wine', 'Not really', 'A myth. It soaks up a little liquid but does not clean — you still have a stain to deal with afterwards'],
+          ['Shaving foam', 'No', "Popular online, poor in practice — it's mostly soap and tends to leave a residue without lifting the stain"],
+          ['Hydrogen peroxide / "oxi" hacks', 'Risky', '**Can bleach the colour straight out of your carpet.** We are regularly called to permanent white patches caused by these'],
+        ],
+      },
+      { type: 'h2', text: 'The "remedies" that quietly ruin carpets' },
+      {
+        type: 'p',
+        text: 'These are the ones worth a clear warning. We see the damage from all of them, and none of it can be undone:',
+      },
+      {
+        type: 'ul',
+        items: [
+          '**Bleach or oxi powders on coloured carpet** — permanent white patches that no one can reverse.',
+          '**Vinegar on wool** — browning and fibre damage that often only shows up days later.',
+          '**Hot water on pet urine or blood** — heat locks the stain and the smell in for good.',
+          '**Over-wetting** — a soaked patch dries slowly, wicks the stain back to the surface as a brown ring, and can rot the underlay.',
+          '**Scrubbing** — distorts the pile so the patch always looks different, even once the stain itself is gone.',
+        ],
+      },
+      { type: 'h2', text: 'Why home methods can only ever do so much' },
+      {
+        type: 'p',
+        text: 'Every cupboard remedy treats the **top of the pile only**. They physically cannot reach the base of the carpet or the underlay underneath — which is exactly where pet accidents, drink spills and years of foot traffic actually sit. That is the honest limit. A home remedy might tide a fresh splash over, but it will never deep-clean a carpet, and a botched attempt often makes our job (and your bill) bigger.',
+      },
+      {
+        type: 'p',
+        text: 'Our hot-water extraction runs at around 70°C under pressure and pulls the dirt, the moisture and the stain back out in one pass — reaching the part of the carpet a cloth and a kettle never can. A typical room is cleaned in well under an hour and dry within 2–4 hours.',
+      },
+      { type: 'h2', text: 'The honest rule of thumb' },
+      {
+        type: 'p',
+        text: 'A fresh, small splash on a synthetic carpet — blot it and you may be fine. **Anything else is a job for a professional**, and trying to DIY it usually costs more in the end:',
+      },
+      {
+        type: 'ul',
+        items: [
+          'The stain is older than a day, or has been "treated" already and come back',
+          "There's a lingering smell, especially pet urine — it lives in the underlay",
+          'A whole room or the stairs need doing, not just a spot',
+          'The carpet is wool, sisal or a silk blend',
+          'A home remedy has left a ring, a patch, a bleached spot or a sticky area',
+        ],
+      },
+      { type: 'h2', text: 'Not sure? Send us a photo first — for free' },
+      {
+        type: 'p',
+        text: "Before you spend a Saturday scrubbing (or risk one of the remedies above), just send us a picture. Text or WhatsApp **0151 936 9664** with a photo of the mark and we'll tell you honestly whether it's a quick blot at home or one for us — plus a fixed price if it is. Free advice, no obligation, across Wirral, Liverpool, Birkenhead, Prenton and Chester.",
       },
     ],
   },

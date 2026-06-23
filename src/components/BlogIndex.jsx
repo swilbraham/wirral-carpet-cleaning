@@ -69,7 +69,9 @@ export default function BlogIndex() {
       <section className="py-16 md:py-20 bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid sm:grid-cols-2 gap-6 md:gap-8">
-            {posts.map((p) => (
+            {[...posts]
+              .sort((a, b) => new Date(b.publishedDate) - new Date(a.publishedDate))
+              .map((p) => (
               <Link
                 key={p.slug}
                 to={`/blog/${p.slug}`}

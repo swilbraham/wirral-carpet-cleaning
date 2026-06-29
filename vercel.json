@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/((?!api/|assets/|sundayoffer|easter).*)", "destination": "/index.html" }
+    { "source": "/((?!api/|assets/|sundayoffer|easter|4carpets99).*)", "destination": "/index.html" }
   ],
   "headers": [
     {

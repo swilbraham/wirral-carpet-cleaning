@@ -175,6 +175,206 @@ const locations = [
       'As one of our closest service areas, Prenton receives fast, reliable carpet cleaning services from our Wirral-based team. We provide professional deep cleaning for all types of carpets and upholstery in homes and businesses across Prenton.',
     nearby: ['Birkenhead', 'Bebington', 'Bromborough', 'Wallasey', 'Wirral'],
   },
+  {
+    slug: 'moreton',
+    name: 'Moreton',
+    county: 'Merseyside',
+    description:
+      'Moreton is right on our doorstep, and homes across Moreton and Moreton Shore benefit from some of our fastest response times on the Wirral. From family homes near the cross to properties out towards Leasowe, we deep clean carpets, rugs and upholstery to a professional standard.',
+    nearby: ['Leasowe', 'Saughall Massie', 'Upton', 'Hoylake', 'Wallasey'],
+  },
+  {
+    slug: 'upton',
+    name: 'Upton',
+    county: 'Merseyside',
+    description:
+      'We regularly clean carpets in homes across Upton, from the village centre to the estates around Arrowe Park. Our local team provides thorough hot-water extraction cleaning that lifts out embedded dirt, allergens and stains, leaving carpets fresh and fast-drying.',
+    nearby: ['Moreton', 'Greasby', 'Woodchurch', 'Bidston', 'Birkenhead'],
+  },
+  {
+    slug: 'greasby',
+    name: 'Greasby',
+    county: 'Merseyside',
+    description:
+      'Greasby households trust our team for reliable, professional carpet and upholstery cleaning. Whether it is a single living room or a whole house before moving in, we bring professional-grade equipment and eco-friendly products to every job in Greasby and Frankby.',
+    nearby: ['Upton', 'Irby', 'West Kirby', 'Moreton', 'Saughall Massie'],
+  },
+  {
+    slug: 'irby',
+    name: 'Irby',
+    county: 'Merseyside',
+    description:
+      'Our carpet cleaning service covers Irby village and the surrounding lanes towards Thurstaston. Irby homes often feature quality carpets worth looking after, and our deep-clean process restores pile, lifts stains and extends the life of your flooring.',
+    nearby: ['Greasby', 'Pensby', 'Thingwall', 'Thurstaston', 'Heswall'],
+  },
+  {
+    slug: 'pensby',
+    name: 'Pensby',
+    county: 'Merseyside',
+    description:
+      'We provide professional carpet, rug and sofa cleaning throughout Pensby. Our fully insured technicians serve the whole area from Pensby Road to the Fishers Lane estates, with free quotes and no payment until the job is complete.',
+    nearby: ['Irby', 'Thingwall', 'Heswall', 'Barnston', 'Greasby'],
+  },
+  {
+    slug: 'thingwall',
+    name: 'Thingwall',
+    county: 'Merseyside',
+    description:
+      'Thingwall residents can count on our local team for high-quality carpet and upholstery cleaning. We use powerful hot-water extraction machines that remove deep-set dirt and leave carpets clean, sanitised and dry within hours.',
+    nearby: ['Pensby', 'Irby', 'Barnston', 'Woodchurch', 'Heswall'],
+  },
+  {
+    slug: 'barnston',
+    name: 'Barnston',
+    county: 'Merseyside',
+    description:
+      'We clean carpets and upholstery in homes across Barnston and the surrounding countryside between Heswall and Storeton. Our team treats every home with care, using safe, eco-friendly products suitable for children, pets and allergy sufferers.',
+    nearby: ['Heswall', 'Pensby', 'Thingwall', 'Gayton', 'Irby'],
+  },
+  {
+    slug: 'gayton',
+    name: 'Gayton',
+    county: 'Merseyside',
+    description:
+      'Our professional carpet cleaning service covers Gayton and the lower Heswall area near the Dee estuary. From large family homes to apartments, we deliver deep cleaning results that make carpets look and feel like new.',
+    nearby: ['Heswall', 'Barnston', 'Neston', 'Pensby', 'Thurstaston'],
+  },
+  {
+    slug: 'thurstaston',
+    name: 'Thurstaston',
+    county: 'Merseyside',
+    description:
+      'We serve Thurstaston and the surrounding villages along the Dee coast with professional carpet and upholstery cleaning. Sandy paths and country walks are hard on carpets — our deep-clean process lifts out trodden-in dirt and restores the pile.',
+    nearby: ['Irby', 'Caldy', 'West Kirby', 'Heswall', 'Greasby'],
+  },
+  {
+    slug: 'caldy',
+    name: 'Caldy',
+    county: 'Merseyside',
+    description:
+      'Caldy homeowners choose our team for careful, high-quality carpet and upholstery cleaning. We are experienced with wool and other premium carpets, using the correct cleaning method for each fibre so your flooring is protected as well as cleaned.',
+    nearby: ['West Kirby', 'Thurstaston', 'Hoylake', 'Irby', 'Heswall'],
+  },
+  {
+    slug: 'meols',
+    name: 'Meols',
+    county: 'Merseyside',
+    description:
+      'Our carpet cleaning team regularly works in Meols, from homes near the promenade to the streets around the station. Coastal living means sand and salt get walked into carpets — our hot-water extraction clean removes it all and leaves carpets fresh.',
+    nearby: ['Hoylake', 'West Kirby', 'Moreton', 'Saughall Massie', 'Greasby'],
+  },
+  {
+    slug: 'saughall-massie',
+    name: 'Saughall Massie',
+    county: 'Merseyside',
+    description:
+      'We provide professional carpet and upholstery cleaning across Saughall Massie village and the surrounding area. Our local team offers fast response times, free quotes and thorough deep cleaning with fast drying times.',
+    nearby: ['Moreton', 'Upton', 'Meols', 'Greasby', 'Leasowe'],
+  },
+  {
+    slug: 'leasowe',
+    name: 'Leasowe',
+    county: 'Merseyside',
+    description:
+      'Leasowe residents benefit from our fast, affordable carpet cleaning service. We cover the whole area from Leasowe Road to the coast, cleaning carpets, stairs, rugs and sofas in homes of every size at competitive prices.',
+    nearby: ['Moreton', 'Wallasey', 'Bidston', 'New Brighton', 'Upton'],
+  },
+  {
+    slug: 'bidston',
+    name: 'Bidston',
+    county: 'Merseyside',
+    description:
+      'Our team serves Bidston, Bidston Village and the surrounding estates with professional carpet and upholstery cleaning. We bring the same commercial-grade equipment and attention to detail to every home, with free no-obligation quotes.',
+    nearby: ['Birkenhead', 'Upton', 'Leasowe', 'Claughton', 'Prenton'],
+  },
+  {
+    slug: 'claughton',
+    name: 'Claughton',
+    county: 'Merseyside',
+    description:
+      'We clean carpets and upholstery in homes throughout Claughton. Many Claughton properties are older houses with original features and quality carpets — our careful deep-clean process refreshes them without harsh chemicals.',
+    nearby: ['Birkenhead', 'Oxton', 'Bidston', 'Prenton', 'Wallasey'],
+  },
+  {
+    slug: 'oxton',
+    name: 'Oxton',
+    county: 'Merseyside',
+    description:
+      'Oxton village and the surrounding conservation area are regular stops for our carpet cleaning team. From Victorian terraces to modern apartments, we tailor our cleaning approach to each property and always leave carpets fresh, clean and fast-drying.',
+    nearby: ['Claughton', 'Prenton', 'Birkenhead', 'Woodchurch', 'Tranmere'],
+  },
+  {
+    slug: 'tranmere',
+    name: 'Tranmere',
+    county: 'Merseyside',
+    description:
+      'We provide affordable, professional carpet cleaning across Tranmere. Whether you need one room refreshed or a full end-of-tenancy clean, our fully insured team delivers excellent results with no hidden fees.',
+    nearby: ['Birkenhead', 'Rock Ferry', 'Prenton', 'Oxton', 'Bebington'],
+  },
+  {
+    slug: 'rock-ferry',
+    name: 'Rock Ferry',
+    county: 'Merseyside',
+    description:
+      'Rock Ferry homes and rental properties are well served by our carpet cleaning team. We work with homeowners, tenants and landlords across the area, providing deep cleans that remove stains, odours and allergens.',
+    nearby: ['Tranmere', 'New Ferry', 'Birkenhead', 'Bebington', 'Prenton'],
+  },
+  {
+    slug: 'new-ferry',
+    name: 'New Ferry',
+    county: 'Merseyside',
+    description:
+      'Our carpet and upholstery cleaning service covers New Ferry and the surrounding streets along the Mersey. We offer competitive prices, free quotes and a thorough hot-water extraction clean that leaves carpets sanitised and fresh.',
+    nearby: ['Rock Ferry', 'Bebington', 'Port Sunlight', 'Bromborough', 'Tranmere'],
+  },
+  {
+    slug: 'port-sunlight',
+    name: 'Port Sunlight',
+    county: 'Merseyside',
+    description:
+      'We are proud to clean carpets in the beautiful garden village of Port Sunlight. Our team takes extra care in these historic homes, using gentle, eco-friendly products and the right method for each carpet type.',
+    nearby: ['Bebington', 'New Ferry', 'Bromborough', 'Rock Ferry', 'Eastham'],
+  },
+  {
+    slug: 'eastham',
+    name: 'Eastham',
+    county: 'Merseyside',
+    description:
+      'Eastham and Eastham Ferry are firmly within our core service area. We clean carpets, stairs, rugs and upholstery in homes across the village, with flexible appointment times and no payment taken until the job is done.',
+    nearby: ['Bromborough', 'Port Sunlight', 'Willaston', 'Ellesmere Port', 'Bebington'],
+  },
+  {
+    slug: 'willaston',
+    name: 'Willaston',
+    county: 'Cheshire',
+    description:
+      'Our carpet cleaning team covers Willaston and the surrounding south Wirral villages. We bring professional equipment and years of experience to every home, delivering a deep clean that removes embedded dirt and refreshes tired carpets.',
+    nearby: ['Neston', 'Eastham', 'Bromborough', 'Ellesmere Port', 'Heswall'],
+  },
+  {
+    slug: 'woodchurch',
+    name: 'Woodchurch',
+    county: 'Merseyside',
+    description:
+      'We provide reliable, affordable carpet cleaning across Woodchurch. From family homes on the estate to properties near Arrowe Park, our team delivers professional deep cleaning with free quotes and fast drying times.',
+    nearby: ['Upton', 'Prenton', 'Thingwall', 'Greasby', 'Oxton'],
+  },
+  {
+    slug: 'liscard',
+    name: 'Liscard',
+    county: 'Merseyside',
+    description:
+      'Liscard is one of our busiest service areas, and our team is in and around Liscard village most weeks. We clean carpets, sofas and stairs in homes and flats across the area, with competitive prices and consistently excellent results.',
+    nearby: ['Wallasey', 'New Brighton', 'Seacombe', 'Leasowe', 'Birkenhead'],
+  },
+  {
+    slug: 'seacombe',
+    name: 'Seacombe',
+    county: 'Merseyside',
+    description:
+      'Our carpet cleaning service covers Seacombe and the streets along the Mersey ferry front. We work with homeowners, tenants and landlords, providing thorough deep cleans that remove stains, odours and allergens at affordable prices.',
+    nearby: ['Liscard', 'Wallasey', 'New Brighton', 'Birkenhead', 'Leasowe'],
+  },
 ];
 
 export default locations;

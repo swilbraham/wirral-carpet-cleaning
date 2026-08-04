@@ -92,6 +92,16 @@ const faqs = [
     answer:
       'One. We deliberately take a single trainee at a time so you get maximum hands-on time on every job and our customers get the same quality of service as always.',
   },
+  {
+    question: 'Where is the course held? I’m not local — can I still attend?',
+    answer:
+      'The course runs on our real customer rounds across Wirral, Liverpool and Chester, and trainees join us from all over the UK. We’re easy to reach — around 40 minutes from Liverpool, an hour from Manchester, and close to the M53 and M56 — with plenty of affordable hotels and B&Bs nearby. Tell us where you’re travelling from and we’ll suggest somewhere convenient to stay for the week.',
+  },
+  {
+    question: 'Do you run courses in other parts of the country?',
+    answer:
+      'No — and that’s deliberate. The training happens on our genuine customer bookings, which is exactly what makes it worth more than a classroom course. Trainees travel to us from across England, Scotland, Wales and Northern Ireland for the week, then take everything home to launch in their own area.',
+  },
 ];
 
 function FAQItem({ question, answer }) {
@@ -156,22 +166,42 @@ export default function TrainingPage() {
     '@type': 'Course',
     name: '5-Day Live Carpet Cleaning Training Course',
     description:
-      'Hands-on carpet cleaning training on real customer jobs across Wirral and Merseyside. One trainee per course, all equipment provided, certificate of completion.',
+      'Hands-on carpet cleaning training on real customer jobs. One trainee per course, all equipment provided, certificate of completion. Trainees welcome from anywhere in the UK.',
     provider: {
       '@type': 'LocalBusiness',
       name: 'Wirral Carpet Cleaning Limited',
       telephone: '0151 936 9664',
       url: 'https://www.wirralcarpetcleaning.com',
+      address: {
+        '@type': 'PostalAddress',
+        addressRegion: 'Merseyside',
+        addressCountry: 'GB',
+      },
+    },
+    offers: {
+      '@type': 'Offer',
+      price: '995',
+      priceCurrency: 'GBP',
+      category: 'Paid',
+    },
+    hasCourseInstance: {
+      '@type': 'CourseInstance',
+      courseMode: 'Onsite',
+      courseWorkload: 'P5D',
+      location: {
+        '@type': 'Place',
+        name: 'Wirral, Merseyside (training on real customer jobs across Wirral, Liverpool and Chester)',
+      },
     },
   };
 
   return (
     <>
       <Helmet>
-        <title>Carpet Cleaning Training Course | 5 Days on Real Customer Jobs | Wirral Carpet Cleaning</title>
+        <title>Carpet Cleaning Training Course UK | 5 Days on Real Customer Jobs | Wirral Carpet Cleaning</title>
         <meta
           name="description"
-          content="Learn carpet cleaning on real customer jobs — not in a classroom. 5-day one-to-one training across Wirral & Merseyside with an experienced technician. Equipment provided, certificate of completion. Call 0151 936 9664."
+          content="Hands-on carpet cleaning training course on real customer jobs — not in a classroom. 5-day one-to-one course, £995, trainees welcome from anywhere in the UK. Equipment provided, certificate of completion. Call 0151 936 9664."
         />
         <link rel="canonical" href="https://www.wirralcarpetcleaning.com/training" />
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
@@ -191,7 +221,8 @@ export default function TrainingPage() {
           <p className="text-lg text-gray-300 max-w-2xl mx-auto mb-6">
             A 5-day, one-to-one training experience. No classroom, no demo rig —
             you spend the week working genuine bookings alongside an experienced,
-            fully insured technician with 15+ years in the trade.
+            fully insured technician with 15+ years in the trade. Trainees welcome
+            from anywhere in the UK.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
@@ -305,6 +336,48 @@ export default function TrainingPage() {
                 <span className="text-gray-700 font-medium">{point}</span>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* UK-wide */}
+      <section className="py-16 md:py-20 bg-gray-50">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+            Train With Us From Anywhere in the UK
+          </h2>
+          <p className="text-gray-600 leading-relaxed mb-8 max-w-2xl mx-auto">
+            Because the course runs on real customer jobs, it happens on our
+            rounds across Wirral, Liverpool and Chester — and trainees travel to
+            us from all over England, Scotland, Wales and Northern Ireland to
+            learn this way. Most book a local hotel or B&amp;B for the week and
+            treat it as a working residential course.
+          </p>
+          <div className="grid sm:grid-cols-3 gap-4 text-left">
+            <div className="bg-white rounded-xl border border-gray-200 p-5">
+              <h3 className="font-bold text-gray-900 mb-2">Easy to reach</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">
+                Minutes from the M53 and M56, around 40 minutes from Liverpool
+                and an hour from Manchester. Direct trains to Liverpool from
+                most of the UK.
+              </p>
+            </div>
+            <div className="bg-white rounded-xl border border-gray-200 p-5">
+              <h3 className="font-bold text-gray-900 mb-2">Affordable stays</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">
+                Plenty of reasonably priced hotels and B&amp;Bs nearby — tell us
+                where you&apos;re travelling from and we&apos;ll suggest
+                somewhere convenient for the week.
+              </p>
+            </div>
+            <div className="bg-white rounded-xl border border-gray-200 p-5">
+              <h3 className="font-bold text-gray-900 mb-2">Launch back home</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">
+                Everything you learn — the technical skills, pricing and
+                marketing — is designed to set up your own round in your own
+                area, wherever that is.
+              </p>
+            </div>
           </div>
         </div>
       </section>

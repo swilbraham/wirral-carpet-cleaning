@@ -8,6 +8,7 @@ const quickLinks = [
   { name: 'Upholstery Cleaning', href: '/services/upholstery-cleaning' },
   { name: 'Commercial Carpet Cleaning', href: '/services/commercial-cleaning' },
   { name: 'Biohazard Cleaning', href: '/services/biohazard-cleaning' },
+  { name: 'Training Course', href: '/training' },
 ];
 
 const companyLinks = [

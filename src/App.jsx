@@ -24,6 +24,7 @@ import LocationPage from './components/LocationPage';
 import StainRemovalPage from './components/StainRemovalPage';
 import BlogIndex from './components/BlogIndex';
 import BlogPost from './components/BlogPost';
+import TrainingPage from './components/TrainingPage';
 
 function HomePage() {
   const location = useLocation();
@@ -71,6 +72,7 @@ function MainLayout() {
         <Route path="/stain-removal/:slug" element={<StainRemovalPage />} />
         <Route path="/blog" element={<BlogIndex />} />
         <Route path="/blog/:slug" element={<BlogPost />} />
+        <Route path="/training" element={<TrainingPage />} />
       </Routes>
       <Footer />
       <MobileCallButton />

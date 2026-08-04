@@ -10,6 +10,7 @@ const navLinks = [
   { name: 'How It Works', href: '/#process' },
   { name: 'Reviews', href: '/#testimonials' },
   { name: 'Blog', href: '/blog' },
+  { name: 'Training', href: '/training' },
   { name: 'About', href: '/#about' },
   { name: 'Contact', href: '/#contact' },
 ];

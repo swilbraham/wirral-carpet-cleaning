@@ -22,7 +22,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gray-900 text-gray-400">
+    <footer className="bg-dark text-gray-400 border-t border-white/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
           {/* Brand */}
@@ -84,7 +84,7 @@ export default function Footer() {
                 <Link
                   key={area.slug}
                   to={`/areas/${area.slug}`}
-                  className="px-2.5 py-1 rounded-md bg-gray-800 text-xs text-gray-400 hover:bg-gray-700 hover:text-white transition-colors"
+                  className="px-2.5 py-1 rounded-md bg-white/5 border border-white/5 text-xs text-gray-400 hover:bg-white/10 hover:text-white transition-colors"
                 >
                   {area.name}
                 </Link>
@@ -94,7 +94,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="border-t border-gray-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-gray-500">
             &copy; {currentYear} Wirral Carpet Cleaning Limited. All rights reserved.
           </p>

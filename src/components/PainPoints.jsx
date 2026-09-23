@@ -45,10 +45,11 @@ function AnimatedCard({ item, index }) {
       initial={{ opacity: 0, y: 40 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="group relative p-6 md:p-8 rounded-2xl bg-white border border-gray-100 hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300"
+      className="group relative p-6 md:p-8 rounded-2xl bg-white border border-gray-100 hover:border-primary/20 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 transition-all duration-300 overflow-hidden"
     >
-      <div className="w-12 h-12 rounded-xl bg-primary/10 group-hover:bg-primary/20 flex items-center justify-center mb-5 transition-colors">
-        <item.icon className="w-6 h-6 text-primary" />
+      <span className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary to-accent opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-accent shadow-lg shadow-primary/20 flex items-center justify-center mb-5">
+        <item.icon className="w-6 h-6 text-white" />
       </div>
       <h3 className="text-lg font-bold text-gray-900 mb-3">{item.title}</h3>
       <p className="text-gray-500 leading-relaxed">{item.description}</p>

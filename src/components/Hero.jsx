@@ -96,7 +96,7 @@ export default function Hero() {
             >
               <a
                 href="#contact"
-                className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-accent hover:bg-accent-light text-white rounded-xl text-lg font-semibold transition-all hover:shadow-xl hover:shadow-accent/25 hover:-translate-y-0.5"
+                className="group inline-flex items-center justify-center gap-2 px-8 py-4 btn-accent text-white rounded-xl text-lg font-semibold"
               >
                 Get a Free Quote
                 <HiArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -115,10 +115,10 @@ export default function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="grid grid-cols-3 gap-4 md:gap-8 max-w-lg"
+              className="grid grid-cols-3 divide-x divide-white/10 max-w-lg"
             >
               {stats.map(({ icon: Icon, value, label }) => (
-                <div key={label} className="text-center md:text-left">
+                <div key={label} className="text-center md:text-left px-3 md:px-6 first:pl-0">
                   <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
                     <Icon className="w-5 h-5 text-accent" />
                     <span className="text-2xl md:text-3xl font-bold text-white">{value}</span>
@@ -145,12 +145,24 @@ export default function Hero() {
               <div className="absolute inset-0 bg-gradient-to-t from-dark/40 to-transparent" />
             </div>
             {/* Floating badge */}
-            <div className="absolute -bottom-4 -left-4 glass-light rounded-xl px-5 py-3 shadow-lg">
-              <p className="text-sm font-semibold text-gray-900">Trusted by 1,000+ customers</p>
-              <div className="flex gap-0.5 mt-1">
-                {[...Array(5)].map((_, i) => (
-                  <HiStar key={i} className="w-4 h-4 text-amber-400" />
+            <div className="absolute -bottom-4 -left-4 glass-light rounded-xl px-5 py-3.5 shadow-lg flex items-center gap-3">
+              <div className="flex -space-x-2">
+                {['S', 'J', 'K', 'D'].map((initial, i) => (
+                  <span
+                    key={i}
+                    className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent text-white text-xs font-bold flex items-center justify-center ring-2 ring-white"
+                  >
+                    {initial}
+                  </span>
                 ))}
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-900">Trusted by 1,000+ customers</p>
+                <div className="flex gap-0.5 mt-0.5">
+                  {[...Array(5)].map((_, i) => (
+                    <HiStar key={i} className="w-4 h-4 text-amber-400" />
+                  ))}
+                </div>
               </div>
             </div>
           </motion.div>

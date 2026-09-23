@@ -25,6 +25,42 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+::selection {
+  background: rgba(4, 167, 235, 0.25);
+}
+
+/* Subtle branded scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 8px;
+  border: 2px solid #f1f5f9;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #1e73be;
+}
+
+/* Primary gradient CTA button */
+.btn-accent {
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-primary) 100%);
+  background-size: 150% 150%;
+  background-position: 0% 50%;
+  box-shadow: 0 10px 30px -10px rgba(4, 167, 235, 0.5);
+  transition: all 0.3s ease;
+}
+.btn-accent:hover {
+  background-position: 100% 50%;
+  box-shadow: 0 16px 40px -12px rgba(4, 167, 235, 0.65);
+  transform: translateY(-2px);
 }
 
 .glass {

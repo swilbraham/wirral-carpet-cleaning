@@ -118,7 +118,7 @@ export default function About() {
               {credentials.map(({ icon: Icon, label }) => (
                 <div
                   key={label}
-                  className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100"
+                  className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100 hover:border-primary/20 hover:bg-primary/5 transition-colors"
                 >
                   <Icon className="w-5 h-5 text-primary shrink-0" />
                   <span className="text-sm font-medium text-gray-700">{label}</span>
@@ -150,7 +150,7 @@ export default function About() {
               {areas.map((area) => (
                 <span
                   key={area}
-                  className="px-3 py-1.5 rounded-lg bg-gray-50 border border-gray-100 text-sm text-gray-600 hover:bg-primary/5 hover:text-primary hover:border-primary/20 transition-colors cursor-default"
+                  className="px-3 py-1.5 rounded-lg bg-white border border-gray-100 text-sm text-gray-600 hover:bg-primary/5 hover:text-primary hover:border-primary/20 transition-colors cursor-default"
                 >
                   {area}
                 </span>

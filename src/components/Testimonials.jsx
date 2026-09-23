@@ -67,16 +67,22 @@ function TestimonialCard({ testimonial, index }) {
       initial={{ opacity: 0, y: 30 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.4, delay: index * 0.1 }}
-      className="relative p-6 md:p-8 rounded-2xl bg-white border border-gray-100 hover:shadow-lg transition-shadow"
+      className="relative p-6 md:p-8 rounded-2xl bg-white border border-gray-100 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-300"
     >
+      <span aria-hidden="true" className="absolute top-4 right-6 font-heading text-7xl leading-none text-primary/10 select-none">”</span>
       <StarRating rating={testimonial.rating} />
       <p className="mt-4 mb-6 text-gray-600 leading-relaxed">
         &ldquo;{testimonial.text}&rdquo;
       </p>
       <div className="flex items-center justify-between">
-        <div>
-          <p className="font-semibold text-gray-900">{testimonial.name}</p>
-          <p className="text-sm text-gray-400">{testimonial.location}</p>
+        <div className="flex items-center gap-3">
+          <span className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent text-white text-sm font-bold flex items-center justify-center shrink-0">
+            {testimonial.name.charAt(0)}
+          </span>
+          <div>
+            <p className="font-semibold text-gray-900">{testimonial.name}</p>
+            <p className="text-sm text-gray-400">{testimonial.location}</p>
+          </div>
         </div>
         <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
           {testimonial.service}

@@ -46,7 +46,7 @@ function FAQItem({ faq, index }) {
       initial={{ opacity: 0, y: 20 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.4, delay: index * 0.08 }}
-      className="border border-gray-100 rounded-xl overflow-hidden bg-white"
+      className="border border-gray-100 rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow-md hover:border-primary/15 transition-all"
     >
       <button
         onClick={() => setIsOpen(!isOpen)}

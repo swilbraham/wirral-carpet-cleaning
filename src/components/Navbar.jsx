@@ -95,7 +95,7 @@ export default function Navbar() {
             <a
               href="/#contact"
               onClick={(e) => handleNavClick(e, '/#contact')}
-              className="px-5 py-2.5 bg-accent hover:bg-accent-light text-white rounded-lg text-sm font-semibold transition-all hover:shadow-lg hover:shadow-accent/25"
+              className="px-5 py-2.5 btn-accent text-white rounded-lg text-sm font-semibold"
             >
               Get a Quote
             </a>

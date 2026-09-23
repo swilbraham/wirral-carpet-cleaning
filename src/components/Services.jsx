@@ -14,7 +14,7 @@ function ServiceCard({ service, index }) {
       initial={{ opacity: 0, y: 50 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="group relative rounded-2xl bg-white border border-gray-100 hover:border-gray-200 overflow-hidden hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500"
+      className="group relative rounded-2xl bg-white border border-gray-100 hover:border-primary/15 overflow-hidden hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1.5 transition-all duration-500"
     >
       {/* Service image */}
       <div className="relative h-48 overflow-hidden">
@@ -28,8 +28,8 @@ function ServiceCard({ service, index }) {
           <service.icon className={`w-6 h-6 ${service.iconColor}`} />
         </div>
         {/* Pricing badge */}
-        <div className="absolute top-4 right-4 px-3 py-1.5 rounded-lg bg-white/90 backdrop-blur-sm">
-          <span className="text-sm font-bold text-gray-900">{service.price}</span>
+        <div className="absolute top-4 right-4 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-accent to-primary shadow-lg shadow-black/20">
+          <span className="text-sm font-bold text-white">{service.price}</span>
         </div>
       </div>
 

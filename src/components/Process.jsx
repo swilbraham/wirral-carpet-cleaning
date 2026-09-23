@@ -47,7 +47,7 @@ function StepCard({ step, index, total }) {
     >
       {/* Connector line (hidden on last item and on mobile) */}
       {index < total - 1 && (
-        <div className="hidden lg:block absolute top-10 left-[calc(50%+40px)] w-[calc(100%-80px)] h-[2px] bg-gradient-to-r from-primary/30 to-primary/10" />
+        <div className="hidden lg:block absolute top-10 left-[calc(50%+40px)] w-[calc(100%-80px)] border-t-2 border-dashed border-primary/25" />
       )}
 
       <div className="relative text-center group">
@@ -56,7 +56,7 @@ function StepCard({ step, index, total }) {
           <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center shadow-lg shadow-primary/20 group-hover:shadow-xl group-hover:shadow-primary/30 transition-shadow">
             <step.icon className="w-8 h-8 text-white" />
           </div>
-          <span className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-accent text-white text-xs font-bold flex items-center justify-center shadow-md">
+          <span className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-gradient-to-br from-accent to-accent-light text-white text-xs font-bold flex items-center justify-center shadow-md ring-2 ring-white">
             {step.step}
           </span>
         </div>

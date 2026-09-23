@@ -123,7 +123,7 @@ export default function CTA() {
             <div className="pt-6">
               <a
                 href="tel:01519369664"
-                className="group inline-flex items-center gap-3 px-6 py-4 bg-accent hover:bg-accent-light text-white rounded-xl font-semibold transition-all hover:shadow-lg hover:shadow-accent/25 w-full justify-center sm:w-auto"
+                className="group inline-flex items-center gap-3 px-6 py-4 btn-accent text-white rounded-xl font-semibold w-full justify-center sm:w-auto"
               >
                 <HiPhone className="w-5 h-5" />
                 Call Now: 0151 936 9664
@@ -294,7 +294,7 @@ export default function CTA() {
 
                   <button
                     type="submit"
-                    className="group w-full flex items-center justify-center gap-2 px-6 py-4 bg-accent hover:bg-accent-light text-white rounded-xl font-semibold text-lg transition-all hover:shadow-lg hover:shadow-accent/25"
+                    className="group w-full flex items-center justify-center gap-2 px-6 py-4 btn-accent text-white rounded-xl font-semibold text-lg"
                   >
                     Get My Free Quote
                     <HiArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

@@ -218,6 +218,7 @@ export default function CostCalculator() {
           note: 'Quote viewed on the website. If no booking follows, worth a text.',
         }),
       }).catch(() => {});
+      notifySms('quote');
     }, 5000);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -319,6 +320,29 @@ export default function CostCalculator() {
     };
   };
 
+  // Fire-and-forget texts via /api/notify — the booking must never fail
+  // because an SMS did.
+  const notifySms = (kind) => {
+    const selectedDate = availableDates.find(
+      (d) => formatDateValue(d) === formData.date
+    );
+    fetch('/api/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        kind,
+        name: formData.name,
+        phone: formData.phone,
+        address: formData.address,
+        postcode: formData.postcode,
+        date: selectedDate ? formatDate(selectedDate) : formData.date,
+        time: formData.timeSlot === 'am' ? 'AM' : 'PM',
+        items: describeLines(lines).join(', '),
+        total: `£${total.toFixed(2)}`,
+      }),
+    }).catch(() => {});
+  };
+
   // Booking without prepayment: "nothing to pay until the job is done"
   // converts far better than a payment wall. The email send is checked — a
   // booking that never reached the office must not show as confirmed.
@@ -341,6 +365,7 @@ export default function CostCalculator() {
       if (!res.ok || data.success === false) {
         throw new Error('send failed');
       }
+      notifySms('booking');
       if (typeof fbq === 'function')
         fbq('track', 'Schedule', { value: total, currency: 'GBP' });
       setBookedVia('payday');
@@ -372,6 +397,7 @@ export default function CostCalculator() {
       // Email failure shouldn't block payment confirmation
     }
 
+    notifySms('booking-paid');
     if (typeof fbq === 'function') fbq('track', 'Purchase', { value: total, currency: 'GBP' });
   };
 

@@ -79,11 +79,11 @@ export default function LocationPage() {
               Call 0151 936 9664
             </a>
             <Link
-              to="/#calculator"
+              to="/book"
               className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-semibold transition-colors"
             >
               <HiCurrencyPound className="w-5 h-5" />
-              Get a Quote
+              Book Online
             </Link>
           </div>
         </div>
@@ -191,7 +191,7 @@ export default function LocationPage() {
             and biohazard cleaning quoted individually.
           </p>
           <Link
-            to="/#calculator"
+            to="/book"
             className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl font-semibold transition-colors"
           >
             Get Your Estimated Price
@@ -227,7 +227,7 @@ export default function LocationPage() {
       <section className="py-16 md:py-20 bg-primary">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-            Get a Free Quote in {location.name}
+            Book your clean in {location.name}
           </h2>
           <p className="text-white/80 mb-8">
             Call us today or use our online price estimator for an instant
@@ -242,10 +242,10 @@ export default function LocationPage() {
               0151 936 9664
             </a>
             <Link
-              to="/#calculator"
+              to="/book"
               className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-semibold transition-colors"
             >
-              Get a Quote Online
+              Book Online
               <HiArrowRight className="w-5 h-5" />
             </Link>
           </div>

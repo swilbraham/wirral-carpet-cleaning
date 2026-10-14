@@ -95,10 +95,10 @@ export default function Hero() {
               className="flex flex-col sm:flex-row gap-4 mb-16"
             >
               <a
-                href="#contact"
+                href="/book"
                 className="group inline-flex items-center justify-center gap-2 px-8 py-4 btn-accent text-white rounded-xl text-lg font-semibold"
               >
-                Get a Free Quote
+                Book Online &mdash; Fixed Price
                 <HiArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </a>
               <a

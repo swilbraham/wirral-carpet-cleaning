@@ -99,11 +99,11 @@ export default function ServicePage() {
               Call 0151 936 9664
             </a>
             <Link
-              to="/#calculator"
+              to="/book"
               className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-semibold transition-colors"
             >
               <HiCurrencyPound className="w-5 h-5" />
-              Get a Quote
+              Book Online
             </Link>
           </div>
         </div>
@@ -194,7 +194,7 @@ export default function ServicePage() {
             {service.pricingNote}
           </p>
           <Link
-            to="/#calculator"
+            to="/book"
             className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl font-semibold transition-colors"
           >
             Get Your Estimated Price
@@ -262,10 +262,10 @@ export default function ServicePage() {
               0151 936 9664
             </a>
             <Link
-              to="/#calculator"
+              to="/book"
               className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-semibold transition-colors"
             >
-              Get a Quote Online
+              Book Online
               <HiArrowRight className="w-5 h-5" />
             </Link>
           </div>

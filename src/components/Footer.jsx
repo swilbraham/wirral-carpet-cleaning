@@ -15,7 +15,7 @@ const companyLinks = [
   { name: 'About Us', href: '#about' },
   { name: 'How It Works', href: '#process' },
   { name: 'Reviews', href: '#testimonials' },
-  { name: 'Get a Quote', href: '#contact' },
+  { name: 'Book Online', href: '/book' },
 ];
 
 export default function Footer() {

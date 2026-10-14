@@ -202,6 +202,15 @@ export default function CTA() {
                   </div>
                 </div>
               ) : (
+                <>
+                <a
+                  href="/book"
+                  className="mb-5 flex items-center justify-between gap-3 rounded-xl bg-accent/15 border border-accent/30 px-4 py-3 text-sm font-semibold text-white hover:bg-accent/25 transition-colors"
+                >
+                  <span>⚡ Skip the wait — price &amp; book online in under a minute</span>
+                  <span className="text-accent">&rarr;</span>
+                </a>
+
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <input type="text" name="_honey" style={{ display: 'none' }} />
 
@@ -296,7 +305,7 @@ export default function CTA() {
                     type="submit"
                     className="group w-full flex items-center justify-center gap-2 px-6 py-4 btn-accent text-white rounded-xl font-semibold text-lg"
                   >
-                    Get My Free Quote
+                    Send My Details
                     <HiArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </button>
 
@@ -304,6 +313,7 @@ export default function CTA() {
                     No spam, no obligation. We typically respond within 2 hours.
                   </p>
                 </form>
+                </>
               )}
             </div>
           </div>

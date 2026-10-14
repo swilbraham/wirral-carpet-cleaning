@@ -93,11 +93,10 @@ export default function Navbar() {
               0151 936 9664
             </a>
             <a
-              href="/#contact"
-              onClick={(e) => handleNavClick(e, '/#contact')}
+              href="/book"
               className="px-5 py-2.5 btn-accent text-white rounded-lg text-sm font-semibold"
             >
-              Get a Quote
+              Book Online
             </a>
           </div>
 
@@ -143,11 +142,10 @@ export default function Navbar() {
                   Call 0151 936 9664
                 </a>
                 <a
-                  href="/#contact"
-                  onClick={(e) => handleNavClick(e, '/#contact')}
+                  href="/book"
                   className="block text-center w-full px-4 py-3 bg-accent text-white rounded-lg font-semibold"
                 >
-                  Get a Free Quote
+                  Book Online
                 </a>
               </div>
             </div>

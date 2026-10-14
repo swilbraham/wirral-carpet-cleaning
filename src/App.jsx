@@ -25,6 +25,7 @@ import StainRemovalPage from './components/StainRemovalPage';
 import BlogIndex from './components/BlogIndex';
 import BlogPost from './components/BlogPost';
 import TrainingPage from './components/TrainingPage';
+import BookPage from './components/BookPage';
 
 function HomePage() {
   const location = useLocation();
@@ -64,6 +65,7 @@ function MainLayout() {
       <Navbar />
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/book" element={<BookPage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/pay" element={<PaymentPage />} />
         <Route path="/pay/success" element={<PaymentSuccess />} />

@@ -2,10 +2,19 @@ import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 
 /**
- * The one-van admin: upcoming jobs, past customers, quotes worth chasing,
- * and who is due a re-clean reminder. Read-only on purpose — the diary of
- * record is still you; this is the memory your inbox doesn't have.
+ * The one-van CRM: a stat strip that answers "anything need me?", an
+ * Overview of what to act on today, and tabs for the full lists. All data
+ * arrives in one fetch; tabs are pure display. Read-only except the two
+ * deliberate actions: discount codes, and silently marking a quote booked.
  */
+const TABS = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'jobs', label: 'Jobs' },
+  { id: 'quotes', label: 'Quotes' },
+  { id: 'customers', label: 'Customers' },
+  { id: 'codes', label: 'Codes' },
+];
+
 export default function AdminPage() {
   const [password, setPassword] = useState(
     () => sessionStorage.getItem('wcc-admin') || ''
@@ -14,6 +23,7 @@ export default function AdminPage() {
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [tab, setTab] = useState('overview');
   const [newCode, setNewCode] = useState('');
   const [newPct, setNewPct] = useState('10');
   const [codeMsg, setCodeMsg] = useState('');
@@ -43,7 +53,7 @@ export default function AdminPage() {
     }
   };
 
-  const codeAction = async (body) => {
+  const adminPost = async (body) => {
     setCodeMsg('');
     try {
       const res = await fetch('/api/admin', {
@@ -60,7 +70,7 @@ export default function AdminPage() {
         return;
       }
       setNewCode('');
-      await load(password); // refresh the list
+      await load(password); // refresh everything
     } catch {
       setCodeMsg("Couldn't reach the server — try again.");
     }
@@ -109,12 +119,27 @@ export default function AdminPage() {
     );
   }
 
-  const Section = ({ title, hint, children }) => (
+  const toChase = data.quotes.filter((q) => !q.booked && !q.chased_at);
+  const codes = data.codes || [];
+
+  const Section = ({ title, hint, children, action }) => (
     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 md:p-6">
-      <h2 className="text-lg font-bold text-gray-900">{title}</h2>
+      <div className="flex items-baseline justify-between gap-3">
+        <h2 className="text-lg font-bold text-gray-900">{title}</h2>
+        {action}
+      </div>
       {hint && <p className="mt-0.5 text-sm text-gray-500">{hint}</p>}
       <div className="mt-3">{children}</div>
     </div>
+  );
+
+  const ViewAll = ({ to, children }) => (
+    <button
+      onClick={() => setTab(to)}
+      className="text-sm font-semibold text-primary underline shrink-0"
+    >
+      {children}
+    </button>
   );
 
   const Empty = ({ children }) => (
@@ -140,11 +165,8 @@ export default function AdminPage() {
                   paid
                 </span>
               )}
-              <span className="ml-2 text-xs font-normal text-gray-400 group-open:hidden">
-                tap for details
-              </span>
             </p>
-            <p className="text-sm text-gray-600">{b.name}</p>
+            <p className="text-sm text-gray-600">{b.name} · {b.postcode}</p>
           </div>
           <span className="font-bold text-primary">{b.total}</span>
         </summary>
@@ -169,15 +191,101 @@ export default function AdminPage() {
     </li>
   );
 
+  const QuoteRow = ({ q }) => (
+    <li>
+      <details className="group">
+        <summary className="cursor-pointer list-none py-2.5 flex flex-wrap items-baseline justify-between gap-2 text-sm rounded-lg px-2 -mx-2 hover:bg-gray-50">
+          <span className="font-semibold text-gray-900">{q.name}</span>
+          <span className="flex items-center gap-2">
+            {q.booked ? (
+              <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
+                {q.manual_booked ? 'booked ☎' : 'booked'}
+              </span>
+            ) : q.chased_at ? (
+              <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">10% sent</span>
+            ) : (
+              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800">chase</span>
+            )}
+            <span className="font-semibold text-gray-700">{q.total}</span>
+            <span className="text-gray-400">{q.created_at}</span>
+          </span>
+        </summary>
+        <div className="mb-2 rounded-xl bg-gray-50 border border-gray-100 px-4 py-3 divide-y divide-gray-100">
+          <Detail label="Phone">
+            <a href={`tel:${q.phone}`} className="font-semibold text-primary underline">{q.phone}</a>
+          </Detail>
+          {q.postcode && <Detail label="Postcode">{q.postcode}</Detail>}
+          <Detail label="Quoted for">
+            {String(q.items).split(', ').map((line) => (
+              <span key={line} className="block">{line}</span>
+            ))}
+          </Detail>
+          <Detail label="Quoted price">{q.total}</Detail>
+          <Detail label="When">{q.created_at}</Detail>
+          <Detail label="Status">
+            {q.manual_booked
+              ? 'Marked booked by you (phoned in)'
+              : q.booked
+                ? 'Went on to book online'
+                : q.chased_at
+                  ? `10% offer texted ${q.chased_at}`
+                  : 'Not booked — 10% offer goes out 6h after the quote'}
+          </Detail>
+          {!q.booked && (
+            <div className="pt-2">
+              <button
+                onClick={() => adminPost({ action: 'mark-booked', id: q.id, booked: true })}
+                className="rounded-xl bg-green-600 hover:bg-green-700 px-4 py-2 text-sm font-semibold text-white transition-colors"
+              >
+                Mark as booked — sends nothing
+              </button>
+              <p className="mt-1 text-xs text-gray-400">
+                For quotes that turned into a phone booking. Stops the 10% chase text; no message goes to anyone.
+              </p>
+            </div>
+          )}
+          {q.manual_booked && (
+            <div className="pt-2">
+              <button
+                onClick={() => adminPost({ action: 'mark-booked', id: q.id, booked: false })}
+                className="text-xs font-semibold text-gray-500 underline"
+              >
+                Un-mark (back to chaseable)
+              </button>
+            </div>
+          )}
+        </div>
+      </details>
+    </li>
+  );
+
+  const DueRow = ({ c }) => (
+    <li className="py-2.5 flex flex-wrap items-baseline justify-between gap-2 text-sm">
+      <span>
+        <span className="font-semibold text-gray-900">{c.name}</span>{' '}
+        <a href={`tel:${c.phone}`} className="font-semibold text-primary underline">{c.phone}</a>
+        <span className="text-gray-500"> · {c.postcode}</span>
+      </span>
+      <span className="text-gray-500">last clean {c.last_clean}</span>
+    </li>
+  );
+
+  const stats = [
+    { label: 'Upcoming jobs', value: data.upcoming.length, to: 'jobs', tone: 'text-primary' },
+    { label: 'Quotes to chase', value: toChase.length, to: 'quotes', tone: toChase.length > 0 ? 'text-amber-600' : 'text-gray-900' },
+    { label: 'Due a reminder', value: data.due.length, to: 'customers', tone: data.due.length > 0 ? 'text-amber-600' : 'text-gray-900' },
+    { label: 'Customers', value: data.customers.length, to: 'customers', tone: 'text-gray-900' },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50 pt-28 pb-20 px-4">
       <Helmet>
         <title>Admin | Wirral Carpet Cleaning</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-5">
         <div className="flex items-baseline justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">Wirral Carpet Cleaning — Admin</h1>
+          <h1 className="text-2xl font-bold text-gray-900">WCC Admin</h1>
           <button
             onClick={() => {
               sessionStorage.removeItem('wcc-admin');
@@ -190,213 +298,222 @@ export default function AdminPage() {
           </button>
         </div>
 
-        <Section title={`Upcoming jobs (${data.upcoming.length})`}>
-          {data.upcoming.length === 0 ? (
-            <Empty>Nothing booked in. New bookings appear here automatically.</Empty>
-          ) : (
-            <ul className="divide-y divide-gray-100">
-              {data.upcoming.map((b) => <BookingRow key={b.id} b={b} />)}
-            </ul>
-          )}
-        </Section>
-
-        <Section
-          title={`Due a re-clean reminder (${data.due.length})`}
-          hint="Last cleaned over 9 months ago — a 'your carpets are due' text to these is the easiest work you'll ever win."
-        >
-          {data.due.length === 0 ? (
-            <Empty>Nobody yet — this fills up as booking history builds.</Empty>
-          ) : (
-            <ul className="divide-y divide-gray-100">
-              {data.due.map((c) => (
-                <li key={c.phone} className="py-2.5 flex flex-wrap items-baseline justify-between gap-2 text-sm">
-                  <span>
-                    <span className="font-semibold text-gray-900">{c.name}</span>{' '}
-                    <a href={`tel:${c.phone}`} className="font-semibold text-primary underline">{c.phone}</a>
-                    <span className="text-gray-500"> · {c.postcode}</span>
-                  </span>
-                  <span className="text-gray-500">last clean {c.last_clean}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Section>
-
-        <Section
-          title={`Quotes — last 30 days (${data.quotes.length})`}
-          hint="Everyone who unlocked a price. Un-booked ones are a text away from being a job."
-        >
-          {data.quotes.length === 0 ? (
-            <Empty>No quotes yet.</Empty>
-          ) : (
-            <ul className="divide-y divide-gray-100">
-              {data.quotes.map((q) => (
-                <li key={q.id}>
-                  <details className="group">
-                    <summary className="cursor-pointer list-none py-2.5 flex flex-wrap items-baseline justify-between gap-2 text-sm rounded-lg px-2 -mx-2 hover:bg-gray-50">
-                      <span className="font-semibold text-gray-900">{q.name}</span>
-                      <span className="flex items-center gap-2">
-                        {q.booked ? (
-                          <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
-                            {q.manual_booked ? 'booked ☎' : 'booked'}
-                          </span>
-                        ) : q.chased_at ? (
-                          <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">10% sent</span>
-                        ) : (
-                          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800">chase</span>
-                        )}
-                        <span className="font-semibold text-gray-700">{q.total}</span>
-                        <span className="text-gray-400">{q.created_at}</span>
-                      </span>
-                    </summary>
-                    <div className="mb-2 rounded-xl bg-gray-50 border border-gray-100 px-4 py-3 divide-y divide-gray-100">
-                      <Detail label="Phone">
-                        <a href={`tel:${q.phone}`} className="font-semibold text-primary underline">{q.phone}</a>
-                      </Detail>
-                      {q.postcode && <Detail label="Postcode">{q.postcode}</Detail>}
-                      <Detail label="Quoted for">
-                        {String(q.items).split(', ').map((line) => (
-                          <span key={line} className="block">{line}</span>
-                        ))}
-                      </Detail>
-                      <Detail label="Quoted price">{q.total}</Detail>
-                      <Detail label="When">{q.created_at}</Detail>
-                      <Detail label="Status">
-                        {q.manual_booked
-                          ? 'Marked booked by you (phoned in)'
-                          : q.booked
-                            ? 'Went on to book online'
-                            : q.chased_at
-                              ? `10% offer texted ${q.chased_at}`
-                              : 'Not booked — 10% offer goes out 6h after the quote'}
-                      </Detail>
-                      {!q.booked && (
-                        <div className="pt-2">
-                          <button
-                            onClick={() => codeAction({ action: 'mark-booked', id: q.id, booked: true })}
-                            className="rounded-xl bg-green-600 hover:bg-green-700 px-4 py-2 text-sm font-semibold text-white transition-colors"
-                          >
-                            Mark as booked — sends nothing
-                          </button>
-                          <p className="mt-1 text-xs text-gray-400">
-                            For quotes that turned into a phone booking. Stops the 10% chase text; no message goes to anyone.
-                          </p>
-                        </div>
-                      )}
-                      {q.manual_booked && (
-                        <div className="pt-2">
-                          <button
-                            onClick={() => codeAction({ action: 'mark-booked', id: q.id, booked: false })}
-                            className="text-xs font-semibold text-gray-500 underline"
-                          >
-                            Un-mark (back to chaseable)
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </details>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Section>
-
-        <Section
-          title={`Customers (${data.customers.length})`}
-          hint="Everyone who has booked, most recent first."
-        >
-          {data.customers.length === 0 ? (
-            <Empty>No customers recorded yet.</Empty>
-          ) : (
-            <ul className="divide-y divide-gray-100">
-              {data.customers.map((c) => (
-                <li key={c.phone} className="py-2.5 flex flex-wrap items-baseline justify-between gap-2 text-sm">
-                  <span>
-                    <span className="font-semibold text-gray-900">{c.name}</span>{' '}
-                    <a href={`tel:${c.phone}`} className="font-semibold text-primary underline">{c.phone}</a>
-                    <span className="text-gray-500"> · {c.postcode}</span>
-                  </span>
-                  <span className="text-gray-500">
-                    {c.bookings} clean{c.bookings === 1 ? '' : 's'} · last {c.last_clean}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Section>
-
-        <Section
-          title={`Discount codes (${(data.codes || []).length})`}
-          hint="Anyone can enter these at booking. Deleting a code stops it working immediately — bookings already made keep their price."
-        >
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              codeAction({ action: 'add-code', code: newCode, pct: newPct });
-            }}
-            className="flex flex-wrap items-center gap-2"
-          >
-            <input
-              type="text"
-              value={newCode}
-              onChange={(e) => setNewCode(e.target.value.toUpperCase())}
-              placeholder="NEWCODE10"
-              className="w-36 rounded-xl border border-gray-200 px-3 py-2 text-sm uppercase focus:border-primary focus:outline-none"
-            />
-            <select
-              value={newPct}
-              onChange={(e) => setNewPct(e.target.value)}
-              className="rounded-xl border border-gray-200 px-3 py-2 text-sm focus:border-primary focus:outline-none"
-            >
-              {[5, 10, 15, 20, 25, 30, 40, 50].map((p) => (
-                <option key={p} value={p}>{p}% off</option>
-              ))}
-            </select>
+        {/* Stat strip — each one jumps to its tab */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {stats.map((s) => (
             <button
-              type="submit"
-              disabled={newCode.trim().length < 3}
-              className="rounded-xl bg-primary hover:bg-primary-dark disabled:bg-gray-300 px-4 py-2 text-sm font-semibold text-white transition-colors"
+              key={s.label}
+              onClick={() => setTab(s.to)}
+              className="rounded-2xl border border-gray-200 bg-white p-4 text-left shadow-sm transition-colors hover:border-primary/40"
             >
-              Add code
+              <p className={`text-2xl font-bold tabular-nums ${s.tone}`}>{s.value}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">{s.label}</p>
             </button>
-            {codeMsg && <span className="text-sm text-red-600">{codeMsg}</span>}
-          </form>
-          {(data.codes || []).length > 0 && (
-            <ul className="mt-3 divide-y divide-gray-100">
-              {data.codes.map((c) => (
-                <li key={c.code} className="py-2.5 flex items-baseline justify-between gap-2 text-sm">
-                  <span>
-                    <span className="font-mono font-bold text-gray-900">{c.code}</span>
-                    <span className="ml-2 rounded-full bg-accent/10 px-2 py-0.5 text-xs font-semibold text-accent">
-                      {c.pct}% off
-                    </span>
-                    <span className="ml-2 text-gray-400">added {c.created_at}</span>
-                  </span>
-                  <button
-                    onClick={() => {
-                      if (window.confirm(`Delete ${c.code}? It stops working immediately.`)) {
-                        codeAction({ action: 'delete-code', code: c.code });
-                      }
-                    }}
-                    className="text-xs font-semibold text-red-600 underline"
-                  >
-                    Delete
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Section>
+          ))}
+        </div>
 
-        <Section title={`Past jobs (${data.past.length})`}>
-          {data.past.length === 0 ? (
-            <Empty>History builds from here.</Empty>
-          ) : (
-            <ul className="divide-y divide-gray-100">
-              {data.past.map((b) => <BookingRow key={b.id} b={b} />)}
-            </ul>
-          )}
-        </Section>
+        {/* Tab bar */}
+        <div className="flex gap-1 overflow-x-auto rounded-2xl border border-gray-200 bg-white p-1 shadow-sm">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className={`flex-1 whitespace-nowrap rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${
+                tab === t.id ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        {tab === 'overview' && (
+          <div className="space-y-5">
+            <Section
+              title="Next up"
+              action={<ViewAll to="jobs">All jobs →</ViewAll>}
+            >
+              {data.upcoming.length === 0 ? (
+                <Empty>Nothing booked in.</Empty>
+              ) : (
+                <ul className="divide-y divide-gray-100">
+                  {data.upcoming.slice(0, 3).map((b) => <BookingRow key={b.id} b={b} />)}
+                </ul>
+              )}
+            </Section>
+
+            <Section
+              title={`Quotes to chase (${toChase.length})`}
+              hint="Priced up, left a mobile, didn't book — the 10% text goes automatically at 6 hours, but a human call beats it."
+              action={<ViewAll to="quotes">All quotes →</ViewAll>}
+            >
+              {toChase.length === 0 ? (
+                <Empty>Nobody waiting — every recent quote booked or was chased.</Empty>
+              ) : (
+                <ul className="divide-y divide-gray-100">
+                  {toChase.slice(0, 5).map((q) => <QuoteRow key={q.id} q={q} />)}
+                </ul>
+              )}
+            </Section>
+
+            <Section
+              title={`Due a re-clean reminder (${data.due.length})`}
+              hint="Last cleaned 9+ months ago — the easiest work you'll ever win."
+              action={<ViewAll to="customers">All customers →</ViewAll>}
+            >
+              {data.due.length === 0 ? (
+                <Empty>Nobody yet — fills up as booking history builds.</Empty>
+              ) : (
+                <ul className="divide-y divide-gray-100">
+                  {data.due.slice(0, 5).map((c) => <DueRow key={c.phone} c={c} />)}
+                </ul>
+              )}
+            </Section>
+          </div>
+        )}
+
+        {tab === 'jobs' && (
+          <div className="space-y-5">
+            <Section title={`Upcoming jobs (${data.upcoming.length})`}>
+              {data.upcoming.length === 0 ? (
+                <Empty>Nothing booked in. New bookings appear here automatically.</Empty>
+              ) : (
+                <ul className="divide-y divide-gray-100">
+                  {data.upcoming.map((b) => <BookingRow key={b.id} b={b} />)}
+                </ul>
+              )}
+            </Section>
+            <Section title={`Past jobs (${data.past.length})`}>
+              {data.past.length === 0 ? (
+                <Empty>History builds from here.</Empty>
+              ) : (
+                <ul className="divide-y divide-gray-100">
+                  {data.past.map((b) => <BookingRow key={b.id} b={b} />)}
+                </ul>
+              )}
+            </Section>
+          </div>
+        )}
+
+        {tab === 'quotes' && (
+          <Section
+            title={`Quotes — last 30 days (${data.quotes.length})`}
+            hint="Everyone who unlocked a price. Tap a row for details and the mark-as-booked button."
+          >
+            {data.quotes.length === 0 ? (
+              <Empty>No quotes yet.</Empty>
+            ) : (
+              <ul className="divide-y divide-gray-100">
+                {data.quotes.map((q) => <QuoteRow key={q.id} q={q} />)}
+              </ul>
+            )}
+          </Section>
+        )}
+
+        {tab === 'customers' && (
+          <div className="space-y-5">
+            <Section
+              title={`Due a re-clean reminder (${data.due.length})`}
+              hint="Last cleaned over 9 months ago."
+            >
+              {data.due.length === 0 ? (
+                <Empty>Nobody yet — this fills up as booking history builds.</Empty>
+              ) : (
+                <ul className="divide-y divide-gray-100">
+                  {data.due.map((c) => <DueRow key={c.phone} c={c} />)}
+                </ul>
+              )}
+            </Section>
+            <Section
+              title={`Customers (${data.customers.length})`}
+              hint="Everyone who has booked, most recent first."
+            >
+              {data.customers.length === 0 ? (
+                <Empty>No customers recorded yet.</Empty>
+              ) : (
+                <ul className="divide-y divide-gray-100">
+                  {data.customers.map((c) => (
+                    <li key={c.phone} className="py-2.5 flex flex-wrap items-baseline justify-between gap-2 text-sm">
+                      <span>
+                        <span className="font-semibold text-gray-900">{c.name}</span>{' '}
+                        <a href={`tel:${c.phone}`} className="font-semibold text-primary underline">{c.phone}</a>
+                        <span className="text-gray-500"> · {c.postcode}</span>
+                      </span>
+                      <span className="text-gray-500">
+                        {c.bookings} clean{c.bookings === 1 ? '' : 's'} · last {c.last_clean}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Section>
+          </div>
+        )}
+
+        {tab === 'codes' && (
+          <Section
+            title={`Discount codes (${codes.length})`}
+            hint="Anyone can enter these at booking. Deleting a code stops it working immediately — bookings already made keep their price."
+          >
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                adminPost({ action: 'add-code', code: newCode, pct: newPct });
+              }}
+              className="flex flex-wrap items-center gap-2"
+            >
+              <input
+                type="text"
+                value={newCode}
+                onChange={(e) => setNewCode(e.target.value.toUpperCase())}
+                placeholder="NEWCODE10"
+                className="w-36 rounded-xl border border-gray-200 px-3 py-2 text-sm uppercase focus:border-primary focus:outline-none"
+              />
+              <select
+                value={newPct}
+                onChange={(e) => setNewPct(e.target.value)}
+                className="rounded-xl border border-gray-200 px-3 py-2 text-sm focus:border-primary focus:outline-none"
+              >
+                {[5, 10, 15, 20, 25, 30, 40, 50].map((p) => (
+                  <option key={p} value={p}>{p}% off</option>
+                ))}
+              </select>
+              <button
+                type="submit"
+                disabled={newCode.trim().length < 3}
+                className="rounded-xl bg-primary hover:bg-primary-dark disabled:bg-gray-300 px-4 py-2 text-sm font-semibold text-white transition-colors"
+              >
+                Add code
+              </button>
+              {codeMsg && <span className="text-sm text-red-600">{codeMsg}</span>}
+            </form>
+            {codes.length > 0 && (
+              <ul className="mt-3 divide-y divide-gray-100">
+                {codes.map((c) => (
+                  <li key={c.code} className="py-2.5 flex items-baseline justify-between gap-2 text-sm">
+                    <span>
+                      <span className="font-mono font-bold text-gray-900">{c.code}</span>
+                      <span className="ml-2 rounded-full bg-accent/10 px-2 py-0.5 text-xs font-semibold text-accent">
+                        {c.pct}% off
+                      </span>
+                      <span className="ml-2 text-gray-400">added {c.created_at}</span>
+                    </span>
+                    <button
+                      onClick={() => {
+                        if (window.confirm(`Delete ${c.code}? It stops working immediately.`)) {
+                          adminPost({ action: 'delete-code', code: c.code });
+                        }
+                      }}
+                      className="text-xs font-semibold text-red-600 underline"
+                    >
+                      Delete
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Section>
+        )}
       </div>
     </div>
   );

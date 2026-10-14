@@ -41,7 +41,7 @@ async function ensureSchema(db) {
  *  block a booking that has already emailed and texted successfully. */
 export async function recordEvent(event) {
   const db = sql();
-  if (!db) return;
+  if (!db) return false;
   try {
     await ensureSchema(db);
     await db`
@@ -49,8 +49,10 @@ export async function recordEvent(event) {
       VALUES (${event.kind}, ${event.name}, ${event.phone}, ${event.address},
               ${event.postcode}, ${event.slotDate || null}, ${event.slotTime},
               ${event.items}, ${event.total})`;
+    return true;
   } catch (err) {
     console.error('recordEvent failed', err);
+    return false;
   }
 }
 

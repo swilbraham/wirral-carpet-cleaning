@@ -87,7 +87,7 @@ export default async function handler(req, res) {
 
   // The permanent record — this is what the admin page reads. Texts and
   // emails are the fast copies; this is the one that lasts.
-  await recordEvent({
+  const stored = await recordEvent({
     kind,
     name,
     phone,
@@ -140,6 +140,7 @@ export default async function handler(req, res) {
   // silent failure is missing.
   return res.status(200).json({
     ok: true,
+    stored,
     ...results,
     configured: {
       twilio: Boolean(

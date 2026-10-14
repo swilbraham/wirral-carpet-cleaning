@@ -237,7 +237,9 @@ export default function AdminPage() {
                       <span className="font-semibold text-gray-900">{q.name}</span>
                       <span className="flex items-center gap-2">
                         {q.booked ? (
-                          <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">booked</span>
+                          <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
+                            {q.manual_booked ? 'booked ☎' : 'booked'}
+                          </span>
                         ) : q.chased_at ? (
                           <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">10% sent</span>
                         ) : (
@@ -260,12 +262,37 @@ export default function AdminPage() {
                       <Detail label="Quoted price">{q.total}</Detail>
                       <Detail label="When">{q.created_at}</Detail>
                       <Detail label="Status">
-                        {q.booked
-                          ? 'Went on to book'
-                          : q.chased_at
-                            ? `10% offer texted ${q.chased_at}`
-                            : 'Not booked — 10% offer goes out 6h after the quote'}
+                        {q.manual_booked
+                          ? 'Marked booked by you (phoned in)'
+                          : q.booked
+                            ? 'Went on to book online'
+                            : q.chased_at
+                              ? `10% offer texted ${q.chased_at}`
+                              : 'Not booked — 10% offer goes out 6h after the quote'}
                       </Detail>
+                      {!q.booked && (
+                        <div className="pt-2">
+                          <button
+                            onClick={() => codeAction({ action: 'mark-booked', id: q.id, booked: true })}
+                            className="rounded-xl bg-green-600 hover:bg-green-700 px-4 py-2 text-sm font-semibold text-white transition-colors"
+                          >
+                            Mark as booked — sends nothing
+                          </button>
+                          <p className="mt-1 text-xs text-gray-400">
+                            For quotes that turned into a phone booking. Stops the 10% chase text; no message goes to anyone.
+                          </p>
+                        </div>
+                      )}
+                      {q.manual_booked && (
+                        <div className="pt-2">
+                          <button
+                            onClick={() => codeAction({ action: 'mark-booked', id: q.id, booked: false })}
+                            className="text-xs font-semibold text-gray-500 underline"
+                          >
+                            Un-mark (back to chaseable)
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </details>
                 </li>

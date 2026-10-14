@@ -1,4 +1,4 @@
-import { adminData, addCode, deleteCode } from './_db.js';
+import { adminData, addCode, deleteCode, setQuoteBooked } from './_db.js';
 
 const attempts = new Map(); // per-instance brute-force damper
 
@@ -49,6 +49,15 @@ export default async function handler(req, res) {
       }
       const result = await addCode(code, pct);
       if (!result.ok) return res.status(400).json({ error: result.reason });
+      return res.status(200).json({ ok: true });
+    }
+    if (action === 'mark-booked') {
+      const id = Math.round(Number(req.body?.id));
+      if (!Number.isFinite(id) || id <= 0) {
+        return res.status(400).json({ error: 'Bad quote id.' });
+      }
+      // A flag and nothing else — no text, no email, ever.
+      await setQuoteBooked(id, req.body?.booked !== false);
       return res.status(200).json({ ok: true });
     }
     if (action === 'delete-code') {

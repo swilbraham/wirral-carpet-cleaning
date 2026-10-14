@@ -45,6 +45,10 @@ async function ensureSchema(db) {
       // The launch code predates the table; keep it working.
       () => db`INSERT INTO wcc_codes (code, pct) VALUES ('WCC201', 20)
                ON CONFLICT (code) DO NOTHING`
+    ).then(
+      // Set when the office marks a quote booked (they phoned instead).
+      // Purely a flag: nothing is ever sent because of it.
+      () => db`ALTER TABLE wcc_events ADD COLUMN IF NOT EXISTS manual_booked_at timestamptz`
     );
   }
   await schemaReady;
@@ -86,6 +90,7 @@ export async function claimQuotesForChase(limit = 15) {
         WHERE q.kind = 'quote'
           AND q.phone <> ''
           AND q.chased_at IS NULL
+          AND q.manual_booked_at IS NULL
           AND q.created_at <= now() - interval '6 hours'
           AND q.created_at > now() - interval '48 hours'
           AND NOT EXISTS (
@@ -104,6 +109,20 @@ export async function unclaimChase(id) {
   const db = sql();
   if (!db) return;
   await db`UPDATE wcc_events SET chased_at = NULL WHERE id = ${id}`;
+}
+
+/**
+ * Mark a quote booked by hand — they phoned instead of clicking. Only this
+ * flag changes: no text, no email, and the chase skips them from now on.
+ */
+export async function setQuoteBooked(id, booked) {
+  const db = sql();
+  if (!db) return;
+  await ensureSchema(db);
+  await db`
+    UPDATE wcc_events
+       SET manual_booked_at = ${booked ? new Date().toISOString() : null}
+     WHERE id = ${id} AND kind = 'quote'`;
 }
 
 /** The percentage for a live code, or null. */
@@ -173,11 +192,12 @@ export async function adminData() {
       SELECT id, name, phone, postcode, items, total,
              to_char(created_at AT TIME ZONE 'Europe/London', 'DD Mon HH24:MI') AS created_at,
              to_char(chased_at AT TIME ZONE 'Europe/London', 'DD Mon HH24:MI') AS chased_at,
-             EXISTS (
+             (manual_booked_at IS NOT NULL) AS manual_booked,
+             (manual_booked_at IS NOT NULL OR EXISTS (
                SELECT 1 FROM wcc_events b
                 WHERE b.kind LIKE 'booking%' AND b.phone = wcc_events.phone
                   AND b.created_at >= wcc_events.created_at - interval '1 hour'
-             ) AS booked
+             )) AS booked
         FROM wcc_events
        WHERE kind = 'quote' AND created_at > now() - interval '30 days'
        ORDER BY created_at DESC

@@ -95,28 +95,51 @@ export default function AdminPage() {
     <p className="text-sm text-gray-400">{children}</p>
   );
 
+  const Detail = ({ label, children }) => (
+    <div className="flex justify-between gap-4 py-1.5 text-sm">
+      <span className="text-gray-500">{label}</span>
+      <span className="font-medium text-gray-900 text-right">{children}</span>
+    </div>
+  );
+
   const BookingRow = ({ b }) => (
-    <li className="py-3 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-      <div>
-        <p className="font-semibold text-gray-900">
-          {b.slot_date} <span className="text-gray-500">{b.slot_time}</span>
-          {b.kind === 'booking-paid' && (
-            <span className="ml-2 rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
-              paid
-            </span>
-          )}
-        </p>
-        <p className="text-sm text-gray-600">
-          {b.name} ·{' '}
-          <a href={`tel:${b.phone}`} className="font-semibold text-primary underline">
-            {b.phone}
-          </a>
-        </p>
-        <p className="text-sm text-gray-500">
-          {b.address}, {b.postcode} — {b.items}
-        </p>
-      </div>
-      <span className="font-bold text-primary">{b.total}</span>
+    <li>
+      <details className="group py-1">
+        <summary className="cursor-pointer list-none py-2 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 rounded-lg px-2 -mx-2 hover:bg-gray-50">
+          <div>
+            <p className="font-semibold text-gray-900">
+              {b.slot_date} <span className="text-gray-500">{b.slot_time}</span>
+              {b.kind === 'booking-paid' && (
+                <span className="ml-2 rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
+                  paid
+                </span>
+              )}
+              <span className="ml-2 text-xs font-normal text-gray-400 group-open:hidden">
+                tap for details
+              </span>
+            </p>
+            <p className="text-sm text-gray-600">{b.name}</p>
+          </div>
+          <span className="font-bold text-primary">{b.total}</span>
+        </summary>
+        <div className="mb-2 rounded-xl bg-gray-50 border border-gray-100 px-4 py-3 divide-y divide-gray-100">
+          <Detail label="Customer">{b.name}</Detail>
+          <Detail label="Phone">
+            <a href={`tel:${b.phone}`} className="font-semibold text-primary underline">{b.phone}</a>
+          </Detail>
+          <Detail label="Address">{b.address}, {b.postcode}</Detail>
+          <Detail label="Slot">{b.slot_date} · {b.slot_time === 'AM' ? 'Morning 8–12' : 'Afternoon 12–5'}</Detail>
+          <Detail label="Items">
+            {String(b.items).split(', ').map((line) => (
+              <span key={line} className="block">{line}</span>
+            ))}
+          </Detail>
+          <Detail label="Payment">
+            {b.kind === 'booking-paid' ? 'Paid via Klarna' : `${b.total} on the day — cash or card`}
+          </Detail>
+          <Detail label="Booked on">{b.booked_at}</Detail>
+        </div>
+      </details>
     </li>
   );
 
@@ -182,21 +205,35 @@ export default function AdminPage() {
           ) : (
             <ul className="divide-y divide-gray-100">
               {data.quotes.map((q) => (
-                <li key={q.id} className="py-2.5 flex flex-wrap items-baseline justify-between gap-2 text-sm">
-                  <span>
-                    <span className="font-semibold text-gray-900">{q.name}</span>{' '}
-                    <a href={`tel:${q.phone}`} className="font-semibold text-primary underline">{q.phone}</a>
-                    <span className="text-gray-500"> · {q.items}</span>
-                  </span>
-                  <span className="flex items-center gap-2">
-                    {q.booked ? (
-                      <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">booked</span>
-                    ) : (
-                      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800">chase</span>
-                    )}
-                    <span className="font-semibold text-gray-700">{q.total}</span>
-                    <span className="text-gray-400">{q.created_at}</span>
-                  </span>
+                <li key={q.id}>
+                  <details className="group">
+                    <summary className="cursor-pointer list-none py-2.5 flex flex-wrap items-baseline justify-between gap-2 text-sm rounded-lg px-2 -mx-2 hover:bg-gray-50">
+                      <span className="font-semibold text-gray-900">{q.name}</span>
+                      <span className="flex items-center gap-2">
+                        {q.booked ? (
+                          <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">booked</span>
+                        ) : (
+                          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800">chase</span>
+                        )}
+                        <span className="font-semibold text-gray-700">{q.total}</span>
+                        <span className="text-gray-400">{q.created_at}</span>
+                      </span>
+                    </summary>
+                    <div className="mb-2 rounded-xl bg-gray-50 border border-gray-100 px-4 py-3 divide-y divide-gray-100">
+                      <Detail label="Phone">
+                        <a href={`tel:${q.phone}`} className="font-semibold text-primary underline">{q.phone}</a>
+                      </Detail>
+                      {q.postcode && <Detail label="Postcode">{q.postcode}</Detail>}
+                      <Detail label="Quoted for">
+                        {String(q.items).split(', ').map((line) => (
+                          <span key={line} className="block">{line}</span>
+                        ))}
+                      </Detail>
+                      <Detail label="Quoted price">{q.total}</Detail>
+                      <Detail label="When">{q.created_at}</Detail>
+                      <Detail label="Status">{q.booked ? 'Went on to book' : 'Not booked — worth a text'}</Detail>
+                    </div>
+                  </details>
                 </li>
               ))}
             </ul>

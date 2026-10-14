@@ -65,19 +65,21 @@ export async function adminData() {
   const [upcoming, past, quotes, customers, due] = await Promise.all([
     db`
       SELECT id, kind, name, phone, address, postcode, slot_time, items, total,
-             to_char(slot_date, 'Dy DD Mon YYYY') AS slot_date
+             to_char(slot_date, 'Dy DD Mon YYYY') AS slot_date,
+             to_char(created_at AT TIME ZONE 'Europe/London', 'DD Mon YYYY HH24:MI') AS booked_at
         FROM wcc_events
        WHERE kind LIKE 'booking%' AND slot_date >= CURRENT_DATE
        ORDER BY slot_date, slot_time`,
     db`
       SELECT id, kind, name, phone, address, postcode, slot_time, items, total,
-             to_char(slot_date, 'Dy DD Mon YYYY') AS slot_date
+             to_char(slot_date, 'Dy DD Mon YYYY') AS slot_date,
+             to_char(created_at AT TIME ZONE 'Europe/London', 'DD Mon YYYY HH24:MI') AS booked_at
         FROM wcc_events
        WHERE kind LIKE 'booking%' AND slot_date < CURRENT_DATE
        ORDER BY slot_date DESC
        LIMIT 100`,
     db`
-      SELECT id, name, phone, items, total,
+      SELECT id, name, phone, postcode, items, total,
              to_char(created_at AT TIME ZONE 'Europe/London', 'DD Mon HH24:MI') AS created_at,
              EXISTS (
                SELECT 1 FROM wcc_events b

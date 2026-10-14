@@ -6,9 +6,10 @@ import { sendSms, ukMobile } from './_sms.js';
  * book gets one text offering 10% off. Pay-on-the-day makes redemption
  * simple — show the text, pay 10% less; no code machinery needed.
  *
- * Runs hourly from Vercel cron. Quiet hours are respected: outside
- * 8am-8pm UK time nothing sends, and unclaimed quotes are simply picked up
- * by the first run inside the window. One chase per quote, ever.
+ * Runs twice daily from Vercel cron (10:00 and 17:00 UTC — the most the
+ * plan's cron allowance gives us), so a quote is chased at the first run
+ * after it turns six hours old. Quiet hours are belt-and-braces: outside
+ * 8am-8pm UK time nothing sends. One chase per quote, ever.
  */
 export default async function handler(req, res) {
   const secret = process.env.CRON_SECRET;

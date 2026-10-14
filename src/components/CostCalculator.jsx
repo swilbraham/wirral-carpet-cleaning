@@ -14,34 +14,39 @@ import {
   HiExclamationCircle,
 } from 'react-icons/hi';
 
-const FIRST_CARPET_PRICE = 60;
-const ADDITIONAL_CARPET_PRICE = 30;
-const MIN_CHARGE = 60;
+// Prices mirror Fresh For Less: £45 a carpeted room or staircase with any
+// three of those for £99, £15 halls and landings, £90 minimum visit.
+const MIN_CHARGE = 90;
+const BUNDLE_SIZE = 3;
+const BUNDLE_PRICE = 99;
+const AREA_PRICE = 45;
+const BUNDLE_SAVING = BUNDLE_SIZE * AREA_PRICE - BUNDLE_PRICE;
 
+// `bundle` marks the £45 areas that count towards "any 3 for £99".
 const rooms = [
-  { id: 'living-room', name: 'Living Room', icon: '🛋️' },
-  { id: 'master-bedroom', name: 'Master Bedroom', icon: '🛏️' },
-  { id: 'bedroom-2', name: 'Bedroom 2', icon: '🛏️' },
-  { id: 'bedroom-3', name: 'Bedroom 3', icon: '🛏️' },
-  { id: 'bedroom-4', name: 'Bedroom 4', icon: '🛏️' },
-  { id: 'bedroom-5', name: 'Bedroom 5', icon: '🛏️' },
-  { id: 'bedroom-6', name: 'Bedroom 6', icon: '🛏️' },
-  { id: 'hallway', name: 'Hallway', icon: '🚪' },
-  { id: 'stairs', name: 'Stairs', icon: '📶' },
-  { id: 'landing', name: 'Landing', icon: '🏠' },
-  { id: 'dining-room', name: 'Dining Room', icon: '🍽️' },
-  { id: 'study', name: 'Study / Office', icon: '💻' },
-  { id: 'conservatory', name: 'Conservatory', icon: '☀️' },
-  { id: 'playroom', name: 'Playroom', icon: '🧸' },
-  { id: 'other', name: 'Other', icon: '📋' },
+  { id: 'living-room', name: 'Living Room', icon: '🛋️', price: 45, bundle: true },
+  { id: 'master-bedroom', name: 'Master Bedroom', icon: '🛏️', price: 45, bundle: true },
+  { id: 'bedroom-2', name: 'Bedroom 2', icon: '🛏️', price: 45, bundle: true },
+  { id: 'bedroom-3', name: 'Bedroom 3', icon: '🛏️', price: 45, bundle: true },
+  { id: 'bedroom-4', name: 'Bedroom 4', icon: '🛏️', price: 45, bundle: true },
+  { id: 'bedroom-5', name: 'Bedroom 5', icon: '🛏️', price: 45, bundle: true },
+  { id: 'bedroom-6', name: 'Bedroom 6', icon: '🛏️', price: 45, bundle: true },
+  { id: 'hallway', name: 'Hallway', icon: '🚪', price: 15, bundle: false },
+  { id: 'stairs', name: 'Stairs', icon: '📶', price: 45, bundle: true },
+  { id: 'landing', name: 'Landing', icon: '🏠', price: 15, bundle: false },
+  { id: 'dining-room', name: 'Dining Room', icon: '🍽️', price: 45, bundle: true },
+  { id: 'study', name: 'Study / Office', icon: '💻', price: 45, bundle: true },
+  { id: 'conservatory', name: 'Conservatory', icon: '☀️', price: 45, bundle: true },
+  { id: 'playroom', name: 'Playroom', icon: '🧸', price: 45, bundle: true },
+  { id: 'other', name: 'Other', icon: '📋', price: 45, bundle: true },
 ];
 
 const upholsteryItems = [
-  { id: 'sofa-2-seater', name: '2-Seater Sofa', icon: '🛋️', price: 50 },
-  { id: 'sofa-3-seater', name: '3-Seater Sofa', icon: '🛋️', price: 70 },
-  { id: 'corner-sofa', name: 'Corner Sofa', icon: '🛋️', price: 90 },
-  { id: 'armchair', name: 'Armchair', icon: '💺', price: 30 },
-  { id: 'dining-chair', name: 'Dining Chair', icon: '🪑', price: 15 },
+  { id: 'sofa-2-seater', name: '2-Seater Sofa', icon: '🛋️', price: 75 },
+  { id: 'sofa-3-seater', name: '3-Seater Sofa', icon: '🛋️', price: 105 },
+  { id: 'corner-sofa', name: 'Corner Sofa (5 seats)', icon: '🛋️', price: 165 },
+  { id: 'armchair', name: 'Armchair', icon: '💺', price: 45 },
+  { id: 'dining-chair', name: 'Dining Chair', icon: '🪑', price: 20 },
   { id: 'mattress-single', name: 'Single Mattress', icon: '🛏️', price: 30 },
   { id: 'mattress-double', name: 'Double Mattress', icon: '🛏️', price: 40 },
 ];
@@ -76,15 +81,13 @@ function calculatePrice(selectedRooms, selectedUpholstery) {
     return { total: 0, breakdown: [], minApplied: false };
 
   const breakdown = [];
-  let count = 0;
+  let bundleAreas = 0;
 
   selectedRooms.forEach((id) => {
     const room = rooms.find((r) => r.id === id);
     if (!room) return;
-
-    count++;
-    const price = count === 1 ? FIRST_CARPET_PRICE : ADDITIONAL_CARPET_PRICE;
-    breakdown.push({ name: room.name, price, icon: room.icon });
+    if (room.bundle) bundleAreas++;
+    breakdown.push({ name: room.name, price: room.price, icon: room.icon });
   });
 
   selectedUpholstery.forEach((id) => {
@@ -95,19 +98,21 @@ function calculatePrice(selectedRooms, selectedUpholstery) {
 
   let total = breakdown.reduce((sum, item) => sum + item.price, 0);
 
-  // Silent combo discount: hall+stairs, stairs+landing, or hall+stairs+landing = -£30
-  const hasHall = selectedRooms.includes('hallway');
-  const hasStairs = selectedRooms.includes('stairs');
-  const hasLanding = selectedRooms.includes('landing');
-  if ((hasHall && hasStairs) || (hasStairs && hasLanding)) {
-    total = Math.max(0, total - 30);
+  // Any three £45 areas (rooms or stairs) for £99, applied automatically.
+  const bundleApplied = bundleAreas >= BUNDLE_SIZE;
+  if (bundleApplied) {
+    breakdown.push({
+      name: `Any ${BUNDLE_SIZE} areas for £${BUNDLE_PRICE}`,
+      price: -BUNDLE_SAVING,
+      icon: '%',
+    });
+    total -= BUNDLE_SAVING;
   }
 
-  // Minimum cleaning charge of £60
   const minApplied = total > 0 && total < MIN_CHARGE;
   if (minApplied) total = MIN_CHARGE;
 
-  return { total, breakdown, minApplied };
+  return { total, breakdown, minApplied, bundleApplied, bundleAreas };
 }
 
 export default function CostCalculator() {
@@ -135,13 +140,60 @@ export default function CostCalculator() {
   const [klarnaPaymentCategory, setKlarnaPaymentCategory] = useState('');
   const [paymentProcessing, setPaymentProcessing] = useState(false);
   const [klarnaOrderId, setKlarnaOrderId] = useState('');
+  // Name and mobile come before the price: every quote is a lead that can
+  // be followed up, not an anonymous basket that vanishes.
+  const [unlocked, setUnlocked] = useState(false);
+  const [gateError, setGateError] = useState('');
+  const quoteLogged = useRef(false);
 
   const availableDates = useMemo(() => generateDates(), []);
 
-  const { total, breakdown, minApplied } = useMemo(
+  const { total, breakdown, minApplied, bundleApplied } = useMemo(
     () => calculatePrice(selectedRooms, selectedUpholstery),
     [selectedRooms, selectedUpholstery]
   );
+
+  const unlockPrice = () => {
+    if (formData.name.trim().length < 2) {
+      setGateError('Please add your name.');
+      return;
+    }
+    if (formData.phone.replace(/[^0-9]/g, '').length < 10) {
+      setGateError('Please add a valid mobile number.');
+      return;
+    }
+    setGateError('');
+    setUnlocked(true);
+  };
+
+  // One quiet email per visit once they have a priced basket: the quote with
+  // their name and number, so un-booked quotes can be chased by text.
+  useEffect(() => {
+    if (!unlocked || total <= 0 || quoteLogged.current) return;
+    const timer = setTimeout(() => {
+      quoteLogged.current = true;
+      const items = [
+        ...selectedRooms.map((id) => rooms.find((r) => r.id === id)?.name),
+        ...selectedUpholstery.map((id) => upholsteryItems.find((u) => u.id === id)?.name),
+      ].filter(Boolean);
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: 'fae49abe-d4e1-4cdc-9ed1-a5ec3c116881',
+          subject: 'New quote (not yet booked) - Wirral Carpet Cleaning',
+          from_name: 'Wirral Carpet Cleaning Website',
+          name: formData.name,
+          phone: formData.phone,
+          itemsQuoted: items.join('\n'),
+          estimatedCost: `£${total.toFixed(2)}`,
+          note: 'Quote viewed on the website. If no booking follows, worth a text.',
+        }),
+      }).catch(() => {});
+    }, 5000);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [unlocked, total]);
 
   const toggleRoom = (roomId) => {
     setSelectedRooms((prev) =>
@@ -382,6 +434,52 @@ export default function CostCalculator() {
     if (typeof fbq === 'function') fbq('track', 'Purchase', { value: total, currency: 'GBP' });
   };
 
+  // Booking without prepayment: the FFL lesson is that "nothing to pay until
+  // the job is done" converts far better than a payment wall. Klarna stays as
+  // the pay-now option underneath.
+  const [podSubmitting, setPodSubmitting] = useState(false);
+  const submitPayOnDay = async () => {
+    setPodSubmitting(true);
+    const roomList = selectedRooms
+      .map((id) => rooms.find((r) => r.id === id)?.name)
+      .filter(Boolean);
+    const uphList = selectedUpholstery
+      .map((id) => upholsteryItems.find((u) => u.id === id)?.name)
+      .filter(Boolean);
+    const selectedDate = availableDates.find(
+      (d) => formatDateValue(d) === formData.date
+    );
+    try {
+      await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: 'fae49abe-d4e1-4cdc-9ed1-a5ec3c116881',
+          subject: 'New Booking (pay on the day) - Wirral Carpet Cleaning',
+          from_name: 'Wirral Carpet Cleaning Website',
+          name: formData.name,
+          phone: formData.phone,
+          postcode: formData.postcode,
+          preferredDate: selectedDate ? formatDate(selectedDate) : formData.date,
+          preferredTime: formData.timeSlot === 'am' ? 'Morning (AM)' : 'Afternoon (PM)',
+          roomsRequested: [...roomList, ...uphList].join('\n'),
+          estimatedCost: `£${total.toFixed(2)}`,
+          paymentMethod: 'Pay on the day',
+          paymentStatus: 'NOT PAID — collect on completion',
+        }),
+      });
+      if (typeof fbq === 'function')
+        fbq('track', 'Schedule', { value: total, currency: 'GBP' });
+      setSubmitted(true);
+    } catch {
+      setKlarnaError(
+        "We couldn't send that just now — please call 0151 936 9664 and we'll book you in."
+      );
+    } finally {
+      setPodSubmitting(false);
+    }
+  };
+
   const resetAll = () => {
     setSelectedRooms([]);
     setSelectedUpholstery([]);
@@ -553,7 +651,10 @@ export default function CostCalculator() {
             >
               {/* Carpet Rooms */}
               <div className="mb-6">
-                <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">Carpet Cleaning</h3>
+                <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-1">Carpet Cleaning</h3>
+                <p className="text-sm text-accent font-medium mb-3">
+                  Any 3 areas (rooms or stairs) for &pound;{BUNDLE_PRICE} — applied automatically.
+                </p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
                   {rooms.map((room) => {
                     const isSelected = selectedRooms.includes(room.id);
@@ -636,6 +737,47 @@ export default function CostCalculator() {
                       <p className="text-gray-500">
                         Select items above to see your estimated price. Minimum charge &pound;{MIN_CHARGE}.
                       </p>
+                    ) : !unlocked ? (
+                      <div>
+                        <p className="text-gray-700 font-medium">
+                          {totalItems} item{totalItems !== 1 ? 's' : ''} selected — pop your
+                          name and mobile in and your price appears instantly.
+                        </p>
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          <input
+                            type="text"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleInputChange}
+                            placeholder="Your name"
+                            autoComplete="name"
+                            className="w-40 flex-none rounded-xl border border-gray-200 px-4 py-2.5 focus:border-primary focus:outline-none"
+                          />
+                          <input
+                            type="tel"
+                            name="phone"
+                            value={formData.phone}
+                            onChange={handleInputChange}
+                            placeholder="Mobile number"
+                            autoComplete="tel"
+                            className="w-44 flex-1 rounded-xl border border-gray-200 px-4 py-2.5 focus:border-primary focus:outline-none"
+                          />
+                          <button
+                            type="button"
+                            onClick={unlockPrice}
+                            className="rounded-xl bg-primary hover:bg-primary-dark px-5 py-2.5 font-semibold text-white transition-colors"
+                          >
+                            Show my price
+                          </button>
+                        </div>
+                        {gateError && (
+                          <p className="mt-2 text-sm text-red-600">{gateError}</p>
+                        )}
+                        <p className="mt-2 text-[11px] leading-snug text-gray-400">
+                          We may text you with regards to your quote — no marketing
+                          lists, nothing more.
+                        </p>
+                      </div>
                     ) : (
                       <div className="space-y-1">
                         <p className="text-sm text-gray-500">
@@ -649,6 +791,11 @@ export default function CostCalculator() {
                           </span>
                           <span className="text-sm text-gray-400">estimated total</span>
                         </div>
+                        {bundleApplied && (
+                          <p className="text-xs font-semibold text-accent">
+                            Any 3 areas for &pound;{BUNDLE_PRICE} applied — saves &pound;{BUNDLE_SAVING}.
+                          </p>
+                        )}
                         <p className="text-xs text-gray-400">
                           To be confirmed on booking.
                         </p>
@@ -663,7 +810,7 @@ export default function CostCalculator() {
 
                   <button
                     onClick={() => setStep(2)}
-                    disabled={!canProceed}
+                    disabled={!canProceed || !unlocked}
                     className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-accent hover:bg-accent-light disabled:bg-gray-200 disabled:text-gray-400 text-white rounded-xl text-lg font-semibold transition-all hover:shadow-lg hover:shadow-accent/25 disabled:shadow-none disabled:cursor-not-allowed"
                   >
                     Book This Clean
@@ -878,7 +1025,7 @@ export default function CostCalculator() {
                       disabled={!canSubmit}
                       className="group w-full flex items-center justify-center gap-2 px-8 py-4 bg-accent hover:bg-accent-light disabled:bg-gray-200 disabled:text-gray-400 text-white rounded-xl text-lg font-semibold transition-all hover:shadow-lg hover:shadow-accent/25 disabled:shadow-none disabled:cursor-not-allowed"
                     >
-                      Continue to Payment
+                      Continue to Confirm
                       <HiArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </button>
 
@@ -958,6 +1105,33 @@ export default function CostCalculator() {
                 {/* Klarna payment widget */}
                 <div className="lg:col-span-3">
                   <div className="space-y-6">
+                    <div className="bg-gray-50 rounded-2xl border border-gray-100 p-6">
+                      <h3 className="text-lg font-bold text-gray-900">
+                        Nothing to pay today
+                      </h3>
+                      <p className="mt-1 text-sm text-gray-500">
+                        Book now and pay by cash or card when the job is done
+                        and you&rsquo;re happy with it.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={submitPayOnDay}
+                        disabled={podSubmitting}
+                        className="group mt-4 w-full flex items-center justify-center gap-2 px-8 py-4 bg-accent hover:bg-accent-light disabled:bg-gray-300 text-white rounded-xl text-lg font-semibold transition-all hover:shadow-lg hover:shadow-accent/25"
+                      >
+                        {podSubmitting ? 'Booking…' : <>Book now — pay &pound;{total.toFixed(2)} on the day<HiArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></>}
+                      </button>
+                      <p className="mt-2 text-xs text-gray-400 text-center">
+                        We&rsquo;ll text to confirm your slot.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-3 text-xs uppercase tracking-wide text-gray-400">
+                      <span className="h-px flex-1 bg-gray-200" />
+                      or pay now in instalments
+                      <span className="h-px flex-1 bg-gray-200" />
+                    </div>
+
                     <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900">
                       <HiCreditCard className="w-5 h-5 text-primary" />
                       Pay with Klarna

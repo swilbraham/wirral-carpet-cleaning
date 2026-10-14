@@ -22,34 +22,38 @@ const BUNDLE_PRICE = 99;
 const AREA_PRICE = 45;
 const BUNDLE_SAVING = BUNDLE_SIZE * AREA_PRICE - BUNDLE_PRICE;
 
+const WEB3FORMS_KEY = 'fae49abe-d4e1-4cdc-9ed1-a5ec3c116881';
+
 // `bundle` marks the £45 areas that count towards "any 3 for £99".
-const rooms = [
-  { id: 'living-room', name: 'Living Room', icon: '🛋️', price: 45, bundle: true },
-  { id: 'master-bedroom', name: 'Master Bedroom', icon: '🛏️', price: 45, bundle: true },
-  { id: 'bedroom-2', name: 'Bedroom 2', icon: '🛏️', price: 45, bundle: true },
-  { id: 'bedroom-3', name: 'Bedroom 3', icon: '🛏️', price: 45, bundle: true },
-  { id: 'bedroom-4', name: 'Bedroom 4', icon: '🛏️', price: 45, bundle: true },
-  { id: 'bedroom-5', name: 'Bedroom 5', icon: '🛏️', price: 45, bundle: true },
-  { id: 'bedroom-6', name: 'Bedroom 6', icon: '🛏️', price: 45, bundle: true },
-  { id: 'hallway', name: 'Hallway', icon: '🚪', price: 15, bundle: false },
-  { id: 'stairs', name: 'Stairs', icon: '📶', price: 45, bundle: true },
-  { id: 'landing', name: 'Landing', icon: '🏠', price: 15, bundle: false },
-  { id: 'dining-room', name: 'Dining Room', icon: '🍽️', price: 45, bundle: true },
-  { id: 'study', name: 'Study / Office', icon: '💻', price: 45, bundle: true },
-  { id: 'conservatory', name: 'Conservatory', icon: '☀️', price: 45, bundle: true },
-  { id: 'playroom', name: 'Playroom', icon: '🧸', price: 45, bundle: true },
-  { id: 'other', name: 'Other', icon: '📋', price: 45, bundle: true },
+const ITEM_GROUPS = [
+  {
+    title: 'Carpets & stairs',
+    items: [
+      { id: 'room', name: 'Carpeted room', hint: 'Bedroom, lounge, dining room', price: 45, bundle: true, max: 10 },
+      { id: 'stairs', name: 'Staircase', hint: 'One flight, up to 14 steps', price: 45, bundle: true, max: 4 },
+      { id: 'landing', name: 'Landing', hint: 'Upstairs landing area', price: 15, max: 4 },
+      { id: 'hallway', name: 'Hallway', hint: 'Entrance hall or corridor', price: 15, max: 4 },
+      { id: 'rug-small', name: 'Rug (small)', hint: 'Up to 2m x 3m', price: 30, max: 6 },
+      { id: 'rug-large', name: 'Rug (large)', hint: 'Over 2m x 3m', price: 55, max: 6 },
+    ],
+  },
+  {
+    title: 'Upholstery',
+    items: [
+      { id: 'sofa-2', name: '2-Seater Sofa', hint: 'Fabric upholstery clean', price: 75, max: 4 },
+      { id: 'sofa-3', name: '3-Seater Sofa', hint: 'Fabric upholstery clean', price: 105, max: 4 },
+      { id: 'corner-5', name: 'Corner Sofa (5 seats)', hint: 'L-shaped or corner suite', price: 165, max: 3 },
+      { id: 'corner-7', name: 'Corner Sofa (6-7 seats)', hint: 'Larger L-shaped or corner suite', price: 210, max: 3 },
+      { id: 'armchair', name: 'Armchair', hint: 'Single fabric chair', price: 45, max: 6 },
+      { id: 'footstool', name: 'Footstool', hint: 'Pouffe or ottoman', price: 25, max: 6 },
+      { id: 'dining-chair', name: 'Dining Chair', hint: 'Fabric seat pad or fully upholstered', price: 20, max: 12 },
+      { id: 'mattress-single', name: 'Single Mattress', hint: 'Steam clean & deodorise', price: 30, max: 4 },
+      { id: 'mattress-double', name: 'Double Mattress', hint: 'Steam clean & deodorise', price: 40, max: 4 },
+    ],
+  },
 ];
 
-const upholsteryItems = [
-  { id: 'sofa-2-seater', name: '2-Seater Sofa', icon: '🛋️', price: 75 },
-  { id: 'sofa-3-seater', name: '3-Seater Sofa', icon: '🛋️', price: 105 },
-  { id: 'corner-sofa', name: 'Corner Sofa (5 seats)', icon: '🛋️', price: 165 },
-  { id: 'armchair', name: 'Armchair', icon: '💺', price: 45 },
-  { id: 'dining-chair', name: 'Dining Chair', icon: '🪑', price: 20 },
-  { id: 'mattress-single', name: 'Single Mattress', icon: '🛏️', price: 30 },
-  { id: 'mattress-double', name: 'Double Mattress', icon: '🛏️', price: 40 },
-];
+const ALL_ITEMS = ITEM_GROUPS.flatMap((group) => group.items);
 
 function generateDates() {
   const dates = [];
@@ -76,35 +80,27 @@ function formatDateValue(date) {
   return date.toISOString().split('T')[0];
 }
 
-function calculatePrice(selectedRooms, selectedUpholstery) {
-  if (selectedRooms.length === 0 && selectedUpholstery.length === 0)
-    return { total: 0, breakdown: [], minApplied: false };
-
-  const breakdown = [];
+function calculatePrice(basket) {
+  const lines = [];
   let bundleAreas = 0;
 
-  selectedRooms.forEach((id) => {
-    const room = rooms.find((r) => r.id === id);
-    if (!room) return;
-    if (room.bundle) bundleAreas++;
-    breakdown.push({ name: room.name, price: room.price, icon: room.icon });
+  ALL_ITEMS.forEach((item) => {
+    const qty = basket[item.id] || 0;
+    if (qty === 0) return;
+    if (item.bundle) bundleAreas += qty;
+    lines.push({ id: item.id, name: item.name, qty, amount: qty * item.price });
   });
 
-  selectedUpholstery.forEach((id) => {
-    const item = upholsteryItems.find((u) => u.id === id);
-    if (!item) return;
-    breakdown.push({ name: item.name, price: item.price, icon: item.icon });
-  });
-
-  let total = breakdown.reduce((sum, item) => sum + item.price, 0);
+  let total = lines.reduce((sum, line) => sum + line.amount, 0);
 
   // Any three £45 areas (rooms or stairs) for £99, applied automatically.
   const bundleApplied = bundleAreas >= BUNDLE_SIZE;
   if (bundleApplied) {
-    breakdown.push({
+    lines.push({
+      id: 'bundle',
       name: `Any ${BUNDLE_SIZE} areas for £${BUNDLE_PRICE}`,
-      price: -BUNDLE_SAVING,
-      icon: '%',
+      qty: 1,
+      amount: -BUNDLE_SAVING,
     });
     total -= BUNDLE_SAVING;
   }
@@ -112,7 +108,14 @@ function calculatePrice(selectedRooms, selectedUpholstery) {
   const minApplied = total > 0 && total < MIN_CHARGE;
   if (minApplied) total = MIN_CHARGE;
 
-  return { total, breakdown, minApplied, bundleApplied, bundleAreas };
+  return { total, lines, minApplied, bundleApplied };
+}
+
+/** "2x Carpeted room" lines for emails and the Klarna order. */
+function describeLines(lines) {
+  return lines
+    .filter((line) => line.id !== 'bundle')
+    .map((line) => `${line.qty}x ${line.name}`);
 }
 
 export default function CostCalculator() {
@@ -120,26 +123,30 @@ export default function CostCalculator() {
   const headingInView = useInView(headingRef, { once: true, margin: '-50px' });
   const klarnaContainerRef = useRef(null);
 
-  const [selectedRooms, setSelectedRooms] = useState([]);
-  const [selectedUpholstery, setSelectedUpholstery] = useState([]);
+  const [basket, setBasket] = useState({});
   const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
+  // 'payday' or 'klarna' — the success screen must not claim a payment that
+  // never happened.
+  const [bookedVia, setBookedVia] = useState('payday');
 
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
+    address: '',
     postcode: '',
     date: '',
     timeSlot: '',
   });
-
-  // Klarna state
   const [klarnaLoading, setKlarnaLoading] = useState(false);
   const [klarnaReady, setKlarnaReady] = useState(false);
   const [klarnaError, setKlarnaError] = useState('');
   const [klarnaPaymentCategory, setKlarnaPaymentCategory] = useState('');
   const [paymentProcessing, setPaymentProcessing] = useState(false);
   const [klarnaOrderId, setKlarnaOrderId] = useState('');
+  const [podSubmitting, setPodSubmitting] = useState(false);
+  const [podError, setPodError] = useState('');
+
   // Name and mobile come before the price: every quote is a lead that can
   // be followed up, not an anonymous basket that vanishes.
   const [unlocked, setUnlocked] = useState(false);
@@ -148,10 +155,35 @@ export default function CostCalculator() {
 
   const availableDates = useMemo(() => generateDates(), []);
 
-  const { total, breakdown, minApplied, bundleApplied } = useMemo(
-    () => calculatePrice(selectedRooms, selectedUpholstery),
-    [selectedRooms, selectedUpholstery]
+  const { total, lines, minApplied, bundleApplied } = useMemo(
+    () => calculatePrice(basket),
+    [basket]
   );
+  const totalItems = Object.values(basket).reduce((sum, qty) => sum + qty, 0);
+  const canProceed = totalItems > 0;
+
+  const setQty = (id, delta) => {
+    setBasket((prev) => {
+      const item = ALL_ITEMS.find((entry) => entry.id === id);
+      const next = Math.max(0, Math.min(item?.max ?? 10, (prev[id] || 0) + delta));
+      const updated = { ...prev, [id]: next };
+      if (next === 0) delete updated[id];
+      return updated;
+    });
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const canSubmit =
+    formData.name.trim() &&
+    formData.phone.trim() &&
+    formData.address.trim() &&
+    formData.postcode.trim() &&
+    formData.date &&
+    formData.timeSlot;
 
   const unlockPrice = () => {
     if (formData.name.trim().length < 2) {
@@ -172,20 +204,16 @@ export default function CostCalculator() {
     if (!unlocked || total <= 0 || quoteLogged.current) return;
     const timer = setTimeout(() => {
       quoteLogged.current = true;
-      const items = [
-        ...selectedRooms.map((id) => rooms.find((r) => r.id === id)?.name),
-        ...selectedUpholstery.map((id) => upholsteryItems.find((u) => u.id === id)?.name),
-      ].filter(Boolean);
       fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({
-          access_key: 'fae49abe-d4e1-4cdc-9ed1-a5ec3c116881',
+          access_key: WEB3FORMS_KEY,
           subject: 'New quote (not yet booked) - Wirral Carpet Cleaning',
           from_name: 'Wirral Carpet Cleaning Website',
           name: formData.name,
           phone: formData.phone,
-          itemsQuoted: items.join('\n'),
+          itemsQuoted: describeLines(lines).join('\n'),
           estimatedCost: `£${total.toFixed(2)}`,
           note: 'Quote viewed on the website. If no booking follows, worth a text.',
         }),
@@ -195,52 +223,15 @@ export default function CostCalculator() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [unlocked, total]);
 
-  const toggleRoom = (roomId) => {
-    setSelectedRooms((prev) =>
-      prev.includes(roomId)
-        ? prev.filter((id) => id !== roomId)
-        : [...prev, roomId]
-    );
-  };
+  const orderLines = useCallback(
+    () => describeLines(lines).map((name, index) => ({ id: `line-${index}`, name })),
+    [lines]
+  );
 
-  const toggleUpholstery = (itemId) => {
-    setSelectedUpholstery((prev) =>
-      prev.includes(itemId)
-        ? prev.filter((id) => id !== itemId)
-        : [...prev, itemId]
-    );
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const canProceed = selectedRooms.length > 0 || selectedUpholstery.length > 0;
-  const totalItems = selectedRooms.length + selectedUpholstery.length;
-  const canSubmit =
-    formData.name.trim() &&
-    formData.phone.trim() &&
-    formData.postcode.trim() &&
-    formData.date &&
-    formData.timeSlot;
-
-  // Initialize Klarna session when entering step 3
   const initKlarnaSession = useCallback(async () => {
     setKlarnaLoading(true);
     setKlarnaError('');
     setKlarnaReady(false);
-
-    const roomData = [
-      ...selectedRooms.map((id) => {
-        const room = rooms.find((r) => r.id === id);
-        return { id, name: room?.name || id };
-      }),
-      ...selectedUpholstery.map((id) => {
-        const item = upholsteryItems.find((u) => u.id === id);
-        return { id, name: item?.name || id };
-      }),
-    ];
 
     try {
       const res = await fetch('/api/klarna/create-session', {
@@ -248,7 +239,7 @@ export default function CostCalculator() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           totalInPence: total * 100,
-          rooms: roomData,
+          rooms: orderLines(),
         }),
       });
 
@@ -258,16 +249,11 @@ export default function CostCalculator() {
         throw new Error(data.error || 'Failed to create payment session');
       }
 
-      // Initialize Klarna Payments
-      window.Klarna.Payments.init({
-        client_token: data.client_token,
-      });
+      window.Klarna.Payments.init({ client_token: data.client_token });
 
-      // Use first available payment category
       const category = data.payment_method_categories?.[0]?.identifier || 'pay_later';
       setKlarnaPaymentCategory(category);
 
-      // Load the Klarna widget
       window.Klarna.Payments.load(
         {
           container: '#klarna-payments-container',
@@ -278,43 +264,116 @@ export default function CostCalculator() {
           if (loadRes.show_form) {
             setKlarnaReady(true);
           } else {
-            setKlarnaError('Klarna is not available for this order. Please contact us to arrange payment.');
+            setKlarnaError('Klarna is not available for this order. You can still book and pay on the day above.');
           }
         }
       );
     } catch (err) {
       setKlarnaLoading(false);
-      setKlarnaError(err.message || 'Could not load payment options. Please contact us to arrange payment.');
+      setKlarnaError(err.message || 'Could not load payment options. You can still book and pay on the day above.');
     }
-  }, [selectedRooms, total]);
+  }, [total, orderLines]);
 
   useEffect(() => {
     if (step === 3) {
-      // Small delay to ensure the container div is rendered
       const timer = setTimeout(() => {
         if (window.Klarna) {
           initKlarnaSession();
         } else {
-          // Wait for Klarna script to load
           const checkKlarna = setInterval(() => {
             if (window.Klarna) {
               clearInterval(checkKlarna);
               initKlarnaSession();
             }
           }, 200);
-          // Timeout after 10s
           setTimeout(() => {
             clearInterval(checkKlarna);
             if (!window.Klarna) {
               setKlarnaLoading(false);
-              setKlarnaError('Payment system could not be loaded. Please contact us to arrange payment.');
+              setKlarnaError('Payment system could not be loaded. You can still book and pay on the day above.');
             }
           }, 10000);
         }
       }, 100);
       return () => clearTimeout(timer);
     }
-  }, [step, initKlarnaSession]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
+
+  const bookingPayload = (extra) => {
+    const selectedDate = availableDates.find(
+      (d) => formatDateValue(d) === formData.date
+    );
+    return {
+      access_key: WEB3FORMS_KEY,
+      from_name: 'Wirral Carpet Cleaning Website',
+      name: formData.name,
+      phone: formData.phone,
+      address: formData.address,
+      postcode: formData.postcode,
+      preferredDate: selectedDate ? formatDate(selectedDate) : formData.date,
+      preferredTime: formData.timeSlot === 'am' ? 'Morning (AM)' : 'Afternoon (PM)',
+      itemsBooked: describeLines(lines).join('\n'),
+      estimatedCost: `£${total.toFixed(2)}`,
+      ...extra,
+    };
+  };
+
+  // Booking without prepayment: "nothing to pay until the job is done"
+  // converts far better than a payment wall. The email send is checked — a
+  // booking that never reached the office must not show as confirmed.
+  const submitPayOnDay = async () => {
+    setPodSubmitting(true);
+    setPodError('');
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(
+          bookingPayload({
+            subject: 'New Booking (pay on the day) - Wirral Carpet Cleaning',
+            paymentMethod: 'Pay on the day',
+            paymentStatus: 'NOT PAID — collect on completion',
+          })
+        ),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data.success === false) {
+        throw new Error('send failed');
+      }
+      if (typeof fbq === 'function')
+        fbq('track', 'Schedule', { value: total, currency: 'GBP' });
+      setBookedVia('payday');
+      setSubmitted(true);
+    } catch {
+      setPodError(
+        "We couldn't send that just now — please call 0151 936 9664 and we'll book you in."
+      );
+    } finally {
+      setPodSubmitting(false);
+    }
+  };
+
+  const sendBookingEmail = async (orderId) => {
+    try {
+      await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(
+          bookingPayload({
+            subject: 'New Paid Booking (Klarna) - Wirral Carpet Cleaning',
+            paymentMethod: 'Klarna',
+            klarnaOrderId: orderId || '',
+            paymentStatus: 'PAID via Klarna',
+          })
+        ),
+      });
+    } catch {
+      // Email failure shouldn't block payment confirmation
+    }
+
+    if (typeof fbq === 'function') fbq('track', 'Purchase', { value: total, currency: 'GBP' });
+  };
 
   const handlePayment = async () => {
     if (!klarnaReady || paymentProcessing) return;
@@ -323,7 +382,6 @@ export default function CostCalculator() {
     setKlarnaError('');
 
     try {
-      // Authorize the payment with Klarna
       window.Klarna.Payments.authorize(
         { payment_method_category: klarnaPaymentCategory },
         {},
@@ -331,22 +389,10 @@ export default function CostCalculator() {
           if (!authorizeRes.approved) {
             setPaymentProcessing(false);
             if (!authorizeRes.show_form) {
-              setKlarnaError('Payment was not approved. Please try again or contact us.');
+              setKlarnaError('Payment was not approved. You can still book and pay on the day above.');
             }
             return;
           }
-
-          // Create the order on our backend
-          const roomData = [
-            ...selectedRooms.map((id) => {
-              const room = rooms.find((r) => r.id === id);
-              return { id, name: room?.name || id };
-            }),
-            ...selectedUpholstery.map((id) => {
-              const item = upholsteryItems.find((u) => u.id === id);
-              return { id, name: item?.name || id };
-            }),
-          ];
 
           try {
             const orderRes = await fetch('/api/klarna/create-order', {
@@ -355,7 +401,7 @@ export default function CostCalculator() {
               body: JSON.stringify({
                 authorizationToken: authorizeRes.authorization_token,
                 totalInPence: total * 100,
-                rooms: roomData,
+                rooms: orderLines(),
                 customer: {
                   name: formData.name,
                   phone: formData.phone,
@@ -370,127 +416,35 @@ export default function CostCalculator() {
             }
 
             setKlarnaOrderId(orderData.order_id);
-
-            // Also send the booking email via FormSubmit
             await sendBookingEmail(orderData.order_id);
 
             setPaymentProcessing(false);
+            setBookedVia('klarna');
             setSubmitted(true);
           } catch (err) {
             setPaymentProcessing(false);
-            setKlarnaError(err.message || 'Payment failed. Please contact us.');
+            setKlarnaError(err.message || 'Payment failed. You can still book and pay on the day above.');
           }
         }
       );
-    } catch (err) {
+    } catch {
       setPaymentProcessing(false);
-      setKlarnaError('Payment failed. Please contact us.');
-    }
-  };
-
-  const sendBookingEmail = async (orderId) => {
-    const roomList = selectedRooms
-      .map((id) => rooms.find((r) => r.id === id)?.name)
-      .filter(Boolean);
-    const uphList = selectedUpholstery
-      .map((id) => upholsteryItems.find((u) => u.id === id)?.name)
-      .filter(Boolean);
-    const allItems = [...roomList, ...uphList];
-
-    const selectedDate = availableDates.find(
-      (d) => formatDateValue(d) === formData.date
-    );
-
-    const jsonData = {
-      name: formData.name,
-      phone: formData.phone,
-      postcode: formData.postcode,
-      preferredDate: selectedDate ? formatDate(selectedDate) : formData.date,
-      preferredTime: formData.timeSlot === 'am' ? 'Morning (AM)' : 'Afternoon (PM)',
-      roomsRequested: allItems.join('\n'),
-      totalItems: `${allItems.length} item${allItems.length !== 1 ? 's' : ''}`,
-      estimatedCost: `£${total.toFixed(2)}`,
-      paymentMethod: 'Klarna',
-      klarnaOrderId: orderId || '',
-      paymentStatus: 'PAID via Klarna',
-      access_key: 'fae49abe-d4e1-4cdc-9ed1-a5ec3c116881',
-      subject: 'New Paid Booking (Klarna) - Wirral Carpet Cleaning',
-      from_name: 'Wirral Carpet Cleaning Website',
-    };
-
-    try {
-      await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify(jsonData),
-      });
-    } catch {
-      // Email failure shouldn't block payment confirmation
-    }
-
-    if (typeof fbq === 'function') fbq('track', 'Purchase', { value: total, currency: 'GBP' });
-  };
-
-  // Booking without prepayment: the FFL lesson is that "nothing to pay until
-  // the job is done" converts far better than a payment wall. Klarna stays as
-  // the pay-now option underneath.
-  const [podSubmitting, setPodSubmitting] = useState(false);
-  const submitPayOnDay = async () => {
-    setPodSubmitting(true);
-    const roomList = selectedRooms
-      .map((id) => rooms.find((r) => r.id === id)?.name)
-      .filter(Boolean);
-    const uphList = selectedUpholstery
-      .map((id) => upholsteryItems.find((u) => u.id === id)?.name)
-      .filter(Boolean);
-    const selectedDate = availableDates.find(
-      (d) => formatDateValue(d) === formData.date
-    );
-    try {
-      await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({
-          access_key: 'fae49abe-d4e1-4cdc-9ed1-a5ec3c116881',
-          subject: 'New Booking (pay on the day) - Wirral Carpet Cleaning',
-          from_name: 'Wirral Carpet Cleaning Website',
-          name: formData.name,
-          phone: formData.phone,
-          postcode: formData.postcode,
-          preferredDate: selectedDate ? formatDate(selectedDate) : formData.date,
-          preferredTime: formData.timeSlot === 'am' ? 'Morning (AM)' : 'Afternoon (PM)',
-          roomsRequested: [...roomList, ...uphList].join('\n'),
-          estimatedCost: `£${total.toFixed(2)}`,
-          paymentMethod: 'Pay on the day',
-          paymentStatus: 'NOT PAID — collect on completion',
-        }),
-      });
-      if (typeof fbq === 'function')
-        fbq('track', 'Schedule', { value: total, currency: 'GBP' });
-      setSubmitted(true);
-    } catch {
-      setKlarnaError(
-        "We couldn't send that just now — please call 0151 936 9664 and we'll book you in."
-      );
-    } finally {
-      setPodSubmitting(false);
+      setKlarnaError('Payment failed. You can still book and pay on the day above.');
     }
   };
 
   const resetAll = () => {
-    setSelectedRooms([]);
-    setSelectedUpholstery([]);
+    setBasket({});
     setStep(1);
     setSubmitted(false);
-    setFormData({ name: '', phone: '', postcode: '', date: '', timeSlot: '' });
+    setBookedVia('payday');
+    setFormData({ name: '', phone: '', address: '', postcode: '', date: '', timeSlot: '' });
     setKlarnaReady(false);
     setKlarnaError('');
     setKlarnaOrderId('');
     setKlarnaPaymentCategory('');
     setPaymentProcessing(false);
+    setPodError('');
   };
 
   return (
@@ -505,15 +459,16 @@ export default function CostCalculator() {
         >
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-medium mb-4">
             <HiCalculator className="w-4 h-4" />
-            Price Estimator
+            Price &amp; Book Online
           </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-5">
-            Get Your Estimated Price
+            Your Fixed Price
             <br />
             <span className="text-primary">In Seconds</span>
           </h2>
           <p className="text-lg text-gray-500 leading-relaxed">
-            All prices are estimates — final price to be confirmed on booking.
+            Pick what needs cleaning, choose a day, and you&rsquo;re booked —
+            nothing to pay until the job is done.
           </p>
         </motion.div>
 
@@ -522,7 +477,7 @@ export default function CostCalculator() {
           {[
             { num: 1, label: 'Select Items' },
             { num: 2, label: 'Your Details' },
-            { num: 3, label: 'Payment' },
+            { num: 3, label: 'Confirm' },
           ].map(({ num, label }) => (
             <button
               key={num}
@@ -531,17 +486,11 @@ export default function CostCalculator() {
                 if (num < step) setStep(num);
               }}
               className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                step >= num
-                  ? 'bg-primary text-white'
-                  : 'bg-gray-100 text-gray-400'
+                step >= num ? 'bg-primary text-white' : 'bg-gray-100 text-gray-400'
               } ${num < step && !submitted ? 'cursor-pointer hover:bg-primary-dark' : ''}`}
             >
               <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">
-                {submitted && num <= step ? (
-                  <HiCheck className="w-4 h-4" />
-                ) : (
-                  num
-                )}
+                {submitted && num <= step ? <HiCheck className="w-4 h-4" /> : num}
               </span>
               <span className="hidden sm:inline">{label}</span>
             </button>
@@ -561,10 +510,23 @@ export default function CostCalculator() {
                 <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
                   <HiCheck className="w-8 h-8 text-green-600" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-1">Booking Confirmed & Paid!</h3>
-                <p className="text-gray-500">
-                  Thank you, {formData.name}. Your payment has been processed via Klarna.
-                </p>
+                {bookedVia === 'klarna' ? (
+                  <>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-1">Booking Confirmed &amp; Paid!</h3>
+                    <p className="text-gray-500">
+                      Thank you, {formData.name}. Your payment has been processed via Klarna.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-1">Booking Received!</h3>
+                    <p className="text-gray-500">
+                      Thank you, {formData.name}. Nothing has been paid today —
+                      you pay &pound;{total.toFixed(2)} by cash or card once the
+                      job is done. We&rsquo;ll text you to confirm your slot.
+                    </p>
+                  </>
+                )}
               </div>
 
               {/* Submission summary */}
@@ -577,25 +539,19 @@ export default function CostCalculator() {
                   <span className="text-sm font-medium text-gray-500">Phone</span>
                   <span className="text-sm font-semibold text-gray-900">{formData.phone}</span>
                 </div>
-                <div className="px-5 py-3 flex justify-between items-center">
-                  <span className="text-sm font-medium text-gray-500">Postcode</span>
-                  <span className="text-sm font-semibold text-gray-900 uppercase">{formData.postcode}</span>
+                <div className="px-5 py-3 flex justify-between items-start">
+                  <span className="text-sm font-medium text-gray-500">Address</span>
+                  <span className="text-sm font-semibold text-gray-900 text-right">
+                    {formData.address}
+                    <span className="block uppercase">{formData.postcode}</span>
+                  </span>
                 </div>
                 <div className="px-5 py-3 flex justify-between items-start">
                   <span className="text-sm font-medium text-gray-500">Items</span>
                   <span className="text-sm font-semibold text-gray-900 text-right">
-                    {selectedRooms.map((id) => {
-                      const room = rooms.find((r) => r.id === id);
-                      return room ? (
-                        <span key={id} className="block">{room.icon} {room.name}</span>
-                      ) : null;
-                    })}
-                    {selectedUpholstery.map((id) => {
-                      const item = upholsteryItems.find((u) => u.id === id);
-                      return item ? (
-                        <span key={id} className="block">{item.icon} {item.name}</span>
-                      ) : null;
-                    })}
+                    {describeLines(lines).map((line) => (
+                      <span key={line} className="block">{line}</span>
+                    ))}
                   </span>
                 </div>
                 <div className="px-5 py-3 flex justify-between items-center">
@@ -614,24 +570,18 @@ export default function CostCalculator() {
                   </span>
                 </div>
                 <div className="px-5 py-3 flex justify-between items-center">
-                  <span className="text-sm font-medium text-gray-500">Payment</span>
-                  <span className="text-sm font-semibold text-green-600">Paid via Klarna</span>
+                  <span className="text-sm font-medium text-gray-500">
+                    {bookedVia === 'klarna' ? 'Paid via Klarna' : 'To pay on the day'}
+                  </span>
+                  <span className="text-sm font-bold text-primary">&pound;{total.toFixed(2)}</span>
                 </div>
                 {klarnaOrderId && (
                   <div className="px-5 py-3 flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-500">Order ID</span>
-                    <span className="text-xs font-mono text-gray-400">{klarnaOrderId}</span>
+                    <span className="text-sm font-medium text-gray-500">Klarna Order</span>
+                    <span className="text-xs font-mono text-gray-700">{klarnaOrderId}</span>
                   </div>
                 )}
-                <div className="px-5 py-4 flex justify-between items-center bg-primary/5">
-                  <span className="text-sm font-bold text-gray-900">Total Paid</span>
-                  <span className="text-xl font-bold text-primary">&pound;{total.toFixed(2)}</span>
-                </div>
               </div>
-
-              <p className="text-xs text-gray-400 text-center mb-6">
-                We&rsquo;ll call to confirm your appointment time. If you have any questions, call us on 0151 936 9664.
-              </p>
 
               <div className="text-center">
                 <button
@@ -649,80 +599,67 @@ export default function CostCalculator() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
             >
-              {/* Carpet Rooms */}
-              <div className="mb-6">
-                <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-1">Carpet Cleaning</h3>
-                <p className="text-sm text-accent font-medium mb-3">
-                  Any 3 areas (rooms or stairs) for &pound;{BUNDLE_PRICE} — applied automatically.
-                </p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
-                  {rooms.map((room) => {
-                    const isSelected = selectedRooms.includes(room.id);
-                    return (
-                      <button
-                        key={room.id}
-                        onClick={() => toggleRoom(room.id)}
-                        className={`relative flex flex-col items-center gap-2 p-4 md:p-5 rounded-xl border-2 transition-all duration-200 ${
-                          isSelected
-                            ? 'border-primary bg-primary/5 shadow-md shadow-primary/10'
-                            : 'border-gray-100 bg-white hover:border-gray-200 hover:shadow-sm'
-                        }`}
-                      >
-                        {isSelected && (
-                          <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                            <HiCheck className="w-3 h-3 text-white" />
-                          </span>
-                        )}
-                        <span className="text-2xl">{room.icon}</span>
-                        <span
-                          className={`text-sm font-medium text-center ${
-                            isSelected ? 'text-primary' : 'text-gray-700'
-                          }`}
-                        >
-                          {room.name}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Upholstery */}
-              <div className="mb-8">
-                <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">Upholstery Cleaning</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
-                  {upholsteryItems.map((item) => {
-                    const isSelected = selectedUpholstery.includes(item.id);
-                    return (
-                      <button
-                        key={item.id}
-                        onClick={() => toggleUpholstery(item.id)}
-                        className={`relative flex flex-col items-center gap-2 p-4 md:p-5 rounded-xl border-2 transition-all duration-200 ${
-                          isSelected
-                            ? 'border-accent bg-accent/5 shadow-md shadow-accent/10'
-                            : 'border-gray-100 bg-white hover:border-gray-200 hover:shadow-sm'
-                        }`}
-                      >
-                        {isSelected && (
-                          <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-accent flex items-center justify-center">
-                            <HiCheck className="w-3 h-3 text-white" />
-                          </span>
-                        )}
-                        <span className="text-2xl">{item.icon}</span>
-                        <span
-                          className={`text-sm font-medium text-center ${
-                            isSelected ? 'text-accent' : 'text-gray-700'
-                          }`}
-                        >
-                          {item.name}
-                        </span>
-                        <span className={`text-xs ${isSelected ? 'text-accent/70' : 'text-gray-400'}`}>
-                          &pound;{item.price}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
+              {/* FFL-style grouped item lists with quantity steppers */}
+              <div className="space-y-6 mb-6">
+                {ITEM_GROUPS.map((group, groupIndex) => (
+                  <div
+                    key={group.title}
+                    className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 md:p-6"
+                  >
+                    <h3 className="text-lg font-bold text-gray-900">{group.title}</h3>
+                    {groupIndex === 0 && (
+                      <p className="mt-0.5 text-sm text-accent font-medium">
+                        Any {BUNDLE_SIZE} areas (carpeted room or staircase) for
+                        &pound;{BUNDLE_PRICE} — applied automatically.
+                      </p>
+                    )}
+                    <ul className="mt-3 divide-y divide-gray-100">
+                      {group.items.map((item) => {
+                        const qty = basket[item.id] || 0;
+                        return (
+                          <li
+                            key={item.id}
+                            className="flex items-center justify-between gap-4 py-3.5"
+                          >
+                            <div className="min-w-0">
+                              <p className="font-semibold text-gray-900">{item.name}</p>
+                              <p className="text-sm text-gray-500">
+                                &pound;{item.price} each &middot; {item.hint}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => setQty(item.id, -1)}
+                                disabled={qty === 0}
+                                aria-label={`Remove one ${item.name}`}
+                                className="w-9 h-9 rounded-xl border border-gray-200 text-lg font-semibold text-gray-600 transition-colors hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed"
+                              >
+                                &minus;
+                              </button>
+                              <span className="w-6 text-center font-bold text-gray-900 tabular-nums">
+                                {qty}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => setQty(item.id, 1)}
+                                disabled={qty >= item.max}
+                                aria-label={`Add one ${item.name}`}
+                                className={`w-9 h-9 rounded-xl border text-lg font-semibold transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
+                                  qty > 0
+                                    ? 'border-accent text-accent hover:bg-accent/10'
+                                    : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                                }`}
+                              >
+                                +
+                              </button>
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                ))}
               </div>
 
               {/* Price summary bar */}
@@ -731,11 +668,11 @@ export default function CostCalculator() {
                   <div>
                     <div className="flex items-center gap-3 mb-2">
                       <HiCurrencyPound className="w-6 h-6 text-primary" />
-                      <h3 className="text-lg font-bold text-gray-900">Your Estimated Price</h3>
+                      <h3 className="text-lg font-bold text-gray-900">Your Fixed Price</h3>
                     </div>
                     {totalItems === 0 ? (
                       <p className="text-gray-500">
-                        Select items above to see your estimated price. Minimum charge &pound;{MIN_CHARGE}.
+                        Add items above to see your price. Minimum visit &pound;{MIN_CHARGE}.
                       </p>
                     ) : !unlocked ? (
                       <div>
@@ -781,19 +718,17 @@ export default function CostCalculator() {
                     ) : (
                       <div className="space-y-1">
                         <p className="text-sm text-gray-500">
-                          {totalItems === 1
-                            ? '1 item selected'
-                            : `${totalItems} items selected`}
+                          {totalItems === 1 ? '1 item selected' : `${totalItems} items selected`}
                         </p>
                         <div className="flex items-baseline gap-2">
                           <span className="text-3xl md:text-4xl font-bold text-primary">
                             &pound;{total.toFixed(2)}
                           </span>
-                          <span className="text-sm text-gray-400">estimated total</span>
+                          <span className="text-sm text-gray-400">fixed price</span>
                         </div>
                         {bundleApplied && (
                           <p className="text-xs font-semibold text-accent">
-                            Any 3 areas for &pound;{BUNDLE_PRICE} applied — saves &pound;{BUNDLE_SAVING}.
+                            Any {BUNDLE_SIZE} areas for &pound;{BUNDLE_PRICE} applied — saves &pound;{BUNDLE_SAVING}.
                           </p>
                         )}
                         <p className="text-xs text-gray-400">
@@ -832,212 +767,181 @@ export default function CostCalculator() {
                   <div className="bg-gray-50 rounded-2xl border border-gray-100 p-6 sticky top-24">
                     <h3 className="text-lg font-bold text-gray-900 mb-4">Your Selection</h3>
                     <ul className="space-y-2 mb-4">
-                      {breakdown.map((item, i) => (
-                        <li key={i} className="flex items-center justify-between text-sm">
-                          <span className="flex items-center gap-2 text-gray-700">
-                            <span>{item.icon}</span>
-                            {item.name}
+                      {lines.map((line) => (
+                        <li key={line.id} className="flex items-center justify-between text-sm">
+                          <span className="text-gray-700">
+                            {line.id === 'bundle' ? line.name : `${line.qty}× ${line.name}`}
                           </span>
-                          <span className="text-gray-500">&pound;{item.price}</span>
+                          <span className={line.amount < 0 ? 'text-accent font-semibold' : 'text-gray-500'}>
+                            {line.amount < 0 ? '−' : ''}&pound;{Math.abs(line.amount)}
+                          </span>
                         </li>
                       ))}
                     </ul>
                     <div className="border-t border-gray-200 pt-4 flex items-center justify-between">
-                      <span className="font-semibold text-gray-900">Estimated Total</span>
-                      <span className="text-2xl font-bold text-primary">
-                        &pound;{total.toFixed(2)}
-                      </span>
+                      <span className="font-semibold text-gray-900">Fixed Price</span>
+                      <span className="text-2xl font-bold text-primary">&pound;{total.toFixed(2)}</span>
                     </div>
-                    <p className="text-xs text-gray-400 mt-1">
-                      To be confirmed on booking.
+                    {minApplied && (
+                      <p className="mt-2 text-xs text-amber-600 font-medium">
+                        Minimum cleaning charge of &pound;{MIN_CHARGE} applies.
+                      </p>
+                    )}
+                    <p className="mt-2 text-xs text-gray-400">
+                      Nothing to pay until the job is done.
                     </p>
                     <button
                       onClick={() => setStep(1)}
                       className="mt-4 text-sm text-primary hover:text-primary-dark font-medium transition-colors"
                     >
-                      &larr; Edit selection
+                      &larr; Back to items
                     </button>
                   </div>
                 </div>
 
-                {/* Booking form */}
-                <div className="lg:col-span-3">
-                  <div className="space-y-6">
-                    <input type="text" name="_honey" style={{ display: 'none' }} />
-
-                    {/* Personal details */}
+                {/* Details form */}
+                <div className="lg:col-span-3 space-y-6">
+                  <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900 mb-4">
-                        <HiUser className="w-5 h-5 text-primary" />
-                        Your Details
-                      </h3>
-                      <div className="space-y-4">
-                        <div>
-                          <label htmlFor="calc-name" className="block text-sm font-medium text-gray-700 mb-1.5">
-                            Full Name
-                          </label>
-                          <input
-                            type="text"
-                            id="calc-name"
-                            name="name"
-                            required
-                            value={formData.name}
-                            onChange={handleInputChange}
-                            placeholder="John Smith"
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
-                          />
-                        </div>
-                        <div className="grid sm:grid-cols-2 gap-4">
-                          <div>
-                            <label htmlFor="calc-phone" className="block text-sm font-medium text-gray-700 mb-1.5">
-                              <HiPhone className="w-4 h-4 inline mr-1" />
-                              Contact Number
-                            </label>
-                            <input
-                              type="tel"
-                              id="calc-phone"
-                              name="phone"
-                              required
-                              value={formData.phone}
-                              onChange={handleInputChange}
-                              placeholder="07123 456789"
-                              className="w-full px-4 py-3 rounded-xl border border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
-                            />
-                          </div>
-                          <div>
-                            <label htmlFor="calc-postcode" className="block text-sm font-medium text-gray-700 mb-1.5">
-                              <HiLocationMarker className="w-4 h-4 inline mr-1" />
-                              Postcode
-                            </label>
-                            <input
-                              type="text"
-                              id="calc-postcode"
-                              name="postcode"
-                              required
-                              value={formData.postcode}
-                              onChange={handleInputChange}
-                              placeholder="CH63 1AA"
-                              className="w-full px-4 py-3 rounded-xl border border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors uppercase"
-                            />
-                          </div>
-                        </div>
-                      </div>
+                      <label htmlFor="booking-name" className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 mb-1.5">
+                        <HiUser className="w-4 h-4 text-primary" /> Full Name
+                      </label>
+                      <input
+                        id="booking-name"
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        autoComplete="name"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:outline-none"
+                      />
                     </div>
-
-                    {/* Date selection */}
                     <div>
-                      <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900 mb-4">
-                        <HiCalendar className="w-5 h-5 text-primary" />
-                        Choose a Date
-                      </h3>
-                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
-                        {availableDates.map((date) => {
-                          const val = formatDateValue(date);
-                          const isSelected = formData.date === val;
-                          return (
-                            <button
-                              key={val}
-                              type="button"
-                              onClick={() => setFormData((prev) => ({ ...prev, date: val }))}
-                              className={`p-3 rounded-xl border-2 text-center transition-all ${
-                                isSelected
-                                  ? 'border-primary bg-primary/5 shadow-sm'
-                                  : 'border-gray-100 hover:border-gray-200'
-                              }`}
-                            >
-                              <span
-                                className={`block text-xs font-medium ${
-                                  isSelected ? 'text-primary' : 'text-gray-400'
-                                }`}
-                              >
-                                {date.toLocaleDateString('en-GB', { weekday: 'short' })}
-                              </span>
-                              <span
-                                className={`block text-lg font-bold ${
-                                  isSelected ? 'text-primary' : 'text-gray-900'
-                                }`}
-                              >
-                                {date.getDate()}
-                              </span>
-                              <span
-                                className={`block text-xs ${
-                                  isSelected ? 'text-primary' : 'text-gray-400'
-                                }`}
-                              >
-                                {date.toLocaleDateString('en-GB', { month: 'short' })}
-                              </span>
-                            </button>
-                          );
-                        })}
-                      </div>
+                      <label htmlFor="booking-phone" className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 mb-1.5">
+                        <HiPhone className="w-4 h-4 text-primary" /> Mobile
+                      </label>
+                      <input
+                        id="booking-phone"
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        autoComplete="tel"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:outline-none"
+                      />
                     </div>
-
-                    {/* Time slot */}
                     <div>
-                      <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900 mb-4">
-                        <HiClock className="w-5 h-5 text-primary" />
-                        Preferred Time
-                      </h3>
-                      <div className="grid grid-cols-2 gap-4">
-                        {[
-                          { value: 'am', label: 'Morning', time: '8am – 12pm', icon: '🌅' },
-                          { value: 'pm', label: 'Afternoon', time: '12pm – 5pm', icon: '☀️' },
-                        ].map((slot) => {
-                          const isSelected = formData.timeSlot === slot.value;
-                          return (
-                            <button
-                              key={slot.value}
-                              type="button"
-                              onClick={() =>
-                                setFormData((prev) => ({ ...prev, timeSlot: slot.value }))
-                              }
-                              className={`flex flex-col items-center gap-2 p-5 rounded-xl border-2 transition-all ${
-                                isSelected
-                                  ? 'border-primary bg-primary/5 shadow-md shadow-primary/10'
-                                  : 'border-gray-100 hover:border-gray-200'
-                              }`}
-                            >
-                              <span className="text-2xl">{slot.icon}</span>
-                              <span
-                                className={`font-semibold ${
-                                  isSelected ? 'text-primary' : 'text-gray-900'
-                                }`}
-                              >
-                                {slot.label}
-                              </span>
-                              <span
-                                className={`text-sm ${
-                                  isSelected ? 'text-primary/70' : 'text-gray-400'
-                                }`}
-                              >
-                                {slot.time}
-                              </span>
-                            </button>
-                          );
-                        })}
-                      </div>
+                      <label htmlFor="booking-address" className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 mb-1.5">
+                        <HiLocationMarker className="w-4 h-4 text-primary" /> Address
+                      </label>
+                      <input
+                        id="booking-address"
+                        type="text"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleInputChange}
+                        placeholder="House number & street"
+                        autoComplete="street-address"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:outline-none"
+                      />
                     </div>
-
-                    {/* Continue to Payment */}
-                    <button
-                      type="button"
-                      onClick={() => canSubmit && setStep(3)}
-                      disabled={!canSubmit}
-                      className="group w-full flex items-center justify-center gap-2 px-8 py-4 bg-accent hover:bg-accent-light disabled:bg-gray-200 disabled:text-gray-400 text-white rounded-xl text-lg font-semibold transition-all hover:shadow-lg hover:shadow-accent/25 disabled:shadow-none disabled:cursor-not-allowed"
-                    >
-                      Continue to Confirm
-                      <HiArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                    </button>
-
-                    <p className="text-xs text-gray-400 text-center">
-                      Estimated price — to be confirmed on booking.
-                    </p>
+                    <div>
+                      <label htmlFor="booking-postcode" className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 mb-1.5">
+                        <HiLocationMarker className="w-4 h-4 text-primary" /> Postcode
+                      </label>
+                      <input
+                        id="booking-postcode"
+                        type="text"
+                        name="postcode"
+                        value={formData.postcode}
+                        onChange={handleInputChange}
+                        placeholder="CH63 1AA"
+                        autoComplete="postal-code"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 uppercase focus:border-primary focus:outline-none"
+                      />
+                    </div>
                   </div>
+
+                  {/* Date picker */}
+                  <div>
+                    <p className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 mb-2">
+                      <HiCalendar className="w-4 h-4 text-primary" /> Pick a day
+                    </p>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                      {availableDates.slice(0, 12).map((date) => {
+                        const value = formatDateValue(date);
+                        const isSelected = formData.date === value;
+                        return (
+                          <button
+                            key={value}
+                            type="button"
+                            onClick={() => setFormData((prev) => ({ ...prev, date: value }))}
+                            className={`rounded-xl border-2 px-2 py-2.5 text-sm font-medium transition-all ${
+                              isSelected
+                                ? 'border-primary bg-primary/5 text-primary'
+                                : 'border-gray-100 text-gray-700 hover:border-gray-200'
+                            }`}
+                          >
+                            {formatDate(date)}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Time slot */}
+                  <div>
+                    <p className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 mb-2">
+                      <HiClock className="w-4 h-4 text-primary" /> Morning or afternoon?
+                    </p>
+                    <div className="grid grid-cols-2 gap-3">
+                      {[
+                        { id: 'am', label: 'Morning', time: '8am – 12pm', icon: '🌅' },
+                        { id: 'pm', label: 'Afternoon', time: '12pm – 5pm', icon: '☀️' },
+                      ].map((slot) => {
+                        const isSelected = formData.timeSlot === slot.id;
+                        return (
+                          <button
+                            key={slot.id}
+                            type="button"
+                            onClick={() => setFormData((prev) => ({ ...prev, timeSlot: slot.id }))}
+                            className={`flex flex-col items-center gap-1 rounded-xl border-2 px-4 py-4 transition-all ${
+                              isSelected
+                                ? 'border-primary bg-primary/5'
+                                : 'border-gray-100 hover:border-gray-200'
+                            }`}
+                          >
+                            <span className="text-2xl">{slot.icon}</span>
+                            <span className={`font-semibold ${isSelected ? 'text-primary' : 'text-gray-900'}`}>
+                              {slot.label}
+                            </span>
+                            <span className={`text-sm ${isSelected ? 'text-primary/70' : 'text-gray-400'}`}>
+                              {slot.time}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => canSubmit && setStep(3)}
+                    disabled={!canSubmit}
+                    className="group w-full flex items-center justify-center gap-2 px-8 py-4 bg-accent hover:bg-accent-light disabled:bg-gray-200 disabled:text-gray-400 text-white rounded-xl text-lg font-semibold transition-all hover:shadow-lg hover:shadow-accent/25 disabled:shadow-none disabled:cursor-not-allowed"
+                  >
+                    Continue to Confirm
+                    <HiArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </button>
+
+                  <p className="text-xs text-gray-400 text-center">
+                    Fixed price — confirmed by text once you book.
+                  </p>
                 </div>
               </div>
             </motion.div>
           ) : (
-            /* Step 3: Klarna Payment */
+            /* Step 3: Confirm — pay on the day, or Klarna */
             <motion.div
               key="step3"
               initial={{ opacity: 0, x: 20 }}
@@ -1048,36 +952,32 @@ export default function CostCalculator() {
                 {/* Summary sidebar */}
                 <div className="lg:col-span-2">
                   <div className="bg-gray-50 rounded-2xl border border-gray-100 p-6 sticky top-24">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4">Order Summary</h3>
+                    <h3 className="text-lg font-bold text-gray-900 mb-4">Your Booking</h3>
                     <ul className="space-y-2 mb-4">
-                      {breakdown.map((item, i) => (
-                        <li key={i} className="flex items-center justify-between text-sm">
-                          <span className="flex items-center gap-2 text-gray-700">
-                            <span>{item.icon}</span>
-                            {item.name}
+                      {lines.map((line) => (
+                        <li key={line.id} className="flex items-center justify-between text-sm">
+                          <span className="text-gray-700">
+                            {line.id === 'bundle' ? line.name : `${line.qty}× ${line.name}`}
                           </span>
-                          <span className="text-gray-500">&pound;{item.price}</span>
+                          <span className={line.amount < 0 ? 'text-accent font-semibold' : 'text-gray-500'}>
+                            {line.amount < 0 ? '−' : ''}&pound;{Math.abs(line.amount)}
+                          </span>
                         </li>
                       ))}
                     </ul>
-                    <div className="border-t border-gray-200 pt-4 flex items-center justify-between">
-                      <span className="font-semibold text-gray-900">Total</span>
-                      <span className="text-2xl font-bold text-primary">
-                        &pound;{total.toFixed(2)}
-                      </span>
-                    </div>
-
-                    <div className="border-t border-gray-100 mt-4 pt-4 space-y-2 text-sm text-gray-500">
+                    <div className="border-t border-gray-200 pt-4 space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span>Name</span>
-                        <span className="font-medium text-gray-700">{formData.name}</span>
+                        <span className="text-gray-500">Total</span>
+                        <span className="text-xl font-bold text-primary">&pound;{total.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between gap-3">
+                        <span className="text-gray-500">Address</span>
+                        <span className="font-medium text-gray-700 text-right">
+                          {formData.address}, {formData.postcode.toUpperCase()}
+                        </span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Phone</span>
-                        <span className="font-medium text-gray-700">{formData.phone}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Date</span>
+                        <span className="text-gray-500">Date</span>
                         <span className="font-medium text-gray-700">
                           {(() => {
                             const d = availableDates.find((d) => formatDateValue(d) === formData.date);
@@ -1086,7 +986,7 @@ export default function CostCalculator() {
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Time</span>
+                        <span className="text-gray-500">Time</span>
                         <span className="font-medium text-gray-700">
                           {formData.timeSlot === 'am' ? 'Morning' : 'Afternoon'}
                         </span>
@@ -1102,13 +1002,11 @@ export default function CostCalculator() {
                   </div>
                 </div>
 
-                {/* Klarna payment widget */}
+                {/* Confirm column */}
                 <div className="lg:col-span-3">
                   <div className="space-y-6">
                     <div className="bg-gray-50 rounded-2xl border border-gray-100 p-6">
-                      <h3 className="text-lg font-bold text-gray-900">
-                        Nothing to pay today
-                      </h3>
+                      <h3 className="text-lg font-bold text-gray-900">Nothing to pay today</h3>
                       <p className="mt-1 text-sm text-gray-500">
                         Book now and pay by cash or card when the job is done
                         and you&rsquo;re happy with it.
@@ -1119,8 +1017,19 @@ export default function CostCalculator() {
                         disabled={podSubmitting}
                         className="group mt-4 w-full flex items-center justify-center gap-2 px-8 py-4 bg-accent hover:bg-accent-light disabled:bg-gray-300 text-white rounded-xl text-lg font-semibold transition-all hover:shadow-lg hover:shadow-accent/25"
                       >
-                        {podSubmitting ? 'Booking…' : <>Book now — pay &pound;{total.toFixed(2)} on the day<HiArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></>}
+                        {podSubmitting ? 'Booking…' : (
+                          <>
+                            Book now — pay &pound;{total.toFixed(2)} on the day
+                            <HiArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                          </>
+                        )}
                       </button>
+                      {podError && (
+                        <p className="mt-3 flex items-start gap-2 text-sm text-red-600">
+                          <HiExclamationCircle className="w-5 h-5 shrink-0 mt-0.5" />
+                          {podError}
+                        </p>
+                      )}
                       <p className="mt-2 text-xs text-gray-400 text-center">
                         We&rsquo;ll text to confirm your slot.
                       </p>
@@ -1150,13 +1059,12 @@ export default function CostCalculator() {
                         <div>
                           <p className="text-sm text-red-700">{klarnaError}</p>
                           <p className="text-xs text-red-500 mt-1">
-                            Call us on <a href="tel:01519369664" className="underline font-medium">0151 936 9664</a> to book over the phone.
+                            Or call <a href="tel:01519369664" className="underline font-medium">0151 936 9664</a> to book over the phone.
                           </p>
                         </div>
                       </div>
                     )}
 
-                    {/* Klarna widget renders here */}
                     <div
                       id="klarna-payments-container"
                       ref={klarnaContainerRef}
@@ -1168,7 +1076,7 @@ export default function CostCalculator() {
                         type="button"
                         onClick={handlePayment}
                         disabled={paymentProcessing}
-                        className="group w-full flex items-center justify-center gap-2 px-8 py-4 bg-accent hover:bg-accent-light disabled:bg-gray-300 disabled:text-gray-500 text-white rounded-xl text-lg font-semibold transition-all hover:shadow-lg hover:shadow-accent/25 disabled:shadow-none disabled:cursor-not-allowed"
+                        className="group w-full flex items-center justify-center gap-2 px-8 py-4 bg-primary hover:bg-primary-dark disabled:bg-gray-300 disabled:text-gray-500 text-white rounded-xl text-lg font-semibold transition-all hover:shadow-lg disabled:shadow-none disabled:cursor-not-allowed"
                       >
                         {paymentProcessing ? (
                           <>
@@ -1177,7 +1085,7 @@ export default function CostCalculator() {
                           </>
                         ) : (
                           <>
-                            Book &amp; Pay &pound;{total.toFixed(2)}
+                            Pay &amp; Book &pound;{total.toFixed(2)} with Klarna
                             <HiArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                           </>
                         )}
@@ -1185,7 +1093,7 @@ export default function CostCalculator() {
                     )}
 
                     <p className="text-xs text-gray-400 text-center">
-                      Secure payment powered by Klarna. We&rsquo;ll call to confirm your appointment.
+                      Secure payment powered by Klarna. We&rsquo;ll text to confirm your appointment.
                     </p>
                   </div>
                 </div>

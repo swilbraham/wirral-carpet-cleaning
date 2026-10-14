@@ -336,6 +336,7 @@ export default function CostCalculator() {
         address: formData.address,
         postcode: formData.postcode,
         date: selectedDate ? formatDate(selectedDate) : formData.date,
+        dateIso: formData.date,
         time: formData.timeSlot === 'am' ? 'AM' : 'PM',
         items: describeLines(lines).join(', '),
         total: `£${total.toFixed(2)}`,

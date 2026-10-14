@@ -11,6 +11,8 @@
  * must not become anyone's free SMS gateway.
  */
 
+import { recordEvent } from './_db.js';
+
 const sent = new Map(); // per-instance rate limit: key -> [timestamps]
 
 function allow(key, max, windowMs) {
@@ -82,6 +84,22 @@ export default async function handler(req, res) {
   const time = text(req.body.time, 20);
   const items = text(req.body.items, 220);
   const total = text(req.body.total, 12);
+
+  // The permanent record — this is what the admin page reads. Texts and
+  // emails are the fast copies; this is the one that lasts.
+  await recordEvent({
+    kind,
+    name,
+    phone,
+    address,
+    postcode,
+    slotDate: /^\d{4}-\d{2}-\d{2}$/.test(text(req.body.dateIso, 10))
+      ? text(req.body.dateIso, 10)
+      : null,
+    slotTime: time,
+    items,
+    total,
+  });
 
   const results = { owner: false, customer: false };
 

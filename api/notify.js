@@ -100,9 +100,7 @@ export default async function handler(req, res) {
       kind === 'quote' ? items : `${address}, ${postcode}`,
       kind === 'quote' ? '' : `${date} ${time} — ${items}`,
     ].filter(Boolean);
-    const ownerSend = await sendSms(owner, lines.join('\n'));
-    results.owner = ownerSend.ok;
-    if (!ownerSend.ok) results.ownerError = String(ownerSend.reason || '').slice(0, 160);
+    results.owner = (await sendSms(owner, lines.join('\n'))).ok;
   }
 
   // Customer confirmation: bookings only, UK mobiles only, once per number.

@@ -32,7 +32,9 @@ async function ensureSchema(db) {
         items      text NOT NULL DEFAULT '',
         total      text NOT NULL DEFAULT '',
         created_at timestamptz NOT NULL DEFAULT now()
-      )`;
+      )`.then(
+      () => db`ALTER TABLE wcc_events ADD COLUMN IF NOT EXISTS chased_at timestamptz`
+    );
   }
   await schemaReady;
 }
@@ -54,6 +56,43 @@ export async function recordEvent(event) {
     console.error('recordEvent failed', err);
     return false;
   }
+}
+
+/**
+ * Quotes 6+ hours old that never booked and were never chased, claimed by
+ * stamping chased_at before any text goes out — a cron retry can't offer
+ * the same person 10% twice. The 48-hour lower bound stops the first run
+ * (or a long outage) texting a stale backlog.
+ */
+export async function claimQuotesForChase(limit = 15) {
+  const db = sql();
+  if (!db) return [];
+  await ensureSchema(db);
+  return db`
+    UPDATE wcc_events SET chased_at = now()
+     WHERE id IN (
+       SELECT q.id FROM wcc_events q
+        WHERE q.kind = 'quote'
+          AND q.phone <> ''
+          AND q.chased_at IS NULL
+          AND q.created_at <= now() - interval '6 hours'
+          AND q.created_at > now() - interval '48 hours'
+          AND NOT EXISTS (
+            SELECT 1 FROM wcc_events b
+             WHERE b.kind LIKE 'booking%' AND b.phone = q.phone
+               AND b.created_at >= q.created_at - interval '1 hour'
+          )
+        ORDER BY q.created_at
+        LIMIT ${limit}
+     )
+     RETURNING id, name, phone, items, total`;
+}
+
+/** Un-stamp a claim whose text failed, so the next run tries again. */
+export async function unclaimChase(id) {
+  const db = sql();
+  if (!db) return;
+  await db`UPDATE wcc_events SET chased_at = NULL WHERE id = ${id}`;
 }
 
 /** Everything the admin page shows, in one round of queries. */
@@ -81,6 +120,7 @@ export async function adminData() {
     db`
       SELECT id, name, phone, postcode, items, total,
              to_char(created_at AT TIME ZONE 'Europe/London', 'DD Mon HH24:MI') AS created_at,
+             to_char(chased_at AT TIME ZONE 'Europe/London', 'DD Mon HH24:MI') AS chased_at,
              EXISTS (
                SELECT 1 FROM wcc_events b
                 WHERE b.kind LIKE 'booking%' AND b.phone = wcc_events.phone

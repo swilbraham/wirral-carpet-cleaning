@@ -212,6 +212,8 @@ export default function AdminPage() {
                       <span className="flex items-center gap-2">
                         {q.booked ? (
                           <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">booked</span>
+                        ) : q.chased_at ? (
+                          <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">10% sent</span>
                         ) : (
                           <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800">chase</span>
                         )}
@@ -231,7 +233,13 @@ export default function AdminPage() {
                       </Detail>
                       <Detail label="Quoted price">{q.total}</Detail>
                       <Detail label="When">{q.created_at}</Detail>
-                      <Detail label="Status">{q.booked ? 'Went on to book' : 'Not booked — worth a text'}</Detail>
+                      <Detail label="Status">
+                        {q.booked
+                          ? 'Went on to book'
+                          : q.chased_at
+                            ? `10% offer texted ${q.chased_at}`
+                            : 'Not booked — 10% offer goes out 6h after the quote'}
+                      </Detail>
                     </div>
                   </details>
                 </li>

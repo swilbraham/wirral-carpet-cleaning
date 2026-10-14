@@ -51,6 +51,7 @@ export default async function handler(req, res) {
   const time = text(req.body.time, 20);
   const items = text(req.body.items, 220);
   const total = text(req.body.total, 12);
+  const discount = text(req.body.discount, 20);
 
   // The permanent record — this is what the admin page reads. Texts and
   // emails are the fast copies; this is the one that lasts.
@@ -80,7 +81,7 @@ export default async function handler(req, res) {
           ? `NEW BOOKING (PAID Klarna): ${total}`
           : `NEW BOOKING (pay on day): ${total}`;
     const lines = [
-      `WCC ${headline}`,
+      `WCC ${headline}${discount ? ` (code ${discount})` : ''}`,
       `${name} ${phone}`,
       kind === 'quote' ? items : `${address}, ${postcode}`,
       kind === 'quote' ? '' : `${date} ${time} — ${items}`,

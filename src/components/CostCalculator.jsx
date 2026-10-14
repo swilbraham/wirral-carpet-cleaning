@@ -147,6 +147,12 @@ export default function CostCalculator() {
   const [podSubmitting, setPodSubmitting] = useState(false);
   const [podError, setPodError] = useState('');
 
+  // A discount code reprices everything: display, Klarna charge, emails.
+  const [discount, setDiscount] = useState(null); // { code, pct }
+  const [codeEntry, setCodeEntry] = useState('');
+  const [codeError, setCodeError] = useState('');
+  const [codeChecking, setCodeChecking] = useState(false);
+
   // Name and mobile come before the price: every quote is a lead that can
   // be followed up, not an anonymous basket that vanishes.
   const [unlocked, setUnlocked] = useState(false);
@@ -159,6 +165,9 @@ export default function CostCalculator() {
     () => calculatePrice(basket),
     [basket]
   );
+  const payable = discount
+    ? Math.round(total * (100 - discount.pct)) / 100
+    : total;
   const totalItems = Object.values(basket).reduce((sum, qty) => sum + qty, 0);
   const canProceed = totalItems > 0;
 
@@ -184,6 +193,31 @@ export default function CostCalculator() {
     formData.postcode.trim() &&
     formData.date &&
     formData.timeSlot;
+
+  const applyCode = async () => {
+    const code = codeEntry.trim().toUpperCase();
+    if (!code) return;
+    setCodeChecking(true);
+    setCodeError('');
+    try {
+      const res = await fetch('/api/discount', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setDiscount({ code: data.code, pct: data.pct });
+        setCodeEntry('');
+      } else {
+        setCodeError(data.error || "That code isn't valid.");
+      }
+    } catch {
+      setCodeError("Couldn't check that — try again.");
+    } finally {
+      setCodeChecking(false);
+    }
+  };
 
   const unlockPrice = () => {
     if (formData.name.trim().length < 2) {
@@ -239,7 +273,7 @@ export default function CostCalculator() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          totalInPence: total * 100,
+          totalInPence: Math.round(payable * 100),
           rooms: orderLines(),
         }),
       });
@@ -315,7 +349,8 @@ export default function CostCalculator() {
       preferredDate: selectedDate ? formatDate(selectedDate) : formData.date,
       preferredTime: formData.timeSlot === 'am' ? 'Morning (AM)' : 'Afternoon (PM)',
       itemsBooked: describeLines(lines).join('\n'),
-      estimatedCost: `£${total.toFixed(2)}`,
+      estimatedCost: `£${payable.toFixed(2)}`,
+      discountCode: discount ? `${discount.code} (${discount.pct}% off £${total.toFixed(2)})` : '',
       ...extra,
     };
   };
@@ -339,7 +374,8 @@ export default function CostCalculator() {
         dateIso: formData.date,
         time: formData.timeSlot === 'am' ? 'AM' : 'PM',
         items: describeLines(lines).join(', '),
-        total: `£${total.toFixed(2)}`,
+        total: `£${payable.toFixed(2)}`,
+        discount: discount ? discount.code : '',
       }),
     }).catch(() => {});
   };
@@ -368,7 +404,7 @@ export default function CostCalculator() {
       }
       notifySms('booking');
       if (typeof fbq === 'function')
-        fbq('track', 'Schedule', { value: total, currency: 'GBP' });
+        fbq('track', 'Schedule', { value: payable, currency: 'GBP' });
       setBookedVia('payday');
       setSubmitted(true);
     } catch {
@@ -399,7 +435,7 @@ export default function CostCalculator() {
     }
 
     notifySms('booking-paid');
-    if (typeof fbq === 'function') fbq('track', 'Purchase', { value: total, currency: 'GBP' });
+    if (typeof fbq === 'function') fbq('track', 'Purchase', { value: payable, currency: 'GBP' });
   };
 
   const handlePayment = async () => {
@@ -427,7 +463,7 @@ export default function CostCalculator() {
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 authorizationToken: authorizeRes.authorization_token,
-                totalInPence: total * 100,
+                totalInPence: Math.round(payable * 100),
                 rooms: orderLines(),
                 customer: {
                   name: formData.name,
@@ -472,6 +508,9 @@ export default function CostCalculator() {
     setKlarnaPaymentCategory('');
     setPaymentProcessing(false);
     setPodError('');
+    setDiscount(null);
+    setCodeEntry('');
+    setCodeError('');
   };
 
   return (
@@ -549,7 +588,7 @@ export default function CostCalculator() {
                     <h3 className="text-2xl font-bold text-gray-900 mb-1">Booking Received!</h3>
                     <p className="text-gray-500">
                       Thank you, {formData.name}. Nothing has been paid today —
-                      you pay &pound;{total.toFixed(2)} by cash or card once the
+                      you pay &pound;{payable.toFixed(2)} by cash or card once the
                       job is done. We&rsquo;ll text you to confirm your slot.
                     </p>
                   </>
@@ -600,7 +639,7 @@ export default function CostCalculator() {
                   <span className="text-sm font-medium text-gray-500">
                     {bookedVia === 'klarna' ? 'Paid via Klarna' : 'To pay on the day'}
                   </span>
-                  <span className="text-sm font-bold text-primary">&pound;{total.toFixed(2)}</span>
+                  <span className="text-sm font-bold text-primary">&pound;{payable.toFixed(2)}</span>
                 </div>
                 {klarnaOrderId && (
                   <div className="px-5 py-3 flex justify-between items-center">
@@ -748,11 +787,21 @@ export default function CostCalculator() {
                           {totalItems === 1 ? '1 item selected' : `${totalItems} items selected`}
                         </p>
                         <div className="flex items-baseline gap-2">
+                          {discount && (
+                            <span className="text-lg font-semibold text-gray-400 line-through">
+                              &pound;{total.toFixed(2)}
+                            </span>
+                          )}
                           <span className="text-3xl md:text-4xl font-bold text-primary">
-                            &pound;{total.toFixed(2)}
+                            &pound;{payable.toFixed(2)}
                           </span>
                           <span className="text-sm text-gray-400">fixed price</span>
                         </div>
+                        {discount && (
+                          <p className="text-xs font-semibold text-accent">
+                            {discount.code} applied — {discount.pct}% off (saves &pound;{(total - payable).toFixed(2)})
+                          </p>
+                        )}
                         {bundleApplied && (
                           <p className="text-xs font-semibold text-accent">
                             Any {BUNDLE_SIZE} areas for &pound;{BUNDLE_PRICE} applied — saves &pound;{BUNDLE_SAVING}.
@@ -765,6 +814,28 @@ export default function CostCalculator() {
                           <p className="text-xs text-amber-600 font-medium">
                             Minimum cleaning charge of &pound;{MIN_CHARGE} applies.
                           </p>
+                        )}
+                        {!discount && (
+                          <div className="flex flex-wrap items-center gap-2 pt-2">
+                            <input
+                              type="text"
+                              value={codeEntry}
+                              onChange={(e) => setCodeEntry(e.target.value.toUpperCase())}
+                              placeholder="Discount code?"
+                              className="w-36 rounded-xl border border-gray-200 px-3 py-2 text-sm uppercase focus:border-primary focus:outline-none"
+                            />
+                            <button
+                              type="button"
+                              onClick={applyCode}
+                              disabled={codeChecking || !codeEntry.trim()}
+                              className="rounded-xl border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100 disabled:opacity-40"
+                            >
+                              {codeChecking ? 'Checking…' : 'Apply'}
+                            </button>
+                            {codeError && (
+                              <span className="text-xs text-red-600">{codeError}</span>
+                            )}
+                          </div>
                         )}
                       </div>
                     )}
@@ -807,8 +878,20 @@ export default function CostCalculator() {
                     </ul>
                     <div className="border-t border-gray-200 pt-4 flex items-center justify-between">
                       <span className="font-semibold text-gray-900">Fixed Price</span>
-                      <span className="text-2xl font-bold text-primary">&pound;{total.toFixed(2)}</span>
+                      <span className="text-2xl font-bold text-primary">
+                        {discount && (
+                          <span className="mr-2 text-sm font-semibold text-gray-400 line-through">
+                            &pound;{total.toFixed(2)}
+                          </span>
+                        )}
+                        &pound;{payable.toFixed(2)}
+                      </span>
                     </div>
+                    {discount && (
+                      <p className="mt-1 text-xs font-semibold text-accent">
+                        {discount.code} — {discount.pct}% off applied
+                      </p>
+                    )}
                     {minApplied && (
                       <p className="mt-2 text-xs text-amber-600 font-medium">
                         Minimum cleaning charge of &pound;{MIN_CHARGE} applies.
@@ -995,8 +1078,20 @@ export default function CostCalculator() {
                     <div className="border-t border-gray-200 pt-4 space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span className="text-gray-500">Total</span>
-                        <span className="text-xl font-bold text-primary">&pound;{total.toFixed(2)}</span>
+                        <span className="text-xl font-bold text-primary">
+                          {discount && (
+                            <span className="mr-2 text-sm font-semibold text-gray-400 line-through">
+                              &pound;{total.toFixed(2)}
+                            </span>
+                          )}
+                          &pound;{payable.toFixed(2)}
+                        </span>
                       </div>
+                      {discount && (
+                        <p className="text-xs font-semibold text-accent">
+                          {discount.code} — {discount.pct}% off applied
+                        </p>
+                      )}
                       <div className="flex justify-between gap-3">
                         <span className="text-gray-500">Address</span>
                         <span className="font-medium text-gray-700 text-right">
@@ -1046,7 +1141,7 @@ export default function CostCalculator() {
                       >
                         {podSubmitting ? 'Booking…' : (
                           <>
-                            Book now — pay &pound;{total.toFixed(2)} on the day
+                            Book now — pay &pound;{payable.toFixed(2)} on the day
                             <HiArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                           </>
                         )}
@@ -1112,7 +1207,7 @@ export default function CostCalculator() {
                           </>
                         ) : (
                           <>
-                            Pay &amp; Book &pound;{total.toFixed(2)} with Klarna
+                            Pay &amp; Book &pound;{payable.toFixed(2)} with Klarna
                             <HiArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                           </>
                         )}

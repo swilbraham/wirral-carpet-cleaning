@@ -34,6 +34,17 @@ async function ensureSchema(db) {
         created_at timestamptz NOT NULL DEFAULT now()
       )`.then(
       () => db`ALTER TABLE wcc_events ADD COLUMN IF NOT EXISTS chased_at timestamptz`
+    ).then(
+      () => db`
+        CREATE TABLE IF NOT EXISTS wcc_codes (
+          code       text PRIMARY KEY,
+          pct        int NOT NULL CHECK (pct BETWEEN 1 AND 90),
+          created_at timestamptz NOT NULL DEFAULT now()
+        )`
+    ).then(
+      // The launch code predates the table; keep it working.
+      () => db`INSERT INTO wcc_codes (code, pct) VALUES ('WCC201', 20)
+               ON CONFLICT (code) DO NOTHING`
     );
   }
   await schemaReady;
@@ -95,13 +106,54 @@ export async function unclaimChase(id) {
   await db`UPDATE wcc_events SET chased_at = NULL WHERE id = ${id}`;
 }
 
+/** The percentage for a live code, or null. */
+export async function findCode(code) {
+  const db = sql();
+  if (!db) return null;
+  await ensureSchema(db);
+  const rows = await db`SELECT pct FROM wcc_codes WHERE code = ${code}`;
+  return rows[0]?.pct ?? null;
+}
+
+export async function listCodes() {
+  const db = sql();
+  if (!db) return [];
+  await ensureSchema(db);
+  return db`
+    SELECT code, pct,
+           to_char(created_at AT TIME ZONE 'Europe/London', 'DD Mon YYYY') AS created_at
+      FROM wcc_codes ORDER BY created_at DESC`;
+}
+
+export async function addCode(code, pct) {
+  const db = sql();
+  if (!db) return { ok: false, reason: 'No database configured.' };
+  await ensureSchema(db);
+  try {
+    await db`INSERT INTO wcc_codes (code, pct) VALUES (${code}, ${pct})`;
+    return { ok: true };
+  } catch (err) {
+    if (String(err?.message || '').includes('duplicate')) {
+      return { ok: false, reason: `${code} already exists — delete it first to change the percentage.` };
+    }
+    return { ok: false, reason: 'Could not save that code.' };
+  }
+}
+
+export async function deleteCode(code) {
+  const db = sql();
+  if (!db) return;
+  await ensureSchema(db);
+  await db`DELETE FROM wcc_codes WHERE code = ${code}`;
+}
+
 /** Everything the admin page shows, in one round of queries. */
 export async function adminData() {
   const db = sql();
   if (!db) return null;
   await ensureSchema(db);
 
-  const [upcoming, past, quotes, customers, due] = await Promise.all([
+  const [upcoming, past, quotes, customers, due, codes] = await Promise.all([
     db`
       SELECT id, kind, name, phone, address, postcode, slot_time, items, total,
              to_char(slot_date, 'Dy DD Mon YYYY') AS slot_date,
@@ -149,7 +201,11 @@ export async function adminData() {
       HAVING max(slot_date) < CURRENT_DATE - interval '9 months'
        ORDER BY max(slot_date)
        LIMIT 50`,
+    db`
+      SELECT code, pct,
+             to_char(created_at AT TIME ZONE 'Europe/London', 'DD Mon YYYY') AS created_at
+        FROM wcc_codes ORDER BY created_at DESC`,
   ]);
 
-  return { upcoming, past, quotes, customers, due };
+  return { upcoming, past, quotes, customers, due, codes };
 }

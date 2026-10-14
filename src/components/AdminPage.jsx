@@ -14,6 +14,9 @@ export default function AdminPage() {
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [newCode, setNewCode] = useState('');
+  const [newPct, setNewPct] = useState('10');
+  const [codeMsg, setCodeMsg] = useState('');
 
   const load = async (pw) => {
     setLoading(true);
@@ -37,6 +40,29 @@ export default function AdminPage() {
       setError("Couldn't reach the server — try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const codeAction = async (body) => {
+    setCodeMsg('');
+    try {
+      const res = await fetch('/api/admin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-password': password,
+        },
+        body: JSON.stringify(body),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        setCodeMsg(json.error || 'Something went wrong.');
+        return;
+      }
+      setNewCode('');
+      await load(password); // refresh the list
+    } catch {
+      setCodeMsg("Couldn't reach the server — try again.");
     }
   };
 
@@ -266,6 +292,69 @@ export default function AdminPage() {
                   <span className="text-gray-500">
                     {c.bookings} clean{c.bookings === 1 ? '' : 's'} · last {c.last_clean}
                   </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Section>
+
+        <Section
+          title={`Discount codes (${(data.codes || []).length})`}
+          hint="Anyone can enter these at booking. Deleting a code stops it working immediately — bookings already made keep their price."
+        >
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              codeAction({ action: 'add-code', code: newCode, pct: newPct });
+            }}
+            className="flex flex-wrap items-center gap-2"
+          >
+            <input
+              type="text"
+              value={newCode}
+              onChange={(e) => setNewCode(e.target.value.toUpperCase())}
+              placeholder="NEWCODE10"
+              className="w-36 rounded-xl border border-gray-200 px-3 py-2 text-sm uppercase focus:border-primary focus:outline-none"
+            />
+            <select
+              value={newPct}
+              onChange={(e) => setNewPct(e.target.value)}
+              className="rounded-xl border border-gray-200 px-3 py-2 text-sm focus:border-primary focus:outline-none"
+            >
+              {[5, 10, 15, 20, 25, 30, 40, 50].map((p) => (
+                <option key={p} value={p}>{p}% off</option>
+              ))}
+            </select>
+            <button
+              type="submit"
+              disabled={newCode.trim().length < 3}
+              className="rounded-xl bg-primary hover:bg-primary-dark disabled:bg-gray-300 px-4 py-2 text-sm font-semibold text-white transition-colors"
+            >
+              Add code
+            </button>
+            {codeMsg && <span className="text-sm text-red-600">{codeMsg}</span>}
+          </form>
+          {(data.codes || []).length > 0 && (
+            <ul className="mt-3 divide-y divide-gray-100">
+              {data.codes.map((c) => (
+                <li key={c.code} className="py-2.5 flex items-baseline justify-between gap-2 text-sm">
+                  <span>
+                    <span className="font-mono font-bold text-gray-900">{c.code}</span>
+                    <span className="ml-2 rounded-full bg-accent/10 px-2 py-0.5 text-xs font-semibold text-accent">
+                      {c.pct}% off
+                    </span>
+                    <span className="ml-2 text-gray-400">added {c.created_at}</span>
+                  </span>
+                  <button
+                    onClick={() => {
+                      if (window.confirm(`Delete ${c.code}? It stops working immediately.`)) {
+                        codeAction({ action: 'delete-code', code: c.code });
+                      }
+                    }}
+                    className="text-xs font-semibold text-red-600 underline"
+                  >
+                    Delete
+                  </button>
                 </li>
               ))}
             </ul>

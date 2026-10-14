@@ -1,7 +1,9 @@
+import { findCode } from './_db.js';
+
 /**
- * Discount-code check. Codes live here, server-side, so they can't be read
- * out of the page source — a code spreads by flyer and word of mouth, not
- * by view-source.
+ * Discount-code check. Codes live in the database (managed from /admin) and
+ * never reach the page source — a code spreads by flyer and word of mouth,
+ * not by view-source. The static map is the no-database fallback.
  */
 const CODES = {
   WCC201: 20,
@@ -30,7 +32,7 @@ export default async function handler(req, res) {
   }
 
   const code = String(req.body?.code || '').trim().toUpperCase().slice(0, 20);
-  const pct = CODES[code];
+  const pct = (await findCode(code)) ?? CODES[code];
   if (!pct) {
     return res.status(200).json({ ok: false, error: "That code isn't valid." });
   }

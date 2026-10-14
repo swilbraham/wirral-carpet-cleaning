@@ -118,5 +118,18 @@ export default async function handler(req, res) {
     }
   }
 
-  return res.status(200).json({ ok: true, ...results });
+  // Presence booleans only — never values. Enough to see which variable a
+  // silent failure is missing.
+  return res.status(200).json({
+    ok: true,
+    ...results,
+    configured: {
+      twilio: Boolean(
+        process.env.TWILIO_ACCOUNT_SID &&
+          process.env.TWILIO_AUTH_TOKEN &&
+          process.env.TWILIO_SMS_FROM
+      ),
+      ownerMobile: Boolean(ukMobile(process.env.OWNER_MOBILE)),
+    },
+  });
 }

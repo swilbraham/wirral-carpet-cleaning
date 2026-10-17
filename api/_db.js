@@ -125,6 +125,35 @@ export async function setQuoteBooked(id, booked) {
      WHERE id = ${id} AND kind = 'quote'`;
 }
 
+/**
+ * A quote the office types in by hand — someone phoned or messaged for a
+ * price. It behaves exactly like a website quote: it shows on the admin
+ * list and the 10% chase picks it up 6 hours later (unless marked booked).
+ */
+export async function addQuote(q) {
+  const db = sql();
+  if (!db) return { ok: false, reason: 'No database configured.' };
+  await ensureSchema(db);
+  try {
+    await db`
+      INSERT INTO wcc_events (kind, name, phone, postcode, items, total)
+      VALUES ('quote', ${q.name}, ${q.phone}, ${q.postcode}, ${q.items}, ${q.total})`;
+    return { ok: true };
+  } catch (err) {
+    console.error('addQuote failed', err);
+    return { ok: false, reason: 'Could not save the quote.' };
+  }
+}
+
+/** Change a quote's price — the chase text reads it from here, so an
+ *  amended price is what any later 10% offer is calculated against. */
+export async function setQuoteTotal(id, total) {
+  const db = sql();
+  if (!db) return;
+  await ensureSchema(db);
+  await db`UPDATE wcc_events SET total = ${total} WHERE id = ${id} AND kind = 'quote'`;
+}
+
 /** The percentage for a live code, or null. */
 export async function findCode(code) {
   const db = sql();

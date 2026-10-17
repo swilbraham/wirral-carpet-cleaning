@@ -67,12 +67,14 @@ export default function AdminPage() {
       const json = await res.json();
       if (!res.ok) {
         setCodeMsg(json.error || 'Something went wrong.');
-        return;
+        return false;
       }
       setNewCode('');
       await load(password); // refresh everything
+      return true;
     } catch {
       setCodeMsg("Couldn't reach the server — try again.");
+      return false;
     }
   };
 
@@ -221,6 +223,35 @@ export default function AdminPage() {
             ))}
           </Detail>
           <Detail label="Quoted price">{q.total}</Detail>
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const total = e.target.elements.total.value;
+              if (total.trim()) await adminPost({ action: 'set-total', id: q.id, total });
+            }}
+            className="py-2 flex items-center gap-2"
+          >
+            <span className="text-sm text-gray-500">Amend price</span>
+            <span className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">£</span>
+              <input
+                name="total"
+                type="text"
+                inputMode="decimal"
+                defaultValue={String(q.total).replace(/[£,]/g, '')}
+                className="w-24 rounded-xl border border-gray-200 pl-7 pr-2 py-2 text-sm focus:border-primary focus:outline-none"
+              />
+            </span>
+            <button
+              type="submit"
+              className="rounded-xl bg-primary hover:bg-primary-dark px-4 py-2 text-sm font-semibold text-white transition-colors"
+            >
+              Update
+            </button>
+          </form>
+          <p className="pb-1 text-xs text-gray-400">
+            Changes the quote only — nothing is sent. A later 10% chase text uses the new price.
+          </p>
           <Detail label="When">{q.created_at}</Detail>
           <Detail label="Status">
             {q.manual_booked
@@ -400,6 +431,78 @@ export default function AdminPage() {
             title={`Quotes — last 30 days (${data.quotes.length})`}
             hint="Everyone who unlocked a price. Tap a row for details and the mark-as-booked button."
           >
+            <details className="mb-4 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+              <summary className="cursor-pointer text-sm font-semibold text-primary">
+                + Add a quote by hand
+              </summary>
+              <p className="mt-1 text-xs text-gray-500">
+                For prices given over the phone or by message. It joins the list
+                like any website quote — with a mobile, the 10% chase text goes
+                out 6 hours later unless you mark it booked.
+              </p>
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const f = e.target;
+                  const ok = await adminPost({
+                    action: 'add-quote',
+                    name: f.elements.qname.value,
+                    phone: f.elements.qphone.value,
+                    postcode: f.elements.qpostcode.value,
+                    items: f.elements.qitems.value,
+                    total: f.elements.qtotal.value,
+                  });
+                  if (ok) f.reset();
+                }}
+                className="mt-3 grid gap-2 sm:grid-cols-2"
+              >
+                <input
+                  name="qname"
+                  type="text"
+                  required
+                  placeholder="Name"
+                  className="rounded-xl border border-gray-200 px-3 py-2 text-sm focus:border-primary focus:outline-none"
+                />
+                <input
+                  name="qphone"
+                  type="tel"
+                  placeholder="Mobile (optional — needed for the 10% chase)"
+                  className="rounded-xl border border-gray-200 px-3 py-2 text-sm focus:border-primary focus:outline-none"
+                />
+                <input
+                  name="qpostcode"
+                  type="text"
+                  placeholder="Postcode (optional)"
+                  className="rounded-xl border border-gray-200 px-3 py-2 text-sm uppercase focus:border-primary focus:outline-none"
+                />
+                <input
+                  name="qitems"
+                  type="text"
+                  placeholder="What's quoted, e.g. 2 rooms, 1 sofa"
+                  className="rounded-xl border border-gray-200 px-3 py-2 text-sm focus:border-primary focus:outline-none"
+                />
+                <div className="flex items-center gap-2">
+                  <span className="relative grow">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">£</span>
+                    <input
+                      name="qtotal"
+                      type="text"
+                      inputMode="decimal"
+                      required
+                      placeholder="Price"
+                      className="w-full rounded-xl border border-gray-200 pl-7 pr-2 py-2 text-sm focus:border-primary focus:outline-none"
+                    />
+                  </span>
+                  <button
+                    type="submit"
+                    className="rounded-xl bg-primary hover:bg-primary-dark px-4 py-2 text-sm font-semibold text-white transition-colors"
+                  >
+                    Add quote
+                  </button>
+                </div>
+              </form>
+              {codeMsg && <p className="mt-2 text-sm text-red-600">{codeMsg}</p>}
+            </details>
             {data.quotes.length === 0 ? (
               <Empty>No quotes yet.</Empty>
             ) : (

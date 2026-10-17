@@ -1,4 +1,11 @@
-import { adminData, addCode, deleteCode, setQuoteBooked } from './_db.js';
+import { adminData, addCode, addQuote, deleteCode, setQuoteBooked, setQuoteTotal } from './_db.js';
+
+/** "90", "£90", "90.50" → "£90" / "£90.50"; null when it isn't a price. */
+function asPrice(raw) {
+  const n = Number(String(raw ?? '').replace(/[£,\s]/g, ''));
+  if (!Number.isFinite(n) || n <= 0 || n > 10000) return null;
+  return `£${Number.isInteger(n) ? n : n.toFixed(2)}`;
+}
 
 const attempts = new Map(); // per-instance brute-force damper
 
@@ -49,6 +56,28 @@ export default async function handler(req, res) {
       }
       const result = await addCode(code, pct);
       if (!result.ok) return res.status(400).json({ error: result.reason });
+      return res.status(200).json({ ok: true });
+    }
+    if (action === 'add-quote') {
+      const name = String(req.body?.name || '').trim().slice(0, 80);
+      const phone = String(req.body?.phone || '').trim().slice(0, 20);
+      const postcode = String(req.body?.postcode || '').trim().toUpperCase().slice(0, 10);
+      const items = String(req.body?.items || '').trim().slice(0, 400);
+      const total = asPrice(req.body?.total);
+      if (!name) return res.status(400).json({ error: 'A name is needed.' });
+      if (!total) return res.status(400).json({ error: 'Enter a price, e.g. 90 or 90.50.' });
+      const result = await addQuote({ name, phone, postcode, items, total });
+      if (!result.ok) return res.status(400).json({ error: result.reason });
+      return res.status(200).json({ ok: true });
+    }
+    if (action === 'set-total') {
+      const id = Math.round(Number(req.body?.id));
+      const total = asPrice(req.body?.total);
+      if (!Number.isFinite(id) || id <= 0) {
+        return res.status(400).json({ error: 'Bad quote id.' });
+      }
+      if (!total) return res.status(400).json({ error: 'Enter a price, e.g. 90 or 90.50.' });
+      await setQuoteTotal(id, total);
       return res.status(200).json({ ok: true });
     }
     if (action === 'mark-booked') {

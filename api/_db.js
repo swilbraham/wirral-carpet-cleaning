@@ -49,6 +49,12 @@ async function ensureSchema(db) {
       // Set when the office marks a quote booked (they phoned instead).
       // Purely a flag: nothing is ever sent because of it.
       () => db`ALTER TABLE wcc_events ADD COLUMN IF NOT EXISTS manual_booked_at timestamptz`
+    ).then(
+      // Office quotes: the secret in the /quote/<token> link, and when the
+      // quote was last texted to the customer.
+      () => db`ALTER TABLE wcc_events ADD COLUMN IF NOT EXISTS token text`
+    ).then(
+      () => db`ALTER TABLE wcc_events ADD COLUMN IF NOT EXISTS quote_sent_at timestamptz`
     );
   }
   await schemaReady;
@@ -135,14 +141,55 @@ export async function addQuote(q) {
   if (!db) return { ok: false, reason: 'No database configured.' };
   await ensureSchema(db);
   try {
-    await db`
-      INSERT INTO wcc_events (kind, name, phone, postcode, items, total)
-      VALUES ('quote', ${q.name}, ${q.phone}, ${q.postcode}, ${q.items}, ${q.total})`;
-    return { ok: true };
+    const rows = await db`
+      INSERT INTO wcc_events (kind, name, phone, postcode, items, total, token)
+      VALUES ('quote', ${q.name}, ${q.phone}, ${q.postcode}, ${q.items}, ${q.total}, ${q.token})
+      RETURNING id`;
+    return { ok: true, id: rows[0].id };
   } catch (err) {
     console.error('addQuote failed', err);
     return { ok: false, reason: 'Could not save the quote.' };
   }
+}
+
+/** One quote by id — what the text-the-quote action works from. */
+export async function getQuote(id) {
+  const db = sql();
+  if (!db) return null;
+  await ensureSchema(db);
+  const rows = await db`
+    SELECT id, name, phone, postcode, items, total, token
+      FROM wcc_events WHERE id = ${id} AND kind = 'quote'`;
+  return rows[0] ?? null;
+}
+
+/** Give an older quote a link token so it can be texted out. */
+export async function setQuoteToken(id, token) {
+  const db = sql();
+  if (!db) return;
+  await ensureSchema(db);
+  await db`UPDATE wcc_events SET token = ${token}
+            WHERE id = ${id} AND kind = 'quote' AND token IS NULL`;
+}
+
+export async function markQuoteSent(id) {
+  const db = sql();
+  if (!db) return;
+  await ensureSchema(db);
+  await db`UPDATE wcc_events SET quote_sent_at = now() WHERE id = ${id}`;
+}
+
+/** The public quote page's lookup — the token is the whole secret. */
+export async function getQuoteByToken(token) {
+  const db = sql();
+  if (!db) return null;
+  await ensureSchema(db);
+  const rows = await db`
+    SELECT name, postcode, items, total,
+           to_char(created_at AT TIME ZONE 'Europe/London', 'DD Month YYYY') AS created
+      FROM wcc_events
+     WHERE kind = 'quote' AND token = ${token} AND token IS NOT NULL`;
+  return rows[0] ?? null;
 }
 
 /** Change a quote's price — the chase text reads it from here, so an
@@ -218,7 +265,8 @@ export async function adminData() {
        ORDER BY slot_date DESC
        LIMIT 100`,
     db`
-      SELECT id, name, phone, postcode, items, total,
+      SELECT id, name, phone, postcode, items, total, token,
+             to_char(quote_sent_at AT TIME ZONE 'Europe/London', 'DD Mon HH24:MI') AS quote_sent_at,
              to_char(created_at AT TIME ZONE 'Europe/London', 'DD Mon HH24:MI') AS created_at,
              to_char(chased_at AT TIME ZONE 'Europe/London', 'DD Mon HH24:MI') AS chased_at,
              (manual_booked_at IS NOT NULL) AS manual_booked,

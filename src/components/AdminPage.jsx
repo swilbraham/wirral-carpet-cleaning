@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { ITEM_GROUPS, calculatePrice, describeLines } from '../lib/pricing';
 
 /**
  * The one-van CRM: a stat strip that answers "anything need me?", an
@@ -27,6 +28,8 @@ export default function AdminPage() {
   const [newCode, setNewCode] = useState('');
   const [newPct, setNewPct] = useState('10');
   const [codeMsg, setCodeMsg] = useState('');
+  const [quoteBasket, setQuoteBasket] = useState({});
+  const [quoteMsg, setQuoteMsg] = useState('');
 
   const load = async (pw) => {
     setLoading(true);
@@ -71,7 +74,7 @@ export default function AdminPage() {
       }
       setNewCode('');
       await load(password); // refresh everything
-      return true;
+      return json;
     } catch {
       setCodeMsg("Couldn't reach the server — try again.");
       return false;
@@ -252,6 +255,26 @@ export default function AdminPage() {
           <p className="pb-1 text-xs text-gray-400">
             Changes the quote only — nothing is sent. A later 10% chase text uses the new price.
           </p>
+          {q.quote_sent_at && (
+            <Detail label="Quote texted">{q.quote_sent_at}</Detail>
+          )}
+          {q.phone && (
+            <div className="pt-2">
+              <button
+                onClick={async () => {
+                  const result = await adminPost({ action: 'send-quote', id: q.id });
+                  if (result) setQuoteMsg(`Quote texted to ${q.name}.`);
+                }}
+                className="rounded-xl border border-primary px-4 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white"
+              >
+                {q.quote_sent_at ? 'Text the quote again' : 'Text them this quote'}
+              </button>
+              <p className="mt-1 text-xs text-gray-400">
+                Sends the items, price and a link to their own quote page. Amend
+                the price first and the text uses the new figure.
+              </p>
+            </div>
+          )}
           <Detail label="When">{q.created_at}</Detail>
           <Detail label="Status">
             {q.manual_booked
@@ -436,73 +459,157 @@ export default function AdminPage() {
                 + Add a quote by hand
               </summary>
               <p className="mt-1 text-xs text-gray-500">
-                For prices given over the phone or by message. It joins the list
-                like any website quote — with a mobile, the 10% chase text goes
-                out 6 hours later unless you mark it booked.
+                Pick the items like the customer would, tweak the price if you
+                want, and tick the box to text them the quote with a link to
+                their own quote page. With a mobile, the 10% chase still goes
+                out 6 hours later unless they book or you mark it booked.
               </p>
               <form
                 onSubmit={async (e) => {
                   e.preventDefault();
                   const f = e.target;
-                  const ok = await adminPost({
+                  const priced = calculatePrice(quoteBasket);
+                  const override = f.elements.qtotal.value.trim();
+                  const result = await adminPost({
                     action: 'add-quote',
                     name: f.elements.qname.value,
                     phone: f.elements.qphone.value,
                     postcode: f.elements.qpostcode.value,
-                    items: f.elements.qitems.value,
-                    total: f.elements.qtotal.value,
+                    items: describeLines(priced.lines).join(', '),
+                    total: override || String(priced.total),
+                    sendText: f.elements.qsend.checked,
                   });
-                  if (ok) f.reset();
+                  if (result) {
+                    f.reset();
+                    setQuoteBasket({});
+                    setQuoteMsg(
+                      result.warning ||
+                        (result.texted
+                          ? 'Quote saved and texted to them.'
+                          : 'Quote saved.')
+                    );
+                  }
                 }}
-                className="mt-3 grid gap-2 sm:grid-cols-2"
+                className="mt-3 space-y-3"
               >
-                <input
-                  name="qname"
-                  type="text"
-                  required
-                  placeholder="Name"
-                  className="rounded-xl border border-gray-200 px-3 py-2 text-sm focus:border-primary focus:outline-none"
-                />
-                <input
-                  name="qphone"
-                  type="tel"
-                  placeholder="Mobile (optional — needed for the 10% chase)"
-                  className="rounded-xl border border-gray-200 px-3 py-2 text-sm focus:border-primary focus:outline-none"
-                />
-                <input
-                  name="qpostcode"
-                  type="text"
-                  placeholder="Postcode (optional)"
-                  className="rounded-xl border border-gray-200 px-3 py-2 text-sm uppercase focus:border-primary focus:outline-none"
-                />
-                <input
-                  name="qitems"
-                  type="text"
-                  placeholder="What's quoted, e.g. 2 rooms, 1 sofa"
-                  className="rounded-xl border border-gray-200 px-3 py-2 text-sm focus:border-primary focus:outline-none"
-                />
-                <div className="flex items-center gap-2">
-                  <span className="relative grow">
+                <div className="grid gap-2 sm:grid-cols-3">
+                  <input
+                    name="qname"
+                    type="text"
+                    required
+                    placeholder="Name"
+                    className="rounded-xl border border-gray-200 px-3 py-2 text-sm focus:border-primary focus:outline-none"
+                  />
+                  <input
+                    name="qphone"
+                    type="tel"
+                    placeholder="Mobile 07…"
+                    className="rounded-xl border border-gray-200 px-3 py-2 text-sm focus:border-primary focus:outline-none"
+                  />
+                  <input
+                    name="qpostcode"
+                    type="text"
+                    placeholder="Postcode (optional)"
+                    className="rounded-xl border border-gray-200 px-3 py-2 text-sm uppercase focus:border-primary focus:outline-none"
+                  />
+                </div>
+
+                {ITEM_GROUPS.map((group) => (
+                  <div key={group.title}>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                      {group.title}
+                    </p>
+                    <ul className="mt-1 divide-y divide-gray-100 rounded-xl border border-gray-100 bg-white">
+                      {group.items.map((item) => {
+                        const qty = quoteBasket[item.id] || 0;
+                        const set = (next) =>
+                          setQuoteBasket((prev) => ({
+                            ...prev,
+                            [item.id]: Math.min(item.max, Math.max(0, next)),
+                          }));
+                        return (
+                          <li
+                            key={item.id}
+                            className="flex items-center justify-between gap-2 px-3 py-1.5 text-sm"
+                          >
+                            <span className={qty > 0 ? 'font-semibold text-gray-900' : 'text-gray-600'}>
+                              {item.name}
+                              <span className="ml-1 text-xs text-gray-400">£{item.price}</span>
+                            </span>
+                            <span className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => set(qty - 1)}
+                                disabled={qty === 0}
+                                className="h-7 w-7 rounded-full border border-gray-200 font-bold text-gray-600 disabled:opacity-30"
+                              >
+                                −
+                              </button>
+                              <span className="w-5 text-center font-semibold tabular-nums">{qty}</span>
+                              <button
+                                type="button"
+                                onClick={() => set(qty + 1)}
+                                disabled={qty >= item.max}
+                                className="h-7 w-7 rounded-full border border-gray-200 font-bold text-gray-600 disabled:opacity-30"
+                              >
+                                +
+                              </button>
+                            </span>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                ))}
+
+                {(() => {
+                  const priced = calculatePrice(quoteBasket);
+                  return (
+                    <div className="rounded-xl bg-white border border-gray-100 px-4 py-3 text-sm">
+                      <div className="flex items-baseline justify-between">
+                        <span className="font-semibold text-gray-700">Calculated price</span>
+                        <span className="text-xl font-bold text-primary">£{priced.total}</span>
+                      </div>
+                      {priced.bundleApplied && (
+                        <p className="text-xs text-green-700">3-areas-for-£99 deal applied.</p>
+                      )}
+                      {priced.minApplied && (
+                        <p className="text-xs text-gray-500">£90 minimum visit applied.</p>
+                      )}
+                    </div>
+                  );
+                })()}
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">£</span>
                     <input
                       name="qtotal"
                       type="text"
                       inputMode="decimal"
-                      required
-                      placeholder="Price"
-                      className="w-full rounded-xl border border-gray-200 pl-7 pr-2 py-2 text-sm focus:border-primary focus:outline-none"
+                      placeholder="Own price (optional)"
+                      className="w-40 rounded-xl border border-gray-200 pl-7 pr-2 py-2 text-sm focus:border-primary focus:outline-none"
                     />
                   </span>
+                  <label className="flex items-center gap-2 text-sm text-gray-700">
+                    <input name="qsend" type="checkbox" defaultChecked className="h-4 w-4 accent-primary" />
+                    Text them the quote with a link
+                  </label>
                   <button
                     type="submit"
-                    className="rounded-xl bg-primary hover:bg-primary-dark px-4 py-2 text-sm font-semibold text-white transition-colors"
+                    className="ml-auto rounded-xl bg-primary hover:bg-primary-dark px-5 py-2 text-sm font-semibold text-white transition-colors"
                   >
-                    Add quote
+                    Save quote
                   </button>
                 </div>
               </form>
               {codeMsg && <p className="mt-2 text-sm text-red-600">{codeMsg}</p>}
             </details>
+            {quoteMsg && (
+              <p className="mb-3 rounded-xl bg-green-50 border border-green-100 px-4 py-2 text-sm font-semibold text-green-800">
+                {quoteMsg}
+              </p>
+            )}
             {data.quotes.length === 0 ? (
               <Empty>No quotes yet.</Empty>
             ) : (

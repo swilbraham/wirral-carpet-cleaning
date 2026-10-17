@@ -1,4 +1,41 @@
-import { adminData, addCode, addQuote, deleteCode, setQuoteBooked, setQuoteTotal } from './_db.js';
+import { randomBytes } from 'node:crypto';
+import {
+  adminData,
+  addCode,
+  addQuote,
+  deleteCode,
+  getQuote,
+  markQuoteSent,
+  setQuoteBooked,
+  setQuoteToken,
+  setQuoteTotal,
+} from './_db.js';
+import { sendSms, ukMobile } from './_sms.js';
+
+const SITE = 'https://www.wirralcarpetcleaning.com';
+
+function newToken() {
+  return randomBytes(12).toString('hex');
+}
+
+/** The quote text: details, the link, and how to book. */
+async function textQuote(quote) {
+  const to = ukMobile(quote.phone);
+  if (!to) return { ok: false, reason: "That mobile number isn't textable — check it starts 07." };
+  const firstName = String(quote.name || '').trim().split(' ')[0] || 'Hi';
+  const items = String(quote.items || '').slice(0, 120);
+  const body =
+    `${firstName}, your Wirral Carpet Cleaning quote: ` +
+    (items ? `${items} — ` : '') +
+    `${quote.total}. Pay on the day, nothing upfront. ` +
+    `View your quote & book: ${SITE}/quote/${quote.token} or call 0151 936 9664.`;
+  const result = await sendSms(to, body);
+  if (!result.ok) {
+    return { ok: false, reason: 'The text failed to send — try again in a minute.' };
+  }
+  await markQuoteSent(quote.id);
+  return { ok: true };
+}
 
 /** "90", "£90", "90.50" → "£90" / "£90.50"; null when it isn't a price. */
 function asPrice(raw) {
@@ -66,9 +103,32 @@ export default async function handler(req, res) {
       const total = asPrice(req.body?.total);
       if (!name) return res.status(400).json({ error: 'A name is needed.' });
       if (!total) return res.status(400).json({ error: 'Enter a price, e.g. 90 or 90.50.' });
-      const result = await addQuote({ name, phone, postcode, items, total });
+      const token = newToken();
+      const result = await addQuote({ name, phone, postcode, items, total, token });
       if (!result.ok) return res.status(400).json({ error: result.reason });
+      if (req.body?.sendText) {
+        const sent = await textQuote({ id: result.id, name, phone, items, total, token });
+        if (!sent.ok) {
+          return res.status(200).json({ ok: true, warning: `Quote saved, but: ${sent.reason}` });
+        }
+        return res.status(200).json({ ok: true, texted: true });
+      }
       return res.status(200).json({ ok: true });
+    }
+    if (action === 'send-quote') {
+      const id = Math.round(Number(req.body?.id));
+      if (!Number.isFinite(id) || id <= 0) {
+        return res.status(400).json({ error: 'Bad quote id.' });
+      }
+      let quote = await getQuote(id);
+      if (!quote) return res.status(404).json({ error: 'Quote not found.' });
+      if (!quote.token) {
+        await setQuoteToken(id, newToken());
+        quote = await getQuote(id);
+      }
+      const sent = await textQuote(quote);
+      if (!sent.ok) return res.status(400).json({ error: sent.reason });
+      return res.status(200).json({ ok: true, texted: true });
     }
     if (action === 'set-total') {
       const id = Math.round(Number(req.body?.id));

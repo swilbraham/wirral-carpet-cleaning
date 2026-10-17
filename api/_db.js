@@ -142,8 +142,9 @@ export async function addQuote(q) {
   await ensureSchema(db);
   try {
     const rows = await db`
-      INSERT INTO wcc_events (kind, name, phone, postcode, items, total, token)
-      VALUES ('quote', ${q.name}, ${q.phone}, ${q.postcode}, ${q.items}, ${q.total}, ${q.token})
+      INSERT INTO wcc_events (kind, name, phone, postcode, address, items, total, token)
+      VALUES ('quote', ${q.name}, ${q.phone}, ${q.postcode}, ${q.address || ''},
+              ${q.items}, ${q.total}, ${q.token})
       RETURNING id`;
     return { ok: true, id: rows[0].id };
   } catch (err) {
@@ -161,6 +162,18 @@ export async function getQuote(id) {
     SELECT id, name, phone, postcode, items, total, token
       FROM wcc_events WHERE id = ${id} AND kind = 'quote'`;
   return rows[0] ?? null;
+}
+
+/** Amend who the quote is for — name, mobile, postcode, address. */
+export async function updateQuoteDetails(id, d) {
+  const db = sql();
+  if (!db) return;
+  await ensureSchema(db);
+  await db`
+    UPDATE wcc_events
+       SET name = ${d.name}, phone = ${d.phone},
+           postcode = ${d.postcode}, address = ${d.address}
+     WHERE id = ${id} AND kind = 'quote'`;
 }
 
 /** Give an older quote a link token so it can be texted out. */
@@ -265,7 +278,7 @@ export async function adminData() {
        ORDER BY slot_date DESC
        LIMIT 100`,
     db`
-      SELECT id, name, phone, postcode, items, total, token,
+      SELECT id, name, phone, postcode, address, items, total, token,
              to_char(quote_sent_at AT TIME ZONE 'Europe/London', 'DD Mon HH24:MI') AS quote_sent_at,
              to_char(created_at AT TIME ZONE 'Europe/London', 'DD Mon HH24:MI') AS created_at,
              to_char(chased_at AT TIME ZONE 'Europe/London', 'DD Mon HH24:MI') AS chased_at,

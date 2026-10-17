@@ -9,6 +9,7 @@ import {
   setQuoteBooked,
   setQuoteToken,
   setQuoteTotal,
+  updateQuoteDetails,
 } from './_db.js';
 import { sendSms, ukMobile } from './_sms.js';
 
@@ -95,16 +96,25 @@ export default async function handler(req, res) {
       if (!result.ok) return res.status(400).json({ error: result.reason });
       return res.status(200).json({ ok: true });
     }
-    if (action === 'add-quote') {
+    if (action === 'add-quote' || action === 'update-quote') {
       const name = String(req.body?.name || '').trim().slice(0, 80);
       const phone = String(req.body?.phone || '').trim().slice(0, 20);
       const postcode = String(req.body?.postcode || '').trim().toUpperCase().slice(0, 10);
+      const address = String(req.body?.address || '').trim().slice(0, 200);
+      if (!name) return res.status(400).json({ error: 'A name is needed.' });
+      if (action === 'update-quote') {
+        const id = Math.round(Number(req.body?.id));
+        if (!Number.isFinite(id) || id <= 0) {
+          return res.status(400).json({ error: 'Bad quote id.' });
+        }
+        await updateQuoteDetails(id, { name, phone, postcode, address });
+        return res.status(200).json({ ok: true });
+      }
       const items = String(req.body?.items || '').trim().slice(0, 400);
       const total = asPrice(req.body?.total);
-      if (!name) return res.status(400).json({ error: 'A name is needed.' });
       if (!total) return res.status(400).json({ error: 'Enter a price, e.g. 90 or 90.50.' });
       const token = newToken();
-      const result = await addQuote({ name, phone, postcode, items, total, token });
+      const result = await addQuote({ name, phone, postcode, address, items, total, token });
       if (!result.ok) return res.status(400).json({ error: result.reason });
       if (req.body?.sendText) {
         const sent = await textQuote({ id: result.id, name, phone, items, total, token });

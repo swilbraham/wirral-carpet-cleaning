@@ -219,6 +219,7 @@ export default function AdminPage() {
           <Detail label="Phone">
             <a href={`tel:${q.phone}`} className="font-semibold text-primary underline">{q.phone}</a>
           </Detail>
+          {q.address && <Detail label="Address">{q.address}</Detail>}
           {q.postcode && <Detail label="Postcode">{q.postcode}</Detail>}
           <Detail label="Quoted for">
             {String(q.items).split(', ').map((line) => (
@@ -258,6 +259,68 @@ export default function AdminPage() {
           {q.quote_sent_at && (
             <Detail label="Quote texted">{q.quote_sent_at}</Detail>
           )}
+          <details className="py-2">
+            <summary className="cursor-pointer text-sm font-semibold text-primary">
+              Edit their details
+            </summary>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const f = e.target;
+                const result = await adminPost({
+                  action: 'update-quote',
+                  id: q.id,
+                  name: f.elements.ename.value,
+                  phone: f.elements.ephone.value,
+                  postcode: f.elements.epostcode.value,
+                  address: f.elements.eaddress.value,
+                });
+                if (result) setQuoteMsg(`Details updated for ${f.elements.ename.value}.`);
+              }}
+              className="mt-2 grid gap-2 sm:grid-cols-2"
+            >
+              <input
+                name="ename"
+                type="text"
+                required
+                defaultValue={q.name}
+                placeholder="Name"
+                className="rounded-xl border border-gray-200 px-3 py-2 text-sm focus:border-primary focus:outline-none"
+              />
+              <input
+                name="ephone"
+                type="tel"
+                defaultValue={q.phone}
+                placeholder="Mobile 07…"
+                className="rounded-xl border border-gray-200 px-3 py-2 text-sm focus:border-primary focus:outline-none"
+              />
+              <input
+                name="eaddress"
+                type="text"
+                defaultValue={q.address || ''}
+                placeholder="Address"
+                className="rounded-xl border border-gray-200 px-3 py-2 text-sm focus:border-primary focus:outline-none"
+              />
+              <input
+                name="epostcode"
+                type="text"
+                defaultValue={q.postcode || ''}
+                placeholder="Postcode"
+                className="rounded-xl border border-gray-200 px-3 py-2 text-sm uppercase focus:border-primary focus:outline-none"
+              />
+              <div className="sm:col-span-2">
+                <button
+                  type="submit"
+                  className="rounded-xl bg-primary hover:bg-primary-dark px-4 py-2 text-sm font-semibold text-white transition-colors"
+                >
+                  Save details
+                </button>
+                <span className="ml-2 text-xs text-gray-400">
+                  Nothing is sent — texts from now on use the new details.
+                </span>
+              </div>
+            </form>
+          </details>
           {q.phone && (
             <div className="pt-2">
               <button
@@ -475,6 +538,7 @@ export default function AdminPage() {
                     name: f.elements.qname.value,
                     phone: f.elements.qphone.value,
                     postcode: f.elements.qpostcode.value,
+                    address: f.elements.qaddress.value,
                     items: describeLines(priced.lines).join(', '),
                     total: override || String(priced.total),
                     sendText: f.elements.qsend.checked,
@@ -511,6 +575,12 @@ export default function AdminPage() {
                     type="text"
                     placeholder="Postcode (optional)"
                     className="rounded-xl border border-gray-200 px-3 py-2 text-sm uppercase focus:border-primary focus:outline-none"
+                  />
+                  <input
+                    name="qaddress"
+                    type="text"
+                    placeholder="Address (optional)"
+                    className="sm:col-span-3 rounded-xl border border-gray-200 px-3 py-2 text-sm focus:border-primary focus:outline-none"
                   />
                 </div>
 

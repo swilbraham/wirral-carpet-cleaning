@@ -5,6 +5,7 @@ import {
   addQuote,
   deleteCode,
   getQuote,
+  markQuoteChased,
   markQuoteSent,
   setQuoteBooked,
   setQuoteToken,
@@ -123,6 +124,40 @@ export default async function handler(req, res) {
         }
         return res.status(200).json({ ok: true, texted: true });
       }
+      return res.status(200).json({ ok: true });
+    }
+    if (action === 'send-discount') {
+      const id = Math.round(Number(req.body?.id));
+      const pct = Math.round(Number(req.body?.pct));
+      if (!Number.isFinite(id) || id <= 0) {
+        return res.status(400).json({ error: 'Bad quote id.' });
+      }
+      if (!Number.isFinite(pct) || pct < 5 || pct > 50) {
+        return res.status(400).json({ error: 'Pick a discount between 5% and 50%.' });
+      }
+      const quote = await getQuote(id);
+      if (!quote) return res.status(404).json({ error: 'Quote not found.' });
+      const to = ukMobile(quote.phone);
+      if (!to) {
+        return res.status(400).json({ error: "That mobile number isn't textable — check it starts 07." });
+      }
+      const totalValue = parseFloat(String(quote.total).replace(/[^0-9.]/g, ''));
+      const discounted =
+        Number.isFinite(totalValue) && totalValue > 0
+          ? `£${(totalValue * (1 - pct / 100)).toFixed(2)}`
+          : null;
+      const firstName = String(quote.name || '').trim().split(' ')[0] || 'Hi';
+      const body =
+        `${firstName}, your Wirral Carpet Cleaning quote (${quote.total}) is still available. ` +
+        `Book in the next 24 hours and pay ${pct}% less` +
+        (discounted ? ` — ${discounted} on the day` : '') +
+        `. Just show this text. Book: ${SITE}/book or call 0151 936 9664.`;
+      const sent = await sendSms(to, body);
+      if (!sent.ok) {
+        return res.status(400).json({ error: 'The text failed to send — try again in a minute.' });
+      }
+      // Stamped so the 6-hour auto-chase doesn't offer them a second deal.
+      await markQuoteChased(id);
       return res.status(200).json({ ok: true });
     }
     if (action === 'send-quote') {

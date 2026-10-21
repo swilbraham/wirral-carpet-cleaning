@@ -348,6 +348,39 @@ export default function AdminPage() {
                   ? `10% offer texted ${q.chased_at}`
                   : 'Not booked — 10% offer goes out 6h after the quote'}
           </Detail>
+          {!q.booked && q.phone && (
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const pct = e.target.elements.dpct.value;
+                const result = await adminPost({ action: 'send-discount', id: q.id, pct });
+                if (result) setQuoteMsg(`${pct}% offer texted to ${q.name}.`);
+              }}
+              className="py-2"
+            >
+              <div className="flex items-center gap-2">
+                <select
+                  name="dpct"
+                  defaultValue="10"
+                  className="rounded-xl border border-gray-200 px-3 py-2 text-sm focus:border-primary focus:outline-none"
+                >
+                  {[5, 10, 15, 20, 25, 30].map((p) => (
+                    <option key={p} value={p}>{p}% off</option>
+                  ))}
+                </select>
+                <button
+                  type="submit"
+                  className="rounded-xl bg-amber-600 hover:bg-amber-700 px-4 py-2 text-sm font-semibold text-white transition-colors"
+                >
+                  {q.chased_at ? 'Text another discount offer' : 'Text discount offer now'}
+                </button>
+              </div>
+              <p className="mt-1 text-xs text-gray-400">
+                Sends the offer text straight away{q.chased_at ? '' : ' instead of waiting for the 6-hour chase'} —
+                and stops the automatic chase from texting them again.
+              </p>
+            </form>
+          )}
           {!q.booked && (
             <div className="pt-2">
               <button

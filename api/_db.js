@@ -110,6 +110,14 @@ export async function claimQuotesForChase(limit = 15) {
      RETURNING id, name, phone, items, total`;
 }
 
+/** Stamp a quote as chased — the admin sent the offer by hand. */
+export async function markQuoteChased(id) {
+  const db = sql();
+  if (!db) return;
+  await ensureSchema(db);
+  await db`UPDATE wcc_events SET chased_at = now() WHERE id = ${id} AND kind = 'quote'`;
+}
+
 /** Un-stamp a claim whose text failed, so the next run tries again. */
 export async function unclaimChase(id) {
   const db = sql();

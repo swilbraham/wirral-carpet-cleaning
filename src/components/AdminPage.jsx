@@ -14,7 +14,30 @@ const TABS = [
   { id: 'quotes', label: 'Quotes' },
   { id: 'customers', label: 'Customers' },
   { id: 'codes', label: 'Codes' },
+  { id: 'placement', label: 'Placement' },
 ];
+
+/** Field names as a person would say them, for the placement answers. */
+const PLACEMENT_LABELS = {
+  coordinatorName: 'Coordinator', coordinatorPhone: 'Coordinator phone',
+  coordinatorEmail: 'Coordinator email', safeguardingContact: 'Safeguarding contact',
+  safeguardingPhone: 'Safeguarding phone', placementHours: 'Hours and days',
+  endDate: 'End date', supervisionArrangements: 'Supervision arrangements',
+  placementRestrictions: 'Restrictions', reportingProcedure: 'Reporting procedure',
+  schoolConfirms: 'School confirms details', parentName: 'Parent / guardian',
+  relationship: 'Relationship', parentPhone: 'Phone', parentPhoneAlt: 'Alternative phone',
+  parentEmail: 'Email', emergencyName: 'Emergency contact', emergencyPhone: 'Emergency phone',
+  collectionArrangements: 'Collection arrangements', healthNone: 'Anything to declare',
+  allergies: 'Allergies / health', medication: 'Medication', supportNeeds: 'Support needed',
+  taskRestrictions: 'Task restrictions', agreePlacement: 'Agrees to placement',
+  agreeTravel: 'Agrees to travel', agreePhotography: 'Photography consent',
+  firstAidConsent: 'First aid consent', excludedTasks: 'Excluded tasks',
+  declarationName: 'Signed (typed name)', declarationDate: 'Dated',
+  studentName: 'Student acknowledgement', submittedAt: 'Submitted',
+  submittedFrom: 'From IP', userAgent: 'Device',
+};
+
+const labelFor = (key) => PLACEMENT_LABELS[key] || key;
 
 export default function AdminPage() {
   const [password, setPassword] = useState(
@@ -32,6 +55,8 @@ export default function AdminPage() {
   const [codeMsg, setCodeMsg] = useState('');
   const [quoteBasket, setQuoteBasket] = useState({});
   const [quoteMsg, setQuoteMsg] = useState('');
+  const [placementMsg, setPlacementMsg] = useState('');
+  const [openPlacement, setOpenPlacement] = useState(null);
 
   const load = async (pw) => {
     setLoading(true);
@@ -863,6 +888,180 @@ export default function AdminPage() {
                       trailing={`${c.bookings} clean${c.bookings === 1 ? '' : 's'} · last ${c.last_clean}`}
                     />
                   ))}
+                </ul>
+              )}
+            </Section>
+          </div>
+        )}
+
+        {tab === 'placement' && (
+          <div className="space-y-5">
+            {data.formKeyReady === false && (
+              <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+                <strong>WCC_FORM_KEY isn&apos;t set in Vercel.</strong> Until it
+                is, the form refuses submissions rather than storing a child&apos;s
+                medical details unencrypted.
+              </div>
+            )}
+
+            <Section
+              title="Start a placement"
+              hint="Creates two private links: one for the school coordinator, one for the parent or guardian. Send each to the right person — the link is the password, so don't post them anywhere public."
+            >
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const f = e.target;
+                  const result = await adminPost({
+                    action: 'add-placement',
+                    studentName: f.elements.studentName.value,
+                    school: f.elements.school.value,
+                    startDate: f.elements.startDate.value,
+                  });
+                  if (result) {
+                    setPlacementMsg('Placement created — the two links are below.');
+                    f.reset();
+                  }
+                }}
+                className="grid gap-2 sm:grid-cols-3"
+              >
+                <input
+                  name="studentName"
+                  required
+                  placeholder="Student name"
+                  className="rounded-xl border border-gray-200 px-3 py-2 text-sm focus:border-primary focus:outline-none"
+                />
+                <input
+                  name="school"
+                  placeholder="School"
+                  className="rounded-xl border border-gray-200 px-3 py-2 text-sm focus:border-primary focus:outline-none"
+                />
+                <input
+                  name="startDate"
+                  type="date"
+                  className="rounded-xl border border-gray-200 px-3 py-2 text-sm focus:border-primary focus:outline-none"
+                />
+                <button
+                  type="submit"
+                  className="rounded-xl bg-primary hover:bg-primary-dark px-4 py-2 text-sm font-semibold text-white transition-colors sm:col-span-3"
+                >
+                  Create the links
+                </button>
+              </form>
+              {placementMsg && (
+                <p className="mt-2 text-sm font-semibold text-green-700">{placementMsg}</p>
+              )}
+            </Section>
+
+            <Section title={`Placements (${(data.placements || []).length})`}>
+              {(data.placements || []).length === 0 ? (
+                <Empty>None yet.</Empty>
+              ) : (
+                <ul className="divide-y divide-gray-100">
+                  {data.placements.map((pl) => {
+                    const base = `${window.location.origin}/student-placement/`;
+                    const detail = openPlacement?.id === pl.id ? openPlacement : null;
+                    return (
+                      <li key={pl.id} className="py-3">
+                        <div className="flex flex-wrap items-baseline justify-between gap-2">
+                          <span className="font-semibold text-gray-900">
+                            {pl.student_name}
+                            {pl.school ? <span className="font-normal text-gray-500"> · {pl.school}</span> : null}
+                          </span>
+                          <span className="flex items-center gap-2 text-xs">
+                            <span className={`rounded-full px-2 py-0.5 font-semibold ${pl.school_done ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-800'}`}>
+                              school {pl.school_done ? '✓' : 'waiting'}
+                            </span>
+                            <span className={`rounded-full px-2 py-0.5 font-semibold ${pl.parent_done ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-800'}`}>
+                              parent {pl.parent_done ? '✓' : 'waiting'}
+                            </span>
+                          </span>
+                        </div>
+                        <p className="mt-1 text-xs text-gray-500">
+                          {pl.start_date ? `Starts ${pl.start_date} · ` : ''}links expire {pl.expires_at}
+                        </p>
+
+                        {(!pl.school_done || !pl.parent_done) && (
+                          <div className="mt-2 space-y-1 text-xs">
+                            {!pl.school_done && (
+                              <p className="break-all text-gray-600">
+                                <span className="font-semibold">School link:</span>{' '}
+                                {base}{pl.school_token}
+                              </p>
+                            )}
+                            {!pl.parent_done && (
+                              <p className="break-all text-gray-600">
+                                <span className="font-semibold">Parent link:</span>{' '}
+                                {base}{pl.parent_token}
+                              </p>
+                            )}
+                          </div>
+                        )}
+
+                        <div className="mt-2 flex flex-wrap gap-4 text-xs">
+                          {(pl.school_done || pl.parent_done) && (
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                if (detail) {
+                                  setOpenPlacement(null);
+                                  return;
+                                }
+                                const result = await adminPost({ action: 'placement', id: pl.id });
+                                if (result) setOpenPlacement(result);
+                              }}
+                              className="font-semibold text-primary underline"
+                            >
+                              {detail ? 'Hide the answers' : 'View the answers'}
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              if (!window.confirm(`Delete ${pl.student_name}'s placement and everything in it? This cannot be undone.`)) return;
+                              const result = await adminPost({ action: 'delete-placement', id: pl.id });
+                              if (result) {
+                                setOpenPlacement(null);
+                                setPlacementMsg('Placement deleted.');
+                              }
+                            }}
+                            className="font-semibold text-gray-500 underline"
+                          >
+                            Delete
+                          </button>
+                        </div>
+
+                        {detail && (
+                          <div className="mt-3 space-y-3 rounded-xl bg-gray-50 border border-gray-100 px-4 py-3">
+                            {['schoolSection', 'parentSection'].map((key) =>
+                              detail[key] ? (
+                                <div key={key}>
+                                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                    {key === 'schoolSection' ? 'School section' : 'Parent / guardian section'}
+                                  </p>
+                                  <dl className="mt-1 divide-y divide-gray-100">
+                                    {Object.entries(detail[key])
+                                      .filter(([, v]) => String(v || '').trim() !== '')
+                                      .map(([k, v]) => (
+                                        <div key={k} className="flex flex-wrap gap-x-3 py-1 text-sm">
+                                          <dt className="w-56 shrink-0 text-gray-500">{labelFor(k)}</dt>
+                                          <dd className="text-gray-800">{String(v)}</dd>
+                                        </div>
+                                      ))}
+                                  </dl>
+                                </div>
+                              ) : null
+                            )}
+                            <p className="text-xs text-gray-400">
+                              Delete this placement once the school&apos;s own
+                              retention period is up — there is no reason to keep
+                              a child&apos;s medical details longer than needed.
+                            </p>
+                          </div>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               )}
             </Section>

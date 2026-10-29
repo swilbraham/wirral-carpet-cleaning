@@ -27,6 +27,7 @@ import BlogPost from './components/BlogPost';
 import TrainingPage from './components/TrainingPage';
 import BookPage from './components/BookPage';
 import QuotePage from './components/QuotePage';
+import PlacementPage from './components/PlacementPage';
 import AdminPage from './components/AdminPage';
 
 function HomePage() {
@@ -69,6 +70,7 @@ function MainLayout() {
         <Route path="/" element={<HomePage />} />
         <Route path="/book" element={<BookPage />} />
         <Route path="/quote/:token" element={<QuotePage />} />
+        <Route path="/student-placement/:token" element={<PlacementPage />} />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/pay" element={<PaymentPage />} />

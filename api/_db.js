@@ -55,6 +55,25 @@ async function ensureSchema(db) {
       () => db`ALTER TABLE wcc_events ADD COLUMN IF NOT EXISTS token text`
     ).then(
       () => db`ALTER TABLE wcc_events ADD COLUMN IF NOT EXISTS quote_sent_at timestamptz`
+    ).then(
+      // Work-experience placements. The two sections are sealed separately
+      // because they are completed by different people at different times, and
+      // the school has no business reading the parent's medical disclosures.
+      () => db`
+        CREATE TABLE IF NOT EXISTS wcc_placements (
+          id             serial PRIMARY KEY,
+          student_name   text NOT NULL,
+          school         text NOT NULL DEFAULT '',
+          start_date     date,
+          school_token   text NOT NULL UNIQUE,
+          parent_token   text NOT NULL UNIQUE,
+          school_sealed  text,
+          parent_sealed  text,
+          school_done_at timestamptz,
+          parent_done_at timestamptz,
+          expires_at     timestamptz NOT NULL DEFAULT now() + interval '60 days',
+          created_at     timestamptz NOT NULL DEFAULT now()
+        )`
     );
   }
   await schemaReady;
@@ -326,4 +345,123 @@ export async function adminData() {
   ]);
 
   return { upcoming, past, quotes, customers, due, codes };
+}
+
+
+// ---------------------------------------------------------------------------
+// Work-experience placements
+// ---------------------------------------------------------------------------
+
+/** Start a placement and mint the two one-per-person links. */
+export async function addPlacement({ studentName, school, startDate, schoolToken, parentToken }) {
+  const db = sql();
+  if (!db) return { ok: false, reason: 'No database configured.' };
+  await ensureSchema(db);
+  const [row] = await db`
+    INSERT INTO wcc_placements (student_name, school, start_date, school_token, parent_token)
+    VALUES (${studentName}, ${school}, ${startDate || null}, ${schoolToken}, ${parentToken})
+    RETURNING id`;
+  return { ok: true, id: row.id };
+}
+
+/**
+ * The placement behind a link, and which half of the form it opens.
+ *
+ * Returns only what that person needs to see — the student's name and the
+ * dates. Never the other party's answers: a school link must not become a way
+ * to read a parent's medical disclosures.
+ */
+export async function getPlacementByToken(token) {
+  const db = sql();
+  if (!db) return null;
+  await ensureSchema(db);
+  const [row] = await db`
+    SELECT id, student_name, school,
+           to_char(start_date, 'DD Mon YYYY') AS start_date,
+           (school_token = ${token}) AS is_school,
+           (school_done_at IS NOT NULL) AS school_done,
+           (parent_done_at IS NOT NULL) AS parent_done,
+           (expires_at < now()) AS expired
+      FROM wcc_placements
+     WHERE school_token = ${token} OR parent_token = ${token}
+     LIMIT 1`;
+  if (!row) return null;
+  return {
+    id: row.id,
+    role: row.is_school ? 'school' : 'parent',
+    studentName: row.student_name,
+    school: row.school,
+    startDate: row.start_date,
+    done: row.is_school ? row.school_done : row.parent_done,
+    expired: row.expired,
+  };
+}
+
+/**
+ * Store a completed section.
+ *
+ * The WHERE clause is the guard: a link only writes its own half, and only
+ * while that half is unanswered, so a forwarded link cannot overwrite what was
+ * submitted — a change has to come through the office.
+ */
+export async function savePlacementSection(token, role, sealedBlob) {
+  const db = sql();
+  if (!db) return { ok: false, reason: 'No database configured.' };
+  await ensureSchema(db);
+
+  const rows = role === 'school'
+    ? await db`
+        UPDATE wcc_placements
+           SET school_sealed = ${sealedBlob}, school_done_at = now()
+         WHERE school_token = ${token} AND school_done_at IS NULL AND expires_at > now()
+        RETURNING id, student_name`
+    : await db`
+        UPDATE wcc_placements
+           SET parent_sealed = ${sealedBlob}, parent_done_at = now()
+         WHERE parent_token = ${token} AND parent_done_at IS NULL AND expires_at > now()
+        RETURNING id, student_name`;
+
+  if (rows.length === 0) {
+    return { ok: false, reason: 'That form has already been completed, or the link has expired.' };
+  }
+  return { ok: true, id: rows[0].id, studentName: rows[0].student_name };
+}
+
+/** The list for the admin tab — names and progress only, nothing sealed. */
+export async function listPlacements() {
+  const db = sql();
+  if (!db) return [];
+  await ensureSchema(db);
+  return db`
+    SELECT id, student_name, school, school_token, parent_token,
+           to_char(start_date, 'DD Mon YYYY') AS start_date,
+           (school_done_at IS NOT NULL) AS school_done,
+           (parent_done_at IS NOT NULL) AS parent_done,
+           to_char(school_done_at AT TIME ZONE 'Europe/London', 'DD Mon HH24:MI') AS school_done_at,
+           to_char(parent_done_at AT TIME ZONE 'Europe/London', 'DD Mon HH24:MI') AS parent_done_at,
+           to_char(expires_at AT TIME ZONE 'Europe/London', 'DD Mon YYYY') AS expires_at,
+           to_char(created_at AT TIME ZONE 'Europe/London', 'DD Mon YYYY') AS created_at
+      FROM wcc_placements
+     ORDER BY created_at DESC
+     LIMIT 50`;
+}
+
+/** One placement's sealed sections, for the admin endpoint to open. */
+export async function getPlacementSealed(id) {
+  const db = sql();
+  if (!db) return null;
+  await ensureSchema(db);
+  const [row] = await db`
+    SELECT id, student_name, school, school_sealed, parent_sealed
+      FROM wcc_placements WHERE id = ${id} LIMIT 1`;
+  return row || null;
+}
+
+/** Remove a placement and everything in it, once it is no longer needed. */
+export async function deletePlacement(id) {
+  const db = sql();
+  if (!db) return false;
+  await ensureSchema(db);
+  await db`DELETE FROM wcc_placements WHERE id = ${id}`;
+  return true;
 }

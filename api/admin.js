@@ -1,5 +1,6 @@
 import { randomBytes } from 'node:crypto';
 import {
+  addPlacement,
   adminData,
   addCode,
   addQuote,
@@ -10,8 +11,12 @@ import {
   setQuoteBooked,
   setQuoteToken,
   setQuoteTotal,
+  deletePlacement,
+  getPlacementSealed,
+  listPlacements,
   updateQuoteDetails,
 } from './_db.js';
+import { formKey, opened } from './_crypto.js';
 import { sendSms, ukMobile } from './_sms.js';
 
 const SITE = 'https://www.wirralcarpetcleaning.com';
@@ -194,6 +199,60 @@ export default async function handler(req, res) {
       await setQuoteBooked(id, req.body?.booked !== false);
       return res.status(200).json({ ok: true });
     }
+    if (action === 'add-placement') {
+      // Minting the links is the only moment the office types anything about
+      // the student: everything else is filled in by the people who know it.
+      if (!formKey()) {
+        return res.status(503).json({
+          error:
+            'WCC_FORM_KEY is not set in Vercel, so placement answers could not be encrypted. Add it before taking a form.',
+        });
+      }
+      const studentName = String(req.body?.studentName || '').trim().slice(0, 80);
+      const school = String(req.body?.school || '').trim().slice(0, 120);
+      const startDate = String(req.body?.startDate || '').trim().slice(0, 10) || null;
+      if (!studentName) return res.status(400).json({ error: "The student's name is needed." });
+
+      const created = await addPlacement({
+        studentName,
+        school,
+        startDate,
+        schoolToken: newToken() + newToken().slice(0, 8),
+        parentToken: newToken() + newToken().slice(0, 8),
+      });
+      if (!created.ok) return res.status(400).json({ error: created.reason });
+      return res.status(200).json({ ok: true });
+    }
+    if (action === 'placement') {
+      // Opening a sealed section. Behind the admin password, never cached, and
+      // only ever returned to this one request.
+      const id = Math.round(Number(req.body?.id));
+      if (!Number.isFinite(id) || id <= 0) {
+        return res.status(400).json({ error: 'Bad placement id.' });
+      }
+      const row = await getPlacementSealed(id);
+      if (!row) return res.status(404).json({ error: 'Placement not found.' });
+      if (!formKey()) {
+        return res.status(503).json({ error: 'WCC_FORM_KEY is not set, so the answers cannot be opened.' });
+      }
+      res.setHeader('Cache-Control', 'no-store');
+      return res.status(200).json({
+        ok: true,
+        id: row.id,
+        studentName: row.student_name,
+        school: row.school,
+        schoolSection: opened(row.school_sealed),
+        parentSection: opened(row.parent_sealed),
+      });
+    }
+    if (action === 'delete-placement') {
+      const id = Math.round(Number(req.body?.id));
+      if (!Number.isFinite(id) || id <= 0) {
+        return res.status(400).json({ error: 'Bad placement id.' });
+      }
+      await deletePlacement(id);
+      return res.status(200).json({ ok: true });
+    }
     if (action === 'delete-code') {
       await deleteCode(String(req.body?.code || '').trim().toUpperCase().slice(0, 20));
       return res.status(200).json({ ok: true });
@@ -205,5 +264,14 @@ export default async function handler(req, res) {
   if (!data) {
     return res.status(503).json({ error: 'DATABASE_URL is not set in Vercel.' });
   }
-  return res.status(200).json({ ok: true, ...data });
+  // Names and progress only — the answers themselves stay sealed until asked
+  // for one at a time.
+  const placements = await listPlacements().catch(() => []);
+  res.setHeader('Cache-Control', 'no-store');
+  return res.status(200).json({
+    ok: true,
+    ...data,
+    placements,
+    formKeyReady: Boolean(formKey()),
+  });
 }

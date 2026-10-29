@@ -25,6 +25,8 @@ export default function AdminPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState('overview');
+  // Where a cross-tab jump is pointing: the row is opened and scrolled to.
+  const [focus, setFocus] = useState(null);
   const [newCode, setNewCode] = useState('');
   const [newPct, setNewPct] = useState('10');
   const [codeMsg, setCodeMsg] = useState('');
@@ -158,9 +160,54 @@ export default function AdminPage() {
     </div>
   );
 
-  const BookingRow = ({ b }) => (
+  /** Jump to another tab and open the record being pointed at. */
+  const go = (toTab, id) => {
+    setTab(toTab);
+    setFocus({ tab: toTab, id });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  /**
+   * The three lists are the same table keyed by phone, so that is the join:
+   * digits only, because the same person is "07712 345678" on one row and
+   * "+447712345678" on another.
+   */
+  const digits = (value) => String(value || '').replace(/\D/g, '').slice(-10);
+
+  const bookingsByPhone = new Map();
+  for (const booking of [...(data.upcoming || []), ...(data.past || [])]) {
+    const key = digits(booking.phone);
+    if (!key) continue;
+    bookingsByPhone.set(key, [...(bookingsByPhone.get(key) || []), booking]);
+  }
+
+  const quotesByPhone = new Map();
+  for (const quote of data.quotes || []) {
+    const key = digits(quote.phone);
+    if (!key) continue;
+    quotesByPhone.set(key, [...(quotesByPhone.get(key) || []), quote]);
+  }
+
+  /** A small underlined button that reads as a link, because it behaves as one. */
+  const Jump = ({ to, id, children }) => (
+    <button
+      type="button"
+      onClick={() => go(to, id)}
+      className="text-left font-semibold text-primary underline"
+    >
+      {children}
+    </button>
+  );
+
+  const BookingRow = ({ b }) => {
+    const theirQuotes = quotesByPhone.get(digits(b.phone)) || [];
+    const fromQuote = theirQuotes[0];
+    return (
     <li>
-      <details className="group py-1">
+      <details
+        className="group py-1"
+        open={focus?.tab === 'jobs' && focus.id === b.id}
+      >
         <summary className="cursor-pointer list-none py-2 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 rounded-lg px-2 -mx-2 hover:bg-gray-50">
           <div>
             <p className="font-semibold text-gray-900">
@@ -187,6 +234,18 @@ export default function AdminPage() {
               <span key={line} className="block">{line}</span>
             ))}
           </Detail>
+          {fromQuote && (
+            <Detail label="Quoted">
+              <Jump to="quotes" id={fromQuote.id}>
+                {fromQuote.total} on {fromQuote.created_at} — open the quote →
+              </Jump>
+            </Detail>
+          )}
+          <Detail label="Customer history">
+            <Jump to="customers" id={digits(b.phone)}>
+              Every job for this number →
+            </Jump>
+          </Detail>
           <Detail label="Payment">
             {b.kind === 'booking-paid' ? 'Paid via Klarna' : `${b.total} on the day — cash or card`}
           </Detail>
@@ -194,11 +253,19 @@ export default function AdminPage() {
         </div>
       </details>
     </li>
-  );
+    );
+  };
 
-  const QuoteRow = ({ q }) => (
+  const QuoteRow = ({ q }) => {
+    const theirBookings = bookingsByPhone.get(digits(q.phone)) || [];
+    // The job this quote turned into: their first booking taken after it.
+    const becameJob = theirBookings[0];
+    return (
     <li>
-      <details className="group">
+      <details
+        className="group"
+        open={focus?.tab === 'quotes' && focus.id === q.id}
+      >
         <summary className="cursor-pointer list-none py-2.5 flex flex-wrap items-baseline justify-between gap-2 text-sm rounded-lg px-2 -mx-2 hover:bg-gray-50">
           <span className="font-semibold text-gray-900">{q.name}</span>
           <span className="flex items-center gap-2">
@@ -339,6 +406,18 @@ export default function AdminPage() {
             </div>
           )}
           <Detail label="When">{q.created_at}</Detail>
+          {becameJob && (
+            <Detail label="Became">
+              <Jump to="jobs" id={becameJob.id}>
+                {becameJob.slot_date} · {becameJob.total} — open the job →
+              </Jump>
+            </Detail>
+          )}
+          {!becameJob && q.booked && (
+            <Detail label="Became">
+              Marked booked by hand — no job found on this number.
+            </Detail>
+          )}
           <Detail label="Status">
             {q.manual_booked
               ? 'Marked booked by you (phoned in)'
@@ -407,17 +486,49 @@ export default function AdminPage() {
         </div>
       </details>
     </li>
-  );
+    );
+  };
+
+  /** One customer, with their jobs and quotes a click away. */
+  const CustomerRow = ({ c, trailing }) => {
+    const key = digits(c.phone);
+    const theirJobs = bookingsByPhone.get(key) || [];
+    const theirQuotes = quotesByPhone.get(key) || [];
+    const focused = focus?.tab === 'customers' && focus.id === key;
+    return (
+      <li
+        className={`py-2.5 text-sm ${focused ? 'rounded-lg bg-amber-50 px-2 -mx-2' : ''}`}
+      >
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <span>
+            <span className="font-semibold text-gray-900">{c.name}</span>{' '}
+            <a href={`tel:${c.phone}`} className="font-semibold text-primary underline">
+              {c.phone}
+            </a>
+            <span className="text-gray-500"> · {c.postcode}</span>
+          </span>
+          <span className="text-gray-500">{trailing}</span>
+        </div>
+        {(theirJobs.length > 0 || theirQuotes.length > 0) && (
+          <p className="mt-1 flex flex-wrap gap-x-4 text-xs">
+            {theirJobs.length > 0 && (
+              <Jump to="jobs" id={theirJobs[0].id}>
+                {theirJobs.length} job{theirJobs.length === 1 ? '' : 's'} →
+              </Jump>
+            )}
+            {theirQuotes.length > 0 && (
+              <Jump to="quotes" id={theirQuotes[0].id}>
+                {theirQuotes.length} quote{theirQuotes.length === 1 ? '' : 's'} →
+              </Jump>
+            )}
+          </p>
+        )}
+      </li>
+    );
+  };
 
   const DueRow = ({ c }) => (
-    <li className="py-2.5 flex flex-wrap items-baseline justify-between gap-2 text-sm">
-      <span>
-        <span className="font-semibold text-gray-900">{c.name}</span>{' '}
-        <a href={`tel:${c.phone}`} className="font-semibold text-primary underline">{c.phone}</a>
-        <span className="text-gray-500"> · {c.postcode}</span>
-      </span>
-      <span className="text-gray-500">last clean {c.last_clean}</span>
-    </li>
+    <CustomerRow c={c} trailing={`last clean ${c.last_clean}`} />
   );
 
   const stats = [
@@ -746,16 +857,11 @@ export default function AdminPage() {
               ) : (
                 <ul className="divide-y divide-gray-100">
                   {data.customers.map((c) => (
-                    <li key={c.phone} className="py-2.5 flex flex-wrap items-baseline justify-between gap-2 text-sm">
-                      <span>
-                        <span className="font-semibold text-gray-900">{c.name}</span>{' '}
-                        <a href={`tel:${c.phone}`} className="font-semibold text-primary underline">{c.phone}</a>
-                        <span className="text-gray-500"> · {c.postcode}</span>
-                      </span>
-                      <span className="text-gray-500">
-                        {c.bookings} clean{c.bookings === 1 ? '' : 's'} · last {c.last_clean}
-                      </span>
-                    </li>
+                    <CustomerRow
+                      key={c.phone}
+                      c={c}
+                      trailing={`${c.bookings} clean${c.bookings === 1 ? '' : 's'} · last ${c.last_clean}`}
+                    />
                   ))}
                 </ul>
               )}

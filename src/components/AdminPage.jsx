@@ -57,12 +57,14 @@ export default function AdminPage() {
   const [quoteMsg, setQuoteMsg] = useState('');
   const [placementMsg, setPlacementMsg] = useState('');
   const [openPlacement, setOpenPlacement] = useState(null);
+  const [search, setSearch] = useState('');
+  const [quoteDays, setQuoteDays] = useState(30);
 
-  const load = async (pw) => {
+  const load = async (pw, days = quoteDays) => {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch('/api/admin', {
+      const res = await fetch(`/api/admin?days=${days}`, {
         headers: { 'x-admin-password': pw },
       });
       const json = await res.json();
@@ -556,6 +558,31 @@ export default function AdminPage() {
     <CustomerRow c={c} trailing={`last clean ${c.last_clean}`} />
   );
 
+  /**
+   * One box over every list. The office's question is almost always "where is
+   * this person", and the answer was previously four tabs and a scroll —
+   * which is how somebody concludes a record is missing when it is simply
+   * older than the quote window.
+   */
+  const needle = search.trim().toLowerCase();
+  const digitsOf = (value) => String(value || '').replace(/\D/g, '');
+  const matches = (row) => {
+    if (!needle) return false;
+    const hay = [row.name, row.phone, row.postcode, row.address, row.items]
+      .map((v) => String(v || '').toLowerCase())
+      .join(' ');
+    if (hay.includes(needle)) return true;
+    const asDigits = needle.replace(/\D/g, '');
+    return asDigits.length >= 4 && digitsOf(row.phone).includes(asDigits);
+  };
+
+  const found = {
+    jobs: [...(data.upcoming || []), ...(data.past || [])].filter(matches),
+    quotes: (data.quotes || []).filter(matches),
+    customers: (data.customers || []).filter(matches),
+  };
+  const foundCount = found.jobs.length + found.quotes.length + found.customers.length;
+
   const stats = [
     { label: 'Upcoming jobs', value: data.upcoming.length, to: 'jobs', tone: 'text-primary' },
     { label: 'Quotes to chase', value: toChase.length, to: 'quotes', tone: toChase.length > 0 ? 'text-amber-600' : 'text-gray-900' },
@@ -584,6 +611,46 @@ export default function AdminPage() {
           </button>
         </div>
 
+        {/* Search — above everything, because "where is this person" is the
+            question the office actually arrives with. */}
+        <div className="rounded-2xl border border-gray-200 bg-white p-3 shadow-sm">
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search a name, address, postcode or part of a number…"
+            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-base focus:border-primary focus:outline-none"
+          />
+          {needle && (
+            <div className="mt-2 flex flex-wrap items-center justify-between gap-2 px-1 text-xs text-gray-500">
+              <span>
+                {foundCount} match{foundCount === 1 ? '' : 'es'} · quotes cover
+                the last {data.quoteDays || 30} days
+              </span>
+              <span className="flex gap-3">
+                {(data.quoteDays || 30) < 365 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setQuoteDays(365);
+                      load(password, 365);
+                    }}
+                    className="font-semibold text-primary underline"
+                  >
+                    Search the last year
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setSearch('')}
+                  className="font-semibold text-gray-500 underline"
+                >
+                  Clear
+                </button>
+              </span>
+            </div>
+          )}
+        </div>
+
         {/* Stat strip — each one jumps to its tab */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {stats.map((s) => (
@@ -598,8 +665,52 @@ export default function AdminPage() {
           ))}
         </div>
 
+        {needle && (
+          <div className="space-y-5">
+            {foundCount === 0 ? (
+              <Section title="No matches">
+                <Empty>
+                  Nothing on that. If they definitely got a price, the quote may
+                  predate the window above — or it never saved, which happens if
+                  the same connection submitted more than eight times in an hour.
+                </Empty>
+              </Section>
+            ) : (
+              <>
+                {found.jobs.length > 0 && (
+                  <Section title={`Jobs (${found.jobs.length})`}>
+                    <ul className="divide-y divide-gray-100">
+                      {found.jobs.map((b) => <BookingRow key={b.id} b={b} />)}
+                    </ul>
+                  </Section>
+                )}
+                {found.quotes.length > 0 && (
+                  <Section title={`Quotes (${found.quotes.length})`}>
+                    <ul className="divide-y divide-gray-100">
+                      {found.quotes.map((q) => <QuoteRow key={q.id} q={q} />)}
+                    </ul>
+                  </Section>
+                )}
+                {found.customers.length > 0 && (
+                  <Section title={`Customers (${found.customers.length})`}>
+                    <ul className="divide-y divide-gray-100">
+                      {found.customers.map((c) => (
+                        <CustomerRow
+                          key={c.phone}
+                          c={c}
+                          trailing={`${c.bookings} clean${c.bookings === 1 ? '' : 's'} · last ${c.last_clean}`}
+                        />
+                      ))}
+                    </ul>
+                  </Section>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
         {/* Tab bar */}
-        <div className="flex gap-1 overflow-x-auto rounded-2xl border border-gray-200 bg-white p-1 shadow-sm">
+        <div className={`flex gap-1 overflow-x-auto rounded-2xl border border-gray-200 bg-white p-1 shadow-sm ${needle ? 'hidden' : ''}`}>
           {TABS.map((t) => (
             <button
               key={t.id}
@@ -613,7 +724,7 @@ export default function AdminPage() {
           ))}
         </div>
 
-        {tab === 'overview' && (
+        {!needle && tab === 'overview' && (
           <div className="space-y-5">
             <Section
               title="Next up"
@@ -658,7 +769,7 @@ export default function AdminPage() {
           </div>
         )}
 
-        {tab === 'jobs' && (
+        {!needle && tab === 'jobs' && (
           <div className="space-y-5">
             <Section title={`Upcoming jobs (${data.upcoming.length})`}>
               {data.upcoming.length === 0 ? (
@@ -681,9 +792,23 @@ export default function AdminPage() {
           </div>
         )}
 
-        {tab === 'quotes' && (
+        {!needle && tab === 'quotes' && (
           <Section
-            title={`Quotes — last 30 days (${data.quotes.length})`}
+            title={`Quotes — last ${data.quoteDays || 30} days (${data.quotes.length})`}
+            action={
+              (data.quoteDays || 30) < 365 ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQuoteDays(365);
+                    load(password, 365);
+                  }}
+                  className="text-sm font-semibold text-primary underline"
+                >
+                  Show the last year
+                </button>
+              ) : null
+            }
             hint="Everyone who unlocked a price. Tap a row for details and the mark-as-booked button."
           >
             <details className="mb-4 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
@@ -859,7 +984,7 @@ export default function AdminPage() {
           </Section>
         )}
 
-        {tab === 'customers' && (
+        {!needle && tab === 'customers' && (
           <div className="space-y-5">
             <Section
               title={`Due a re-clean reminder (${data.due.length})`}
@@ -894,7 +1019,7 @@ export default function AdminPage() {
           </div>
         )}
 
-        {tab === 'placement' && (
+        {!needle && tab === 'placement' && (
           <div className="space-y-5">
             {data.formKeyReady === false && (
               <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
@@ -1068,7 +1193,7 @@ export default function AdminPage() {
           </div>
         )}
 
-        {tab === 'codes' && (
+        {!needle && tab === 'codes' && (
           <Section
             title={`Discount codes (${codes.length})`}
             hint="Anyone can enter these at booking. Deleting a code stops it working immediately — bookings already made keep their price."

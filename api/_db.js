@@ -283,7 +283,7 @@ export async function deleteCode(code) {
 }
 
 /** Everything the admin page shows, in one round of queries. */
-export async function adminData() {
+export async function adminData({ quoteDays = 30 } = {}) {
   const db = sql();
   if (!db) return null;
   await ensureSchema(db);
@@ -316,9 +316,10 @@ export async function adminData() {
                   AND b.created_at >= wcc_events.created_at - interval '1 hour'
              )) AS booked
         FROM wcc_events
-       WHERE kind = 'quote' AND created_at > now() - interval '30 days'
+       WHERE kind = 'quote'
+         AND created_at > now() - (${String(quoteDays)} || ' days')::interval
        ORDER BY created_at DESC
-       LIMIT 100`,
+       LIMIT ${quoteDays > 90 ? 1000 : 200}`,
     db`
       SELECT name, phone,
              count(*)::int AS bookings,

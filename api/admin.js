@@ -260,7 +260,12 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Unknown action' });
   }
 
-  const data = await adminData();
+  // ?days=365 widens the quote window when the office is looking for somebody
+  // from months ago, rather than quietly showing 30 days and nothing else.
+  const asked = Math.round(Number(req.query?.days));
+  const quoteDays = Number.isFinite(asked) && asked > 0 ? Math.min(asked, 3650) : 30;
+
+  const data = await adminData({ quoteDays });
   if (!data) {
     return res.status(503).json({ error: 'DATABASE_URL is not set in Vercel.' });
   }
@@ -272,6 +277,7 @@ export default async function handler(req, res) {
     ok: true,
     ...data,
     placements,
+    quoteDays,
     formKeyReady: Boolean(formKey()),
   });
 }

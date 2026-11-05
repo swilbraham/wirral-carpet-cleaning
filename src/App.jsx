@@ -70,6 +70,7 @@ function MainLayout() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/book" element={<BookPage />} />
+        <Route path="/christmas" element={<ChristmasPage />} />
         <Route path="/quote/:token" element={<QuotePage />} />
         <Route path="/student-placement/:token" element={<PlacementPage />} />
         <Route path="/admin" element={<AdminPage />} />
@@ -94,7 +95,6 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/landing" element={<Landing />} />
-        <Route path="/christmas" element={<ChristmasPage />} />
         <Route path="/spin-wheel" element={<SpinWheel />} />
         <Route path="/game" element={<CarpetGame />} />
         <Route path="/*" element={<MainLayout />} />

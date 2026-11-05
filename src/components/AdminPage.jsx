@@ -277,6 +277,26 @@ export default function AdminPage() {
             {b.kind === 'booking-paid' ? 'Paid via Klarna' : `${b.total} on the day — cash or card`}
           </Detail>
           <Detail label="Booked on">{b.booked_at}</Detail>
+          {b.reminded_at && (
+            <Detail label="Reminder texted">{b.reminded_at}</Detail>
+          )}
+          {b.phone && (
+            <div className="pt-2">
+              <button
+                onClick={async () => {
+                  const result = await adminPost({ action: 'remind-booking', id: b.id });
+                  if (result) setQuoteMsg(`Reminder texted to ${b.name}.`);
+                }}
+                className="rounded-xl border border-primary px-4 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white"
+              >
+                {b.reminded_at ? 'Text another reminder' : 'Text booking reminder'}
+              </button>
+              <p className="mt-1 text-xs text-gray-400">
+                Texts them the date, time window, address and price, with your
+                number for changes.
+              </p>
+            </div>
+          )}
         </div>
       </details>
     </li>

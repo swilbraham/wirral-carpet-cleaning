@@ -56,6 +56,9 @@ async function ensureSchema(db) {
     ).then(
       () => db`ALTER TABLE wcc_events ADD COLUMN IF NOT EXISTS quote_sent_at timestamptz`
     ).then(
+      // When the office last texted this booking's customer a reminder.
+      () => db`ALTER TABLE wcc_events ADD COLUMN IF NOT EXISTS reminded_at timestamptz`
+    ).then(
       // Work-experience placements. The two sections are sealed separately
       // because they are completed by different people at different times, and
       // the school has no business reading the parent's medical disclosures.
@@ -180,6 +183,25 @@ export async function addQuote(q) {
   }
 }
 
+/** One booking by id — what the reminder text works from. */
+export async function getBooking(id) {
+  const db = sql();
+  if (!db) return null;
+  await ensureSchema(db);
+  const rows = await db`
+    SELECT id, name, phone, address, postcode, slot_time, total,
+           to_char(slot_date, 'Dy DD Mon') AS slot_date
+      FROM wcc_events WHERE id = ${id} AND kind LIKE 'booking%'`;
+  return rows[0] ?? null;
+}
+
+export async function markBookingReminded(id) {
+  const db = sql();
+  if (!db) return;
+  await ensureSchema(db);
+  await db`UPDATE wcc_events SET reminded_at = now() WHERE id = ${id}`;
+}
+
 /** One quote by id — what the text-the-quote action works from. */
 export async function getQuote(id) {
   const db = sql();
@@ -292,6 +314,7 @@ export async function adminData({ quoteDays = 30 } = {}) {
     db`
       SELECT id, kind, name, phone, address, postcode, slot_time, items, total,
              to_char(slot_date, 'Dy DD Mon YYYY') AS slot_date,
+             to_char(reminded_at AT TIME ZONE 'Europe/London', 'DD Mon HH24:MI') AS reminded_at,
              to_char(created_at AT TIME ZONE 'Europe/London', 'DD Mon YYYY HH24:MI') AS booked_at
         FROM wcc_events
        WHERE kind LIKE 'booking%' AND slot_date >= CURRENT_DATE

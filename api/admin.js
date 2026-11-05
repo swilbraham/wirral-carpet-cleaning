@@ -5,7 +5,9 @@ import {
   addCode,
   addQuote,
   deleteCode,
+  getBooking,
   getQuote,
+  markBookingReminded,
   markQuoteChased,
   markQuoteSent,
   setQuoteBooked,
@@ -129,6 +131,32 @@ export default async function handler(req, res) {
         }
         return res.status(200).json({ ok: true, texted: true });
       }
+      return res.status(200).json({ ok: true });
+    }
+    if (action === 'remind-booking') {
+      const id = Math.round(Number(req.body?.id));
+      if (!Number.isFinite(id) || id <= 0) {
+        return res.status(400).json({ error: 'Bad booking id.' });
+      }
+      const booking = await getBooking(id);
+      if (!booking) return res.status(404).json({ error: 'Booking not found.' });
+      const to = ukMobile(booking.phone);
+      if (!to) {
+        return res.status(400).json({ error: "That mobile number isn't textable — check it starts 07." });
+      }
+      const firstName = String(booking.name || '').trim().split(' ')[0] || 'Hi';
+      const window =
+        booking.slot_time === 'AM' ? 'morning, 8–12' : 'afternoon, 12–5';
+      const body =
+        `${firstName}, a reminder from Wirral Carpet Cleaning: we're booked in for ` +
+        `${booking.slot_date} (${window}) at ${booking.address}, ${booking.postcode}. ` +
+        `${booking.total} on the day — cash or card. ` +
+        `Need to change anything? Call or text 0151 936 9664.`;
+      const sent = await sendSms(to, body);
+      if (!sent.ok) {
+        return res.status(400).json({ error: 'The text failed to send — try again in a minute.' });
+      }
+      await markBookingReminded(id);
       return res.status(200).json({ ok: true });
     }
     if (action === 'send-discount') {

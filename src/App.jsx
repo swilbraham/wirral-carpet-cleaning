@@ -15,6 +15,7 @@ import Footer from './components/Footer';
 import MobileCallButton from './components/MobileCallButton';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import Landing from './components/Landing';
+import ChristmasPage from './components/ChristmasPage';
 import SpinWheel from './components/SpinWheel';
 import CarpetGame from './components/CarpetGame';
 import PaymentPage from './components/PaymentPage';
@@ -93,6 +94,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/landing" element={<Landing />} />
+        <Route path="/christmas" element={<ChristmasPage />} />
         <Route path="/spin-wheel" element={<SpinWheel />} />
         <Route path="/game" element={<CarpetGame />} />
         <Route path="/*" element={<MainLayout />} />

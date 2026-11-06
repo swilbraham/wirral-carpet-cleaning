@@ -8,7 +8,8 @@ import { HiPhone, HiCalendar, HiCheck, HiSparkles, HiClock } from 'react-icons/h
  * rest of the site (navy hero, blue accents, white sections); the snow and
  * the copy carry the festive feel, not a novelty palette.
  *
- * The SANTA10 code it advertises must exist in Admin → Codes (10%).
+ * No discount: December sells out on its own — the 3-for-£99 bundle is
+ * the advertised offer, and the automatic chase keeps its private offers.
  */
 const SNOWFLAKES = Array.from({ length: 20 }, (_, i) => ({
   id: i,
@@ -79,7 +80,7 @@ export default function ChristmasPage() {
             transition={{ duration: 0.6 }}
           >
             <p className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-accent-light">
-              <HiSparkles /> Christmas offer — 10% off online bookings
+              <HiSparkles /> Christmas offer — any 3 areas for £99
             </p>
             <h1 className="mt-6 text-4xl font-black leading-tight text-white md:text-5xl">
               Guest-ready carpets
@@ -119,18 +120,15 @@ export default function ChristmasPage() {
                 The offer
               </p>
               <p className="mt-3 text-4xl font-black text-gray-900">
-                10% off
+                Any 3 areas for £99
                 <span className="block mt-1 text-lg font-semibold text-gray-500">
-                  every online booking before Christmas
+                  rooms or staircases — applied automatically
                 </span>
               </p>
               <p className="mt-4 text-sm text-gray-600">
-                Use code{' '}
-                <span className="rounded-lg bg-primary/10 px-2 py-1 font-mono font-bold text-primary">
-                  SANTA10
-                </span>{' '}
-                at the end of the price calculator — it comes straight off the
-                price you pay on the day.
+                Pick three carpeted rooms or staircases on the price calculator
+                and the deal applies itself — nothing to type, nothing to pay
+                until the job&rsquo;s done. Dates before Christmas go fast.
               </p>
               <Link
                 to="/book"

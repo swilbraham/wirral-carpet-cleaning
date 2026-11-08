@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -83,6 +83,10 @@ function MainLayout() {
         <Route path="/blog" element={<BlogIndex />} />
         <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/training" element={<TrainingPage />} />
+        {/* A mistyped path used to render the header, the footer and nothing
+            between them — the worst thing to do with a click somebody paid
+            for. Anything unknown goes to the home page instead. */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <Footer />
       <MobileCallButton />

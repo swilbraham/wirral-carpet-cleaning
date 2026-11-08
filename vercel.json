@@ -1,4 +1,26 @@
 {
+  "redirects": [
+    {
+      "source": "/chrsitmas",
+      "destination": "/christmas",
+      "permanent": false
+    },
+    {
+      "source": "/chistmas",
+      "destination": "/christmas",
+      "permanent": false
+    },
+    {
+      "source": "/christmass",
+      "destination": "/christmas",
+      "permanent": false
+    },
+    {
+      "source": "/xmas",
+      "destination": "/christmas",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/((?!api/|assets/|sundayoffer|easter|4carpets99).*)",

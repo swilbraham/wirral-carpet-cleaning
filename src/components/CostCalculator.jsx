@@ -30,7 +30,7 @@ const WEB3FORMS_KEY = 'fae49abe-d4e1-4cdc-9ed1-a5ec3c116881';
 function generateDates() {
   const dates = [];
   const today = new Date();
-  for (let i = 1; i <= 21; i++) {
+  for (let i = 1; i <= 42; i++) {
     const date = new Date(today);
     date.setDate(today.getDate() + i);
     if (date.getDay() !== 0) {
@@ -92,6 +92,8 @@ export default function CostCalculator() {
   // be followed up, not an anonymous basket that vanishes.
   const [unlocked, setUnlocked] = useState(false);
   const [gateError, setGateError] = useState('');
+  // First fortnight shown by default; the rest of the 6 weeks behind a tap.
+  const [showAllDates, setShowAllDates] = useState(false);
   const quoteLogged = useRef(false);
 
   const availableDates = useMemo(() => generateDates(), []);
@@ -913,7 +915,7 @@ export default function CostCalculator() {
                       <HiCalendar className="w-4 h-4 text-primary" /> Pick a day
                     </p>
                     <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                      {availableDates.slice(0, 12).map((date) => {
+                      {(showAllDates ? availableDates : availableDates.slice(0, 12)).map((date) => {
                         const value = formatDateValue(date);
                         const isSelected = formData.date === value;
                         return (
@@ -932,6 +934,15 @@ export default function CostCalculator() {
                         );
                       })}
                     </div>
+                    {!showAllDates && (
+                      <button
+                        type="button"
+                        onClick={() => setShowAllDates(true)}
+                        className="mt-2 text-sm font-semibold text-primary hover:underline"
+                      >
+                        More dates — book up to 6 weeks ahead ↓
+                      </button>
+                    )}
                   </div>
 
                   {/* Time slot */}

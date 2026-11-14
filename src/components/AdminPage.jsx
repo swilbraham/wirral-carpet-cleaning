@@ -244,6 +244,11 @@ export default function AdminPage() {
                   paid
                 </span>
               )}
+              {b.cancelled_at && (
+                <span className="ml-2 rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700">
+                  cancelled
+                </span>
+              )}
             </p>
             <p className="text-sm text-gray-600">{b.name} · {b.postcode}</p>
           </div>
@@ -280,21 +285,47 @@ export default function AdminPage() {
           {b.reminded_at && (
             <Detail label="Reminder texted">{b.reminded_at}</Detail>
           )}
-          {b.phone && (
-            <div className="pt-2">
-              <button
-                onClick={async () => {
-                  const result = await adminPost({ action: 'remind-booking', id: b.id });
-                  if (result) setQuoteMsg(`Reminder texted to ${b.name}.`);
-                }}
-                className="rounded-xl border border-primary px-4 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white"
-              >
-                {b.reminded_at ? 'Text another reminder' : 'Text booking reminder'}
-              </button>
-              <p className="mt-1 text-xs text-gray-400">
-                Texts them the date, time window, address and price, with your
-                number for changes.
-              </p>
+          {b.cancelled_at && (
+            <Detail label="Cancellation texted">{b.cancelled_at}</Detail>
+          )}
+          {b.phone && !b.cancelled_at && (
+            <div className="flex flex-wrap items-start gap-x-6 gap-y-2 pt-2">
+              <div>
+                <button
+                  onClick={async () => {
+                    const result = await adminPost({ action: 'remind-booking', id: b.id });
+                    if (result) setQuoteMsg(`Reminder texted to ${b.name}.`);
+                  }}
+                  className="rounded-xl border border-primary px-4 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white"
+                >
+                  {b.reminded_at ? 'Text another reminder' : 'Text booking reminder'}
+                </button>
+                <p className="mt-1 text-xs text-gray-400">
+                  Texts them the date, time window, address and price, with your
+                  number for changes.
+                </p>
+              </div>
+              <div>
+                <button
+                  onClick={async () => {
+                    if (
+                      !window.confirm(
+                        `Text ${b.name} that their ${b.slot_date} booking is CANCELLED?\n\nThis sends straight away and marks the job cancelled.`
+                      )
+                    )
+                      return;
+                    const result = await adminPost({ action: 'cancel-booking', id: b.id });
+                    if (result) setQuoteMsg(`Cancellation texted to ${b.name}.`);
+                  }}
+                  className="rounded-xl border border-red-300 px-4 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-600 hover:border-red-600 hover:text-white"
+                >
+                  Text cancellation
+                </button>
+                <p className="mt-1 text-xs text-gray-400">
+                  Says sorry, the booking is off, nothing owed, with the
+                  rebook link — and marks the job cancelled.
+                </p>
+              </div>
             </div>
           )}
         </div>

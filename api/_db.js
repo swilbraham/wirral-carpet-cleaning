@@ -59,6 +59,10 @@ async function ensureSchema(db) {
       // When the office last texted this booking's customer a reminder.
       () => db`ALTER TABLE wcc_events ADD COLUMN IF NOT EXISTS reminded_at timestamptz`
     ).then(
+      // Set when the office texts the customer that their booking is
+      // cancelled. The row stays, flagged, so the diary keeps its history.
+      () => db`ALTER TABLE wcc_events ADD COLUMN IF NOT EXISTS cancelled_at timestamptz`
+    ).then(
       // Work-experience placements. The two sections are sealed separately
       // because they are completed by different people at different times, and
       // the school has no business reading the parent's medical disclosures.
@@ -202,6 +206,13 @@ export async function markBookingReminded(id) {
   await db`UPDATE wcc_events SET reminded_at = now() WHERE id = ${id}`;
 }
 
+export async function markBookingCancelled(id) {
+  const db = sql();
+  if (!db) return;
+  await ensureSchema(db);
+  await db`UPDATE wcc_events SET cancelled_at = now() WHERE id = ${id} AND kind LIKE 'booking%'`;
+}
+
 /** One quote by id — what the text-the-quote action works from. */
 export async function getQuote(id) {
   const db = sql();
@@ -315,6 +326,7 @@ export async function adminData({ quoteDays = 30 } = {}) {
       SELECT id, kind, name, phone, address, postcode, slot_time, items, total,
              to_char(slot_date, 'Dy DD Mon YYYY') AS slot_date,
              to_char(reminded_at AT TIME ZONE 'Europe/London', 'DD Mon HH24:MI') AS reminded_at,
+             to_char(cancelled_at AT TIME ZONE 'Europe/London', 'DD Mon HH24:MI') AS cancelled_at,
              to_char(created_at AT TIME ZONE 'Europe/London', 'DD Mon YYYY HH24:MI') AS booked_at
         FROM wcc_events
        WHERE kind LIKE 'booking%' AND slot_date >= CURRENT_DATE
@@ -322,6 +334,7 @@ export async function adminData({ quoteDays = 30 } = {}) {
     db`
       SELECT id, kind, name, phone, address, postcode, slot_time, items, total,
              to_char(slot_date, 'Dy DD Mon YYYY') AS slot_date,
+             to_char(cancelled_at AT TIME ZONE 'Europe/London', 'DD Mon HH24:MI') AS cancelled_at,
              to_char(created_at AT TIME ZONE 'Europe/London', 'DD Mon YYYY HH24:MI') AS booked_at
         FROM wcc_events
        WHERE kind LIKE 'booking%' AND slot_date < CURRENT_DATE

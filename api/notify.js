@@ -27,6 +27,32 @@ function allow(key, max, windowMs) {
 
 const text = (value, max = 160) => String(value ?? '').trim().slice(0, max);
 
+/**
+ * Relay the enquiry into RinseHQ, server to server, so every website quote and
+ * booking lands in the owner's one system. Best effort and time-boxed: a
+ * booking must never fail or hang because RinseHQ was briefly unreachable, and
+ * the local record (above) is still the safety net. No key set → simply skipped.
+ */
+async function forwardToRinse(payload) {
+  const key = process.env.RINSEHQ_INTAKE_KEY;
+  if (!key) return false;
+  const url = process.env.RINSEHQ_INTAKE_URL || 'https://www.rinsehq.co.uk/api/intake';
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 4000);
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-intake-key': key },
+      body: JSON.stringify(payload),
+      signal: ctrl.signal,
+    });
+    clearTimeout(timer);
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -52,6 +78,9 @@ export default async function handler(req, res) {
   const items = text(req.body.items, 220);
   const total = text(req.body.total, 12);
   const discount = text(req.body.discount, 20);
+  const dateIso = /^\d{4}-\d{2}-\d{2}$/.test(text(req.body.dateIso, 10))
+    ? text(req.body.dateIso, 10)
+    : null;
 
   // The permanent record — this is what the admin page reads. Texts and
   // emails are the fast copies; this is the one that lasts.
@@ -61,12 +90,15 @@ export default async function handler(req, res) {
     phone,
     address,
     postcode,
-    slotDate: /^\d{4}-\d{2}-\d{2}$/.test(text(req.body.dateIso, 10))
-      ? text(req.body.dateIso, 10)
-      : null,
+    slotDate: dateIso,
     slotTime: time,
     items,
     total,
+  });
+
+  // Hand the same enquiry to RinseHQ, the owner's single system.
+  const rinse = await forwardToRinse({
+    kind, name, phone, address, postcode, dateIso, time, items, total, discount,
   });
 
   const results = { owner: false, customer: false };
@@ -109,6 +141,7 @@ export default async function handler(req, res) {
   return res.status(200).json({
     ok: true,
     stored,
+    rinse,
     ...results,
     configured: {
       twilio: Boolean(

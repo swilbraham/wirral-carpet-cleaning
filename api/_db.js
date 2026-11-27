@@ -325,6 +325,7 @@ export async function adminData({ quoteDays = 30 } = {}) {
     db`
       SELECT id, kind, name, phone, address, postcode, slot_time, items, total,
              to_char(slot_date, 'Dy DD Mon YYYY') AS slot_date,
+             to_char(slot_date, 'YYYY-MM-DD') AS slot_iso,
              to_char(reminded_at AT TIME ZONE 'Europe/London', 'DD Mon HH24:MI') AS reminded_at,
              to_char(cancelled_at AT TIME ZONE 'Europe/London', 'DD Mon HH24:MI') AS cancelled_at,
              to_char(created_at AT TIME ZONE 'Europe/London', 'DD Mon YYYY HH24:MI') AS booked_at
@@ -334,6 +335,7 @@ export async function adminData({ quoteDays = 30 } = {}) {
     db`
       SELECT id, kind, name, phone, address, postcode, slot_time, items, total,
              to_char(slot_date, 'Dy DD Mon YYYY') AS slot_date,
+             to_char(slot_date, 'YYYY-MM-DD') AS slot_iso,
              to_char(cancelled_at AT TIME ZONE 'Europe/London', 'DD Mon HH24:MI') AS cancelled_at,
              to_char(created_at AT TIME ZONE 'Europe/London', 'DD Mon YYYY HH24:MI') AS booked_at
         FROM wcc_events

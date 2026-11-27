@@ -201,6 +201,12 @@ export default function AdminPage() {
    */
   const digits = (value) => String(value || '').replace(/\D/g, '').slice(-10);
 
+  /** A maps link to the job — one tap to set off from wherever the van is. */
+  const mapsUrl = (b) =>
+    `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+      `${b.address || ''}, ${b.postcode || ''}`.trim()
+    )}`;
+
   const bookingsByPhone = new Map();
   for (const booking of [...(data.upcoming || []), ...(data.past || [])]) {
     const key = digits(booking.phone);
@@ -260,6 +266,16 @@ export default function AdminPage() {
             <a href={`tel:${b.phone}`} className="font-semibold text-primary underline">{b.phone}</a>
           </Detail>
           <Detail label="Address">{b.address}, {b.postcode}</Detail>
+          <Detail label="Directions">
+            <a
+              href={mapsUrl(b)}
+              target="_blank"
+              rel="noreferrer"
+              className="font-semibold text-primary underline"
+            >
+              Open in Maps →
+            </a>
+          </Detail>
           <Detail label="Slot">{b.slot_date} · {b.slot_time === 'AM' ? 'Morning 8–12' : 'Afternoon 12–5'}</Detail>
           <Detail label="Items">
             {String(b.items).split(', ').map((line) => (
@@ -610,6 +626,53 @@ export default function AdminPage() {
   );
 
   /**
+   * Today's run sheet: the day's jobs in order, with everything the van needs
+   * at a glance — no tapping to expand. Call and Directions are one tap each.
+   */
+  const RunSheetRow = ({ b, n }) => (
+    <li className="flex items-start gap-3 py-3">
+      <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary tabular-nums">
+        {n}
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold text-gray-900">
+          {b.slot_time === 'AM' ? 'Morning · 8–12' : 'Afternoon · 12–5'}
+          {b.kind === 'booking-paid' && (
+            <span className="ml-2 rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
+              paid
+            </span>
+          )}
+          {b.cancelled_at && (
+            <span className="ml-2 rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700">
+              cancelled
+            </span>
+          )}
+        </p>
+        <p className="mt-0.5 text-sm">
+          <span className="font-semibold text-gray-900">{b.name}</span>
+          <span className="ml-2 font-bold text-primary">{b.total}</span>
+        </p>
+        <p className="truncate text-sm text-gray-600">
+          {b.address}, {b.postcode}
+        </p>
+        <p className="mt-1 flex gap-4 text-xs">
+          <a href={`tel:${b.phone}`} className="font-semibold text-primary underline">
+            Call
+          </a>
+          <a
+            href={mapsUrl(b)}
+            target="_blank"
+            rel="noreferrer"
+            className="font-semibold text-primary underline"
+          >
+            Directions →
+          </a>
+        </p>
+      </div>
+    </li>
+  );
+
+  /**
    * One box over every list. The office's question is almost always "where is
    * this person", and the answer was previously four tabs and a scroll —
    * which is how somebody concludes a record is missing when it is simply
@@ -633,6 +696,94 @@ export default function AdminPage() {
     customers: (data.customers || []).filter(matches),
   };
   const foundCount = found.jobs.length + found.quotes.length + found.customers.length;
+
+  // --- Money and dates -----------------------------------------------------
+  // "£120" / "£99.50" → a number; anything odd counts as zero rather than NaN.
+  const money = (s) => {
+    const n = Number(String(s || '').replace(/[^0-9.]/g, ''));
+    return Number.isFinite(n) ? n : 0;
+  };
+  const gbp = (n) => `£${Math.round(n).toLocaleString('en-GB')}`;
+  const sum = (rows) => rows.reduce((t, b) => t + money(b.total), 0);
+
+  // Today in Britain as YYYY-MM-DD — matches slot_iso from the server, so the
+  // sums never drift with the browser's timezone or the clocks changing.
+  const todayIso = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/London',
+  }).format(new Date());
+  // Build YYYY-MM-DD from local parts (not toISOString, which would shift a day
+  // under British Summer Time).
+  const isoLocal = (d) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(
+      d.getDate()
+    ).padStart(2, '0')}`;
+  const base = new Date(`${todayIso}T00:00:00`);
+  const monday = new Date(base);
+  monday.setDate(base.getDate() - ((base.getDay() + 6) % 7)); // back to Monday
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  const weekStart = isoLocal(monday);
+  const weekEnd = isoLocal(sunday);
+  const thisMonth = todayIso.slice(0, 7);
+
+  const liveUpcoming = (data.upcoming || []).filter((b) => !b.cancelled_at);
+  const livePast = (data.past || []).filter((b) => !b.cancelled_at);
+  const allLive = [...liveUpcoming, ...livePast];
+
+  const weekJobs = allLive.filter(
+    (b) => b.slot_iso && b.slot_iso >= weekStart && b.slot_iso <= weekEnd
+  );
+  const doneThisMonth = livePast.filter(
+    (b) => b.slot_iso && b.slot_iso.slice(0, 7) === thisMonth
+  );
+  const todayJobs = liveUpcoming.filter((b) => b.slot_iso === todayIso);
+  const comingUp = liveUpcoming.filter((b) => b.slot_iso !== todayIso);
+
+  const quoteCount = data.quotes?.length || 0;
+  const quotesBooked = (data.quotes || []).filter((q) => q.booked).length;
+  const conversionPct = quoteCount ? Math.round((quotesBooked / quoteCount) * 100) : 0;
+
+  const moneyTiles = [
+    {
+      label: 'This week',
+      value: gbp(sum(weekJobs)),
+      sub: `${weekJobs.length} job${weekJobs.length === 1 ? '' : 's'}`,
+      tone: 'text-primary',
+      to: 'jobs',
+    },
+    {
+      label: 'Booked ahead',
+      value: gbp(sum(liveUpcoming)),
+      sub: `${liveUpcoming.length} in the diary`,
+      tone: 'text-gray-900',
+      to: 'jobs',
+    },
+    {
+      label: 'Taken this month',
+      value: gbp(sum(doneThisMonth)),
+      sub: `${doneThisMonth.length} done`,
+      tone: 'text-green-700',
+      to: 'jobs',
+    },
+    {
+      label: 'Quotes booked',
+      value: `${conversionPct}%`,
+      sub: `${quotesBooked} of ${quoteCount} · last ${data.quoteDays || 30}d`,
+      tone: conversionPct >= 50 ? 'text-green-700' : 'text-gray-900',
+      to: 'quotes',
+    },
+  ];
+
+  // Group a list of jobs by calendar day, keeping the server's order.
+  const groupByDay = (rows) => {
+    const map = new Map();
+    for (const b of rows) {
+      const key = b.slot_iso || b.slot_date;
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(b);
+    }
+    return [...map.entries()];
+  };
 
   const stats = [
     { label: 'Upcoming jobs', value: data.upcoming.length, to: 'jobs', tone: 'text-primary' },
@@ -777,15 +928,48 @@ export default function AdminPage() {
 
         {!needle && tab === 'overview' && (
           <div className="space-y-5">
+            {/* Money at a glance — the numbers that say how the week's going. */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {moneyTiles.map((t) => (
+                <button
+                  key={t.label}
+                  onClick={() => setTab(t.to)}
+                  className="rounded-2xl border border-gray-200 bg-white p-4 text-left shadow-sm transition-colors hover:border-primary/40"
+                >
+                  <p className={`text-2xl font-bold tabular-nums ${t.tone}`}>{t.value}</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                    {t.label}
+                  </p>
+                  <p className="mt-0.5 text-xs text-gray-400">{t.sub}</p>
+                </button>
+              ))}
+            </div>
+
+            {todayJobs.length > 0 && (
+              <Section
+                title={`Today · ${todayJobs[0].slot_date} (${todayJobs.length})`}
+                hint="Your run for the day, in order. One tap to call or set off."
+                action={<ViewAll to="jobs">All jobs →</ViewAll>}
+              >
+                <ul className="divide-y divide-gray-100">
+                  {todayJobs.map((b, i) => (
+                    <RunSheetRow key={b.id} b={b} n={i + 1} />
+                  ))}
+                </ul>
+              </Section>
+            )}
+
             <Section
-              title="Next up"
+              title={todayJobs.length > 0 ? 'Coming up' : 'Next up'}
               action={<ViewAll to="jobs">All jobs →</ViewAll>}
             >
-              {data.upcoming.length === 0 ? (
-                <Empty>Nothing booked in.</Empty>
+              {comingUp.length === 0 ? (
+                <Empty>
+                  {todayJobs.length > 0 ? 'Nothing else booked in.' : 'Nothing booked in.'}
+                </Empty>
               ) : (
                 <ul className="divide-y divide-gray-100">
-                  {data.upcoming.slice(0, 3).map((b) => <BookingRow key={b.id} b={b} />)}
+                  {comingUp.slice(0, 3).map((b) => <BookingRow key={b.id} b={b} />)}
                 </ul>
               )}
             </Section>
@@ -826,9 +1010,29 @@ export default function AdminPage() {
               {data.upcoming.length === 0 ? (
                 <Empty>Nothing booked in. New bookings appear here automatically.</Empty>
               ) : (
-                <ul className="divide-y divide-gray-100">
-                  {data.upcoming.map((b) => <BookingRow key={b.id} b={b} />)}
-                </ul>
+                <div className="space-y-4">
+                  {groupByDay(data.upcoming).map(([iso, rows]) => {
+                    const dayValue = sum(rows.filter((r) => !r.cancelled_at));
+                    return (
+                      <div key={iso}>
+                        <p className="flex items-baseline gap-2 border-b border-gray-200 pb-1 text-sm font-bold text-gray-900">
+                          {rows[0].slot_date}
+                          {iso === todayIso && (
+                            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
+                              Today
+                            </span>
+                          )}
+                          <span className="ml-auto font-semibold text-gray-400">
+                            {gbp(dayValue)}
+                          </span>
+                        </p>
+                        <ul className="divide-y divide-gray-100">
+                          {rows.map((b) => <BookingRow key={b.id} b={b} />)}
+                        </ul>
+                      </div>
+                    );
+                  })}
+                </div>
               )}
             </Section>
             <Section title={`Past jobs (${data.past.length})`}>

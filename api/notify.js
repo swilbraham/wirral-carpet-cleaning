@@ -12,7 +12,6 @@
  */
 
 import { recordEvent } from './_db.js';
-import { sendSms, ukMobile } from './_sms.js';
 
 const sent = new Map(); // per-instance rate limit: key -> [timestamps]
 
@@ -73,7 +72,6 @@ export default async function handler(req, res) {
   const phone = text(req.body.phone, 20);
   const address = text(req.body.address, 120);
   const postcode = text(req.body.postcode, 10).toUpperCase();
-  const date = text(req.body.date, 24);
   const time = text(req.body.time, 20);
   const items = text(req.body.items, 220);
   const total = text(req.body.total, 12);
@@ -101,44 +99,10 @@ export default async function handler(req, res) {
     kind, name, phone, address, postcode, dateIso, time, items, total, discount,
   });
 
-  const results = { owner: false, customer: false };
+  // RinseHQ now owns every message: the customer confirmation AND the cleaner
+  // alert are both sent from there (to the registered cleaner's number). The
+  // website therefore sends no texts itself — it only saves the record and
+  // relays the enquiry to RinseHQ above.
 
-  // The office text: fixed destination, so this one is always safe to send.
-  const owner = ukMobile(process.env.OWNER_MOBILE);
-  if (owner) {
-    const headline =
-      kind === 'quote'
-        ? `QUOTE viewed (not booked): ${total}`
-        : kind === 'booking-paid'
-          ? `NEW BOOKING (PAID Klarna): ${total}`
-          : `NEW BOOKING (pay on day): ${total}`;
-    const lines = [
-      `WCC ${headline}${discount ? ` (code ${discount})` : ''}`,
-      `${name} ${phone}`,
-      kind === 'quote' ? items : `${address}, ${postcode}`,
-      kind === 'quote' ? '' : `${date} ${time} — ${items}`,
-    ].filter(Boolean);
-    results.owner = (await sendSms(owner, lines.join('\n'))).ok;
-  }
-
-  // Customer confirmation is now sent by RinseHQ (one system owns every
-  // customer message), so the website no longer texts the customer — only the
-  // owner alert above, to avoid messaging the customer from two numbers.
-
-  // Presence booleans only — never values. Enough to see which variable a
-  // silent failure is missing.
-  return res.status(200).json({
-    ok: true,
-    stored,
-    rinse,
-    ...results,
-    configured: {
-      twilio: Boolean(
-        process.env.TWILIO_ACCOUNT_SID &&
-          process.env.TWILIO_AUTH_TOKEN &&
-          process.env.TWILIO_SMS_FROM
-      ),
-      ownerMobile: Boolean(ukMobile(process.env.OWNER_MOBILE)),
-    },
-  });
+  return res.status(200).json({ ok: true, stored, rinse });
 }

@@ -70,15 +70,5 @@
         }
       ]
     }
-  ],
-  "crons": [
-    {
-      "path": "/api/chase",
-      "schedule": "0 10 * * *"
-    },
-    {
-      "path": "/api/chase",
-      "schedule": "0 17 * * *"
-    }
   ]
 }

@@ -121,20 +121,9 @@ export default async function handler(req, res) {
     results.owner = (await sendSms(owner, lines.join('\n'))).ok;
   }
 
-  // Customer confirmation: bookings only, UK mobiles only, once per number.
-  if (kind !== 'quote') {
-    const customer = ukMobile(phone);
-    if (customer && allow(`cust:${customer}`, 2, 24 * 60 * 60 * 1000)) {
-      const body =
-        kind === 'booking-paid'
-          ? `Wirral Carpet Cleaning: booking received for ${date} (${time}), paid via Klarna. ` +
-            `We'll confirm your slot shortly. Questions? 0151 936 9664`
-          : `Wirral Carpet Cleaning: booking received for ${date} (${time}). ` +
-            `Nothing paid today — ${total} by cash or card when the job's done. ` +
-            `We'll confirm your slot shortly. Questions? 0151 936 9664`;
-      results.customer = (await sendSms(customer, body)).ok;
-    }
-  }
+  // Customer confirmation is now sent by RinseHQ (one system owns every
+  // customer message), so the website no longer texts the customer — only the
+  // owner alert above, to avoid messaging the customer from two numbers.
 
   // Presence booleans only — never values. Enough to see which variable a
   // silent failure is missing.

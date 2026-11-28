@@ -165,6 +165,10 @@ export default function CostCalculator() {
       setGateError('Please add a valid mobile number.');
       return;
     }
+    if (!/^[A-Za-z]{1,2}\d[A-Za-z\d]?\s*\d[A-Za-z]{2}$/.test(formData.postcode.trim())) {
+      setGateError('Please add a valid postcode.');
+      return;
+    }
     setGateError('');
     setUnlocked(true);
   };
@@ -184,6 +188,7 @@ export default function CostCalculator() {
           from_name: 'Wirral Carpet Cleaning Website',
           name: formData.name,
           phone: formData.phone,
+          postcode: formData.postcode,
           itemsQuoted: describeLines(lines).join('\n'),
           estimatedCost: `£${total.toFixed(2)}`,
           note: 'Quote viewed on the website. If no booking follows, worth a text.',
@@ -681,7 +686,7 @@ export default function CostCalculator() {
                       <div>
                         <p className="text-gray-700 font-medium">
                           {totalItems} item{totalItems !== 1 ? 's' : ''} selected — pop your
-                          name and mobile in and your price appears instantly.
+                          name, mobile and postcode in and your price appears instantly.
                         </p>
                         <div className="mt-3 flex flex-wrap gap-2">
                           <input
@@ -701,6 +706,15 @@ export default function CostCalculator() {
                             placeholder="Mobile number"
                             autoComplete="tel"
                             className="w-44 flex-1 rounded-xl border border-gray-200 px-4 py-2.5 focus:border-primary focus:outline-none"
+                          />
+                          <input
+                            type="text"
+                            name="postcode"
+                            value={formData.postcode}
+                            onChange={handleInputChange}
+                            placeholder="Postcode"
+                            autoComplete="postal-code"
+                            className="w-32 flex-none rounded-xl border border-gray-200 px-4 py-2.5 uppercase focus:border-primary focus:outline-none"
                           />
                           <button
                             type="button"
